@@ -55,6 +55,12 @@ jobs:
             -e "ssh -p $SSH_PORT" \
             dist/ "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/releases/$RELEASE/"
 
+          ssh -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" "mkdir -p $DEPLOY_PATH/media"
+
+          rsync -az \
+            -e "ssh -p $SSH_PORT" \
+            dist/media/ "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/media/"
+
           ssh -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" "
             ln -sfn $DEPLOY_PATH/releases/$RELEASE $DEPLOY_PATH/current &&
             sudo systemctl reload nginx

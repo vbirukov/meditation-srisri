@@ -1,0 +1,24 @@
+# Пример для app2.aolapp.ru
+# DEPLOY_PATH — значение secrets.DEPLOY_PATH (например /var/www/meditation-app2)
+
+server {
+    listen 443 ssl http2;
+    server_name app2.aolapp.ru;
+
+    root /var/www/meditation-app2/current;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Если оставляешь отдельный alias — CI кладёт файлы в $DEPLOY_PATH/media (см. deploy.yaml)
+    location /media/ {
+        alias /var/www/meditation-app2/media/;
+        add_header Access-Control-Allow-Origin *;
+        expires 30d;
+    }
+}
+
+# Вариант проще: один root, без alias — тогда media лежит в current/media после rsync dist/
+# Удали блок location /media/ выше и используй только root + try_files.

@@ -8,7 +8,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icons/*.svg', 'media/**/*'],
+      includeAssets: ['icons/*.svg'],
       manifest: {
         name: 'Meditate with Sri Sri',
         short_name: 'Sri Sri Meditate',
@@ -44,10 +44,18 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,svg,json,woff2}'],
         runtimeCaching: [
           {
-            urlPattern: /\.(?:mp3|mp4|webm|m4a|ogg)$/i,
+            urlPattern: /^\/media\/.+\.(?:png|jpe?g|webp|gif|svg)$/i,
             handler: 'StaleWhileRevalidate',
             options: {
-              cacheName: 'media-cache',
+              cacheName: 'media-images-cache',
+              expiration: { maxEntries: 128, maxAgeSeconds: 60 * 60 * 24 * 30 },
+            },
+          },
+          {
+            urlPattern: /^\/media\/.+\.(?:mp3|mp4|webm|m4a|ogg|wav)$/i,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'media-audio-video-cache',
               expiration: { maxEntries: 32, maxAgeSeconds: 60 * 60 * 24 * 30 },
             },
           },

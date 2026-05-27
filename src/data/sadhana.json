@@ -43,7 +43,7 @@
       "description": "Самостоятельная падмасадхана 10 минут",
       "durationSeconds": 600,
       "audioUrl": "/media/audio/padmasadhana.mp3",
-      "finishingAudioUrl": "/media/audio/bell1.mp3"
+      "finishingAudioUrl": "/media/audio/bell.mp3"
     },
     {
       "id": "bogar-pranayam",
@@ -51,7 +51,7 @@
       "description": "Богар Пранаяма 5 минут",
       "durationSeconds": 540,
       "audioUrl": "/media/audio/bogar-pranayam.mp3",
-      "finishingAudioUrl": "/media/audio/bell1.mp3"
+      "finishingAudioUrl": "/media/audio/bell.mp3"
     },
     {
       "id": "kriya",
@@ -59,7 +59,7 @@
       "description": "Сударшан Крия 10 минут",
       "durationSeconds": 600,
       "audioUrl": "/media/audio/sudarshan-kriya.mp3",
-      "finishingAudioUrl": "/media/audio/bell1.mp3"
+      "finishingAudioUrl": "/media/audio/bell.mp3"
     },
     {
       "id":"sahaj",
@@ -67,15 +67,15 @@
       "description": "Сахадж самадхи медитация 20 минут",
       "durationSeconds": 1200,
       "audioUrl": "/media/audio/sahaj.mp3",
-      "finishingAudioUrl": "/media/audio/bell1.mp3"
+      "finishingAudioUrl": "/media/audio/bell.mp3"
     },
     {
       "id":"silence",
       "title": "Тишина",
       "description": "Тишина 7 минут",
       "durationSeconds": 420,
-      "startingAudioUrl": "/media/audio/bell1.mp3",
-      "finishingAudioUrl": "/media/audio/bell1.mp3"
+      "startingAudioUrl": "/media/audio/bell.mp3",
+      "finishingAudioUrl": "/media/audio/bell.mp3"
     }
   ]
 }

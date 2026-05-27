@@ -1,0 +1,151 @@
+.session-screen > .app-header {
+  padding-inline: var(--space-4);
+  box-sizing: border-box;
+}
+
+.session-screen__content {
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  box-sizing: border-box;
+  padding-inline: var(--space-4);
+  padding-bottom: calc(var(--space-4) + var(--safe-bottom));
+  --font-size-xs: 0.875rem;
+  --font-size-sm: 1rem;
+  --font-size-md: 1.125rem;
+  --font-size-lg: 1.375rem;
+  --font-size-xl: 1.875rem;
+  --font-size-2xl: 2.5rem;
+  --btn-height-md: 3rem;
+  --btn-height-lg: 3.375rem;
+}
+
+.session-screen__content .timer-ring__main {
+  font-size: clamp(2rem, 9vw, 2.75rem);
+}
+
+.session-screen__content .timer-elapsed__text {
+  font-size: var(--font-size-md);
+}
+
+.session-screen__content .audio-player__play {
+  min-width: 4rem;
+  min-height: 4rem;
+  font-size: var(--font-size-lg);
+}
+
+.session-screen__content .btn-icon {
+  min-width: 3rem;
+  min-height: 3rem;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.session-screen__content .timer-active__controls .btn-primary,
+.session-screen__content .timer-active__controls .btn-secondary {
+  font-size: var(--font-size-lg);
+}
+
+.session-screen__chrome {
+  width: 100%;
+  max-width: 28rem;
+  text-align: center;
+  border-radius: var(--radius-lg);
+  border: 1px solid color-mix(in srgb, var(--color-secondary) 22%, var(--glass-border));
+  box-shadow: var(--shadow-elevated);
+}
+
+.session-screen__chrome:not(.textured-surface) {
+  background: rgba(249, 246, 238, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.session-screen__title {
+  margin: 0;
+  padding: var(--space-4) var(--space-5) var(--space-2);
+  line-height: 1.25;
+}
+
+.session-screen__title-text,
+.session-screen__progress-text {
+  position: relative;
+  z-index: 2;
+  display: block;
+}
+
+.session-screen__chrome.textured-surface .session-screen__title {
+  padding-top: var(--space-5);
+}
+
+.session-screen__progress {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-4) var(--space-4);
+  font-size: var(--font-size-sm);
+  letter-spacing: 0.02em;
+}
+
+.session-screen__chrome.textured-surface .session-screen__progress {
+  padding-bottom: var(--space-5);
+}
+
+.session-screen--focus .session-screen__content {
+  justify-content: center;
+}
+
+.session-screen__focus-timer {
+  font-size: var(--font-size-2xl);
+  font-weight: 300;
+  font-variant-numeric: tabular-nums;
+  padding: var(--space-8) var(--space-10);
+  border-radius: var(--radius-lg);
+}
+
+.session-screen__video-wrap {
+  width: 100%;
+  max-width: 400px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-elevated);
+  border: 1px solid var(--glass-border);
+}
+
+.session-screen__guided-video {
+  width: 100%;
+  display: block;
+}
+
+.session-screen__hint {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-faint);
+}
+
+.session-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+  background: var(--overlay-dark);
+  backdrop-filter: blur(6px);
+}
+
+.session-dialog__box {
+  max-width: 320px;
+  width: 100%;
+  text-align: center;
+}
+
+.session-dialog__actions {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: center;
+  margin-top: var(--space-4);
+}

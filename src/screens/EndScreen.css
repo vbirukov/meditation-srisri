@@ -1,0 +1,207 @@
+.end-screen {
+  background:
+    radial-gradient(circle at 50% 0%, var(--color-primary-soft) 0%, transparent 45%),
+    var(--color-bg);
+}
+
+.end-screen--textured {
+  background: var(--color-bg);
+}
+
+.end-screen--textured::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-image: var(--texture-image);
+  background-size: cover;
+  background-position: center top;
+  pointer-events: none;
+}
+
+.end-screen--textured::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(249, 246, 238, 0.82) 0%,
+    rgba(249, 246, 238, 0.9) 35%,
+    rgba(249, 246, 238, 0.96) 100%
+  );
+  pointer-events: none;
+}
+
+.end-screen--textured .screen__body {
+  position: relative;
+  z-index: 1;
+}
+
+.end-screen__hero {
+  padding: var(--space-5);
+  margin-bottom: var(--space-4);
+  text-align: center;
+}
+
+.end-screen__hero.textured-surface {
+  --texture-scrim: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.55) 0%,
+    rgba(249, 246, 238, 0.78) 100%
+  );
+}
+
+.end-screen__portrait {
+  margin: 0 auto var(--space-4);
+  max-width: 200px;
+}
+
+.end-screen__portrait-media {
+  display: block;
+  width: 100%;
+  aspect-ratio: 5 / 6;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--color-border-subtle);
+  box-shadow: var(--shadow-soft);
+}
+
+.end-screen__quote {
+  margin: 0;
+}
+
+.end-screen__quote-text {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--font-size-lg);
+  line-height: 1.4;
+}
+
+.end-screen__quote-source {
+  margin-top: var(--space-3);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  font-style: normal;
+}
+
+.end-screen__summary {
+  margin-bottom: var(--space-4);
+  text-align: center;
+}
+
+.end-screen__summary:not(.textured-surface) {
+  background: var(--color-primary-soft);
+  border-color: var(--color-primary-soft);
+}
+
+.end-screen__summary.textured-surface {
+  --texture-scrim: linear-gradient(
+    135deg,
+    rgba(255, 248, 240, 0.82) 0%,
+    rgba(244, 208, 186, 0.72) 50%,
+    rgba(249, 246, 238, 0.85) 100%
+  );
+  border-color: color-mix(in srgb, var(--color-secondary) 35%, var(--color-border-subtle));
+}
+
+.end-screen__summary-title {
+  margin: 0 0 var(--space-2);
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-secondary);
+  font-weight: 600;
+}
+
+.end-screen__practice-name {
+  margin: 0 0 var(--space-1);
+  font-size: var(--font-size-md);
+  font-weight: 600;
+}
+
+.end-screen__practice-duration {
+  margin: 0 0 var(--space-3);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.end-screen__summary-text {
+  margin: 0;
+  font-size: var(--font-size-sm);
+}
+
+.end-screen__stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+  padding: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.end-screen__stats.textured-surface {
+  --texture-scrim: linear-gradient(
+    135deg,
+    rgba(249, 246, 238, 0.7) 0%,
+    rgba(255, 255, 255, 0.65) 50%,
+    rgba(242, 229, 207, 0.75) 100%
+  );
+}
+
+.end-screen__stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2);
+}
+
+.end-screen__stat-value {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--color-secondary);
+}
+
+.end-screen__stat-label {
+  font-size: 0.65rem;
+  text-align: center;
+  color: var(--color-text-muted);
+  line-height: 1.3;
+}
+
+.end-screen__mood {
+  padding: var(--space-4);
+  margin-bottom: var(--space-5);
+  text-align: center;
+}
+
+.end-screen__mood.textured-surface {
+  --texture-scrim: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.68) 0%,
+    rgba(249, 246, 238, 0.8) 100%
+  );
+}
+
+.end-screen__mood-title {
+  margin: 0 0 var(--space-3);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.end-screen__mood .mood-selector {
+  margin: 0;
+}
+
+.end-screen__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-bottom: var(--space-4);
+}
+
+.end-screen__actions .btn-primary,
+.end-screen__actions .btn-secondary {
+  width: 100%;
+}

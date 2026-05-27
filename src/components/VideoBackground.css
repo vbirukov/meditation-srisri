@@ -1,0 +1,60 @@
+.video-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.video-bg__poster,
+.video-bg__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.video-bg__poster {
+  background-size: cover;
+  background-position: center;
+  filter: blur(var(--blur, 0px));
+  transform: scale(1.05);
+}
+
+.video-bg__video {
+  filter: blur(var(--blur, 0px));
+}
+
+.video-bg__overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at center,
+    rgba(0, 0, 0, calc(var(--overlay) * 0.55)),
+    rgba(0, 0, 0, var(--overlay))
+  );
+}
+
+.video-bg--soft .video-bg__overlay {
+  background: radial-gradient(
+    circle at center,
+    rgba(249, 246, 238, calc(0.55 + var(--overlay) * 0.2)),
+    rgba(242, 229, 207, calc(0.85 + var(--overlay) * 0.1))
+  );
+}
+
+.video-bg--welcome .video-bg__overlay {
+  background:
+    linear-gradient(
+      165deg,
+      rgba(255, 225, 90, 0.35) 0%,
+      rgba(198, 116, 74, 0.45) 55%,
+      rgba(0, 0, 0, var(--overlay)) 100%
+    ),
+    radial-gradient(
+      circle at 30% 20%,
+      rgba(0, 0, 0, calc(var(--overlay) * 0.35)),
+      rgba(0, 0, 0, var(--overlay)) 70%
+    );
+}

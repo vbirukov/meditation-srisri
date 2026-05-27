@@ -1,0 +1,208 @@
+.timer-setup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 100%;
+  max-width: 360px;
+}
+
+.timer-setup.glass-panel,
+.timer-ring-wrap.glass-panel {
+  padding: var(--space-5);
+}
+
+.timer-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.timer-preset {
+  min-width: 52px;
+  min-height: var(--btn-height-md);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border-subtle);
+  font-weight: 500;
+  font-size: var(--font-size-sm);
+  transition: background var(--transition-fast);
+}
+
+.timer-preset--active {
+  background: var(--color-primary);
+  color: var(--color-text-on-accent);
+  border-color: transparent;
+}
+
+.timer-custom {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.timer-custom input {
+  min-height: var(--btn-height-md);
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-subtle);
+  font: inherit;
+  background: var(--color-surface-alt);
+}
+
+.timer-start-btn {
+  margin-top: var(--space-2);
+  width: 100%;
+}
+
+.timer-ring-wrap {
+  position: relative;
+  width: min(280px, 80vw);
+  margin: 0 auto var(--space-4);
+  aspect-ratio: 1;
+  border-radius: 50%;
+}
+
+.timer-ring {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.timer-ring__track {
+  fill: none;
+  stroke: var(--color-primary-soft);
+  stroke-width: 8;
+}
+
+.timer-ring__progress {
+  fill: none;
+  stroke: var(--color-primary);
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.3s var(--ease-out);
+}
+
+.timer-ring__label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.timer-ring__label.textured-surface {
+  inset: 10%;
+  background: rgba(249, 246, 238, 0.52);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.timer-ring__main,
+.timer-ring__sub,
+.timer-elapsed__text {
+  position: relative;
+  z-index: 2;
+}
+
+.timer-ring__main {
+  font-size: var(--font-size-xl);
+  font-weight: 300;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text);
+}
+
+.timer-ring__sub {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.timer-elapsed {
+  text-align: center;
+  margin: 0;
+  padding: var(--space-2) var(--space-5);
+  border-radius: var(--radius-pill);
+  width: 100%;
+  max-width: 360px;
+}
+
+.timer-elapsed__text {
+  font-size: var(--font-size-sm);
+}
+
+.timer-elapsed:not(.textured-surface) {
+  background: rgba(249, 246, 238, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.timer-active {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 360px;
+}
+
+.timer-active__controls {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 100%;
+  margin-top: var(--space-4);
+  padding: 0 var(--space-1);
+}
+
+.timer-active__controls .btn-primary,
+.timer-active__controls .btn-secondary {
+  flex: 1 1 9rem;
+  min-height: var(--btn-height-lg);
+  padding: 0 var(--space-5);
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-soft);
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.timer-active__controls .btn-primary {
+  border: 1px solid color-mix(in srgb, var(--color-primary) 80%, #000 5%);
+  box-shadow: 0 4px 16px rgba(212, 168, 67, 0.35);
+}
+
+.timer-active__controls .btn-primary:hover {
+  box-shadow: 0 6px 20px rgba(212, 168, 67, 0.45);
+}
+
+.timer-active__controls .btn-primary:active {
+  transform: translateY(1px);
+}
+
+.timer-active__controls .btn-secondary {
+  background: rgba(249, 246, 238, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid color-mix(in srgb, var(--color-secondary) 25%, var(--glass-border));
+  color: var(--color-text);
+  box-shadow: var(--shadow-soft);
+}
+
+.timer-active__controls .btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.82);
+  border-color: color-mix(in srgb, var(--color-secondary) 35%, var(--glass-border));
+}
+
+.timer-active__controls .btn-secondary:active {
+  transform: translateY(1px);
+}

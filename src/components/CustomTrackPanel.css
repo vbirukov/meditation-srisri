@@ -1,0 +1,92 @@
+.custom-track {
+  margin-top: var(--space-2);
+}
+
+.custom-track__upload {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+.custom-track__upload-icon {
+  font-size: 1.75rem;
+  color: var(--color-secondary);
+}
+
+.custom-track__upload-text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.custom-track__upload-text strong {
+  font-weight: 500;
+}
+
+.custom-track__current {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.custom-track__info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.custom-track__label {
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-secondary);
+  font-weight: 600;
+}
+
+.custom-track__name {
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.custom-track__duration {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.custom-track__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.custom-track__actions .btn-primary {
+  flex: 1;
+  min-width: 120px;
+}
+
+.custom-track__remove {
+  flex-shrink: 0;
+}
+
+.custom-track__error {
+  margin: var(--space-2) 0 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-error);
+}
+
+.custom-track__storage {
+  margin: var(--space-2) 0 0;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-faint);
+}
+
+.custom-track--compact .custom-track__storage {
+  display: none;
+}

@@ -1,0 +1,64 @@
+.practice-tools {
+  margin-bottom: var(--space-5);
+  padding: var(--space-4);
+}
+
+.practice-tools__heading {
+  margin: 0 0 var(--space-3);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.practice-tools__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+
+.practice-tools__chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  min-height: 72px;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border-subtle);
+  transition:
+    border-color var(--transition-fast),
+    background var(--transition-fast);
+}
+
+.practice-tools__chip:hover,
+.practice-tools__chip--active {
+  border-color: var(--color-secondary);
+  background: var(--color-secondary-soft);
+}
+
+.practice-tools__chip-icon {
+  font-size: 1.5rem;
+  color: var(--color-secondary);
+  line-height: 1;
+}
+
+.practice-tools__chip-label {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-align: center;
+  color: var(--color-text);
+}
+
+.practice-tools__track {
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.practice-tools__track .custom-track {
+  margin-top: 0;
+}

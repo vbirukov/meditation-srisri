@@ -1,0 +1,68 @@
+{
+  "meditation-card": [
+    "/media/textures/meditation-card.png",
+    "/media/textures/meditation-card1.png",
+    "/media/textures/meditation-card2.png",
+    "/media/textures/meditation-card3.png",
+    "/media/textures/meditation-card4.png"
+  ],
+  "sadhana-card": [
+    "/media/textures/sadhana-card.png",
+    "/media/textures/sadhana-card1.png",
+    "/media/textures/sadhana-card2.png",
+    "/media/textures/sadhana-card3.png",
+    "/media/textures/sadhana-card4.png"
+  ],
+  "section-header": [
+    "/media/textures/section-header.png",
+    "/media/textures/section-header1.png",
+    "/media/textures/section-header2.png",
+    "/media/textures/section-header3.png",
+    "/media/textures/section-header4.png",
+    "/media/textures/section-header5.png",
+    "/media/textures/section-header6.png",
+    "/media/textures/section-header7.png",
+    "/media/textures/section-header8.png",
+    "/media/textures/section-header9.png",
+    "/media/textures/section-header10.png"
+  ],
+  "practice-tools": [
+    "/media/textures/practice-tools.png",
+    "/media/textures/practice-tools1.png",
+    "/media/textures/practice-tools2.png",
+    "/media/textures/practice-tools3.png"
+  ],
+  "session-chrome": [],
+  "end-screen": [
+    "/media/textures/end-screen.png",
+    "/media/textures/end-screen1.png",
+    "/media/textures/end-screen2.png",
+    "/media/textures/end-screen3.png",
+    "/media/textures/end-screen4.png",
+    "/media/textures/end-screen5.png"
+  ],
+  "end-hero": [
+    "/media/textures/end-hero.png",
+    "/media/textures/end-hero.webp",
+    "/media/textures/end-hero1.png",
+    "/media/textures/end-hero2.png",
+    "/media/textures/end-hero3.png"
+  ],
+  "end-summary": [
+    "/media/textures/end-summary.png",
+    "/media/textures/end-summary1.png",
+    "/media/textures/end-summary2.png",
+    "/media/textures/end-summary3.png"
+  ],
+  "end-stats": [
+    "/media/textures/end-stats.png",
+    "/media/textures/end-stats1.png",
+    "/media/textures/end-stats2.png",
+    "/media/textures/end-stats3.png"
+  ],
+  "end-mood": [
+    "/media/textures/end-mood1.png",
+    "/media/textures/end-mood2.png",
+    "/media/textures/end-mood3.png"
+  ]
+}

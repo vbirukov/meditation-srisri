@@ -1,0 +1,46 @@
+[
+  {
+    "id": "breath-5",
+    "type": "audio",
+    "title": "Дыхание и покой",
+    "description": "Короткая guided-практика на дыхание",
+    "durationSeconds": 300,
+    "mediaUrl": "/media/audio/breath-5.wav",
+    "backgroundScene": "ganga",
+    "isOfflinePrecached": true,
+    "language": "ru"
+  },
+  {
+    "id": "gratitude-10",
+    "type": "audio",
+    "title": "Благодарность",
+    "description": "Мягкая практика благодарности",
+    "durationSeconds": 600,
+    "mediaUrl": "/media/audio/gratitude-10.wav",
+    "backgroundScene": "sea",
+    "isOfflinePrecached": true,
+    "language": "ru"
+  },
+  {
+    "id": "silence-15",
+    "type": "audio",
+    "title": "Тишина у воды",
+    "description": "Guided-медитация с паузами",
+    "durationSeconds": 900,
+    "mediaUrl": "/media/audio/silence-15.wav",
+    "backgroundScene": "ganga",
+    "isOfflinePrecached": false,
+    "language": "multi"
+  },
+  {
+    "id": "sunset-visual",
+    "type": "video",
+    "title": "Закат у воды",
+    "description": "Визуальная медитация (без голоса)",
+    "durationSeconds": 600,
+    "mediaUrl": "/media/video/sunset-visual.mp4",
+    "backgroundScene": "sea",
+    "isOfflinePrecached": false,
+    "language": "en"
+  }
+]

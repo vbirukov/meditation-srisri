@@ -1,0 +1,81 @@
+{
+  "practices": [
+    {
+      "id": "morning-short",
+      "title": "Короткая утренняя садхана",
+      "description": "Сударшан крия - сахадж - тишина - надишодхана пранаяма",
+      "phases": [
+        { "id": "kriya" },
+        { "id": "sahaj", "label": "Медитация", "durationSeconds": 600 },
+        { "id": "silence", "label": "Сутры", "durationSeconds": 1200 },
+        { "id": "rest", "label": "Отдых", "durationSeconds": 180 },
+        { "id": "nadi-shodhana-pranayam", "label": "Надишодхана пранаяма", "durationSeconds": 300 }
+      ]
+    },
+    {
+      "id": "sanyam-short",
+      "title": "Короткая саньям садхана",
+      "description": "Богар пранаяма - сахадж - тишина - надишодхана пранаяма",
+      "phases": [
+        { "id": "bogar-pranayam" },
+        { "id": "sahaj" },
+        { "id": "silence" },
+        { "id": "nadi-shodhana-pranayam" }
+      ]
+    },
+    {
+      "id": "sanyam-full",
+      "title": "Полная саньям садхана",
+      "description": "Падмасадхана асаны - Богар пранаяма - сахадж - тишина - надишодхана пранаяма",
+      "phases": [
+        { "id": "padmasadhana" },
+        { "id": "bogar-pranayam" },
+        { "id": "sahaj" },
+        { "id": "silence" },
+        { "id": "nadi-shodhana-pranayam" }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "id": "padmasadhana",
+      "title": "Падмасадхана асаны",
+      "description": "Самостоятельная падмасадхана 10 минут",
+      "durationSeconds": 600,
+      "audioUrl": "/media/audio/padmasadhana.mp3",
+      "finishingAudioUrl": "/media/audio/bell1.mp3"
+    },
+    {
+      "id": "bogar-pranayam",
+      "title": "Богар Пранаяма",
+      "description": "Богар Пранаяма 5 минут",
+      "durationSeconds": 540,
+      "audioUrl": "/media/audio/bogar-pranayam.mp3",
+      "finishingAudioUrl": "/media/audio/bell1.mp3"
+    },
+    {
+      "id": "kriya",
+      "title": "Сударшан Крия",
+      "description": "Сударшан Крия 10 минут",
+      "durationSeconds": 600,
+      "audioUrl": "/media/audio/sudarshan-kriya.mp3",
+      "finishingAudioUrl": "/media/audio/bell1.mp3"
+    },
+    {
+      "id":"sahaj",
+      "title": "Сахадж",
+      "description": "Сахадж самадхи медитация 20 минут",
+      "durationSeconds": 1200,
+      "audioUrl": "/media/audio/sahaj.mp3",
+      "finishingAudioUrl": "/media/audio/bell1.mp3"
+    },
+    {
+      "id":"silence",
+      "title": "Тишина",
+      "description": "Тишина 7 минут",
+      "durationSeconds": 420,
+      "startingAudioUrl": "/media/audio/bell1.mp3",
+      "finishingAudioUrl": "/media/audio/bell1.mp3"
+    }
+  ]
+}

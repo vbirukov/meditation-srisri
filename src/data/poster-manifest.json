@@ -1,0 +1,19 @@
+{
+  "welcome": [
+    "/media/posters/welcome1.jpg",
+    "/media/posters/welcome2.jpg",
+    "/media/posters/welcome3.jpg",
+    "/media/posters/welcome4.jpg",
+    "/media/posters/welcome5.jpg",
+    "/media/posters/welcome6.jpg",
+    "/media/posters/welcome7.jpg",
+    "/media/posters/welcome8.jpg",
+    "/media/posters/welcome9.jpg"
+  ],
+  "picker": [
+    "/media/posters/picker.jpg"
+  ],
+  "session": [
+    "/media/posters/session.jpg"
+  ]
+}

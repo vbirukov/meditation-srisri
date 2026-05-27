@@ -1,0 +1,40 @@
+.mood-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: center;
+}
+
+.mood-selector__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  min-width: 60px;
+  min-height: 60px;
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-alt);
+  border: 2px solid transparent;
+  transition:
+    border-color var(--transition-fast),
+    background var(--transition-fast);
+}
+
+.mood-selector__item--active {
+  border-color: var(--color-primary-active);
+  background: var(--color-primary-soft);
+}
+
+.mood-selector__emoji {
+  font-size: var(--font-size-xl);
+  line-height: 1;
+}
+
+.mood-selector__label {
+  font-size: 0.65rem;
+  color: var(--color-text-muted);
+  text-align: center;
+  max-width: 72px;
+  line-height: 1.2;
+}

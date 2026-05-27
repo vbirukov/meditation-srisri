@@ -1,0 +1,90 @@
+{
+  "media": {
+    "photos": [
+      "/media/images/guruji1.jpg",
+      "/media/images/guruji2.jpg",
+      "/media/images/guruji3.jpg",
+      "/media/images/guruji4.jpg",
+      "/media/images/guruji5.jpg",
+      "/media/images/guruji6.jpg",
+      "/media/images/guruji7.jpg"
+    ],
+    "video": null
+  },
+  "quotes": [
+    {
+      "id": "quote-01",
+      "text": {
+        "ru": "Заполните цитату на русском.",
+        "en": "Fill in the quote in English."
+      },
+      "source": {
+        "ru": "— источник (по желанию)",
+        "en": "— source (optional)"
+      }
+    },
+    {
+      "id": "quote-02",
+      "text": {
+        "ru": "Вторая цитата — добавьте свои или удалите лишние блоки.",
+        "en": "Second quote — add your own or remove extra entries."
+      },
+      "source": {
+        "ru": "",
+        "en": ""
+      }
+    }
+  ],
+  "summaries": {
+    "default": {
+      "ru": "Краткое резюме после любой практики. Замените этот текст своим.",
+      "en": "Short summary after any practice. Replace with your own text."
+    },
+    "byMode": {
+      "timer": {
+        "ru": "Резюме для тихой практики с таймером.",
+        "en": "Summary for a silent timer practice."
+      },
+      "custom": {
+        "ru": "Резюме для практики со своим треком.",
+        "en": "Summary for a session with your own track."
+      },
+      "sadhana": {
+        "ru": "Резюме после садханы.",
+        "en": "Summary after sadhana practice."
+      }
+    },
+    "bySadhanaId": {
+      "morning-full": {
+        "ru": "Утренняя садхана завершена — хорошего дня.",
+        "en": "Morning sadhana complete — have a peaceful day."
+      },
+      "evening-short": {
+        "ru": "Вечерняя практика завершена — спокойного отдыха.",
+        "en": "Evening practice complete — rest well."
+      },
+      "mantra-japa": {
+        "ru": "Джапа завершена.",
+        "en": "Japa round complete."
+      }
+    },
+    "byMeditationId": {
+      "breath-5": {
+        "ru": "Резюме после «Дыхание и покой».",
+        "en": "Summary after “Breath and calm”."
+      },
+      "gratitude-10": {
+        "ru": "Резюме после «Благодарность».",
+        "en": "Summary after “Gratitude”."
+      },
+      "silence-15": {
+        "ru": "Резюме после «Тишина у воды».",
+        "en": "Summary after “Silence by the water”."
+      },
+      "sunset-visual": {
+        "ru": "Резюме после визуальной медитации «Закат у воды».",
+        "en": "Summary after the visual meditation “Sunset by the water”."
+      }
+    }
+  }
+}

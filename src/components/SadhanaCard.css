@@ -1,0 +1,74 @@
+.sadhana-card {
+  width: 100%;
+  text-align: left;
+  margin-bottom: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+}
+
+.card.sadhana-card.card--has-texture {
+  border-color: color-mix(in srgb, var(--color-secondary) 40%, var(--color-border-subtle));
+}
+
+.sadhana-card__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.sadhana-card__main {
+  min-width: 0;
+  flex: 1;
+}
+
+.sadhana-card__title {
+  margin: var(--space-1) 0 0;
+  font-size: var(--font-size-md);
+  font-weight: 600;
+}
+
+.sadhana-card__duration {
+  flex-shrink: 0;
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  padding-top: var(--space-4);
+}
+
+.sadhana-card__desc {
+  margin: var(--space-1) 0 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.sadhana-card__phases {
+  list-style: none;
+  margin: var(--space-3) 0 0;
+  padding: var(--space-3) 0 0;
+  border-top: 1px dashed var(--color-border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.sadhana-card__phases li {
+  display: grid;
+  grid-template-columns: 1.25rem 1fr auto;
+  gap: var(--space-2);
+  align-items: baseline;
+  font-size: var(--font-size-xs);
+}
+
+.sadhana-card__phase-num {
+  color: var(--color-secondary);
+  font-weight: 600;
+}
+
+.sadhana-card__phase-label {
+  color: var(--color-text);
+}
+
+.sadhana-card__phase-time {
+  color: var(--color-text-muted);
+}

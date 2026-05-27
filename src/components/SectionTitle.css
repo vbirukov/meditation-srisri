@@ -1,0 +1,24 @@
+.section-title--banner {
+  margin-top: var(--space-6);
+  margin-bottom: var(--space-3);
+  padding: 0;
+  border: none;
+}
+
+.section-title--banner:first-child {
+  margin-top: 0;
+}
+
+.section-title.textured-surface {
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--color-border-subtle);
+  box-shadow: var(--shadow-soft);
+}
+
+.section-title__label {
+  padding: var(--space-3) var(--space-4);
+  width: 100%;
+  max-width: 62%;
+}

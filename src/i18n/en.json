@@ -1,0 +1,95 @@
+{
+  "appName": "Meditate with Sri Sri",
+  "splash": "Loading…",
+  "welcome": {
+    "greeting": "Namaste, let us sit for meditation",
+    "cta": "Begin meditation",
+    "disclaimer": "This app does not replace medical care. If you need help, please consult a professional."
+  },
+  "hub": {
+    "title": "Practice",
+    "subtitle": "Guided meditations or structured sadhana with phases",
+    "meditations": "Meditations",
+    "sadhana": "Sadhana",
+    "toolsTitle": "Your own practice",
+    "sadhanaSection": "Sadhana practices",
+    "sadhanaHint": "Multi-phase timers — edit sequences in sadhana.json",
+    "phasesCount": "{count} phases",
+    "recent": "Recent",
+    "continue": "Continue"
+  },
+  "sadhana": {
+    "phases": "Phases",
+    "total": "Total",
+    "phaseOf": "Phase {current} of {total}"
+  },
+  "picker": {
+    "title": "Choose your practice",
+    "subtitle": "When you feel ready, tap to begin",
+    "videoSection": "Video meditations",
+    "audioSection": "Audio meditations",
+    "timerSection": "Your own practice",
+    "timerHint": "A quiet timer with water in the background",
+    "offlineHint": "You are offline — cached meditations and the timer are available",
+    "customSection": "Your track"
+  },
+  "customTrack": {
+    "upload": "Upload audio",
+    "uploadHint": "mp3, wav, ogg, m4a — up to 50 MB",
+    "yours": "Your track",
+    "start": "Start with track",
+    "replace": "Replace",
+    "remove": "Remove",
+    "localOnly": "Stored only on this device",
+    "errors": {
+      "invalid_type": "Audio file required",
+      "too_large": "File exceeds 50 MB",
+      "save_failed": "Could not save",
+      "delete_failed": "Could not delete",
+      "load_failed": "Could not load saved track"
+    }
+  },
+  "session": {
+    "elapsed": "Elapsed",
+    "remaining": "Remaining",
+    "focusHint": "Tap anywhere to hide controls",
+    "exitConfirm": "End meditation?",
+    "exitYes": "End",
+    "exitNo": "Continue",
+    "offlineFallback": "Media unavailable offline. You can use the timer instead."
+  },
+  "timer": {
+    "title": "Your practice",
+    "presets": "Duration",
+    "custom": "Custom (minutes)",
+    "start": "Start",
+    "pause": "Pause",
+    "resume": "Resume",
+    "restart": "Restart"
+  },
+  "end": {
+    "title": "Practice complete",
+    "subtitle": "How do you feel?",
+    "sessionSummary": "Today's practice",
+    "duration": "Duration",
+    "practiceFallback": "Meditation",
+    "statsTitle": "Your practice",
+    "streak": "day streak",
+    "monthTotal": "this month",
+    "totalSessions": "total sessions",
+    "again": "Another meditation",
+    "finish": "Finish"
+  },
+  "mood": {
+    "calm": "Calm",
+    "grateful": "Grateful",
+    "peaceful": "Peaceful",
+    "energized": "Energized",
+    "tired": "Tired"
+  },
+  "common": {
+    "back": "Back",
+    "minutes": "min",
+    "offline": "Offline"
+  }
+}

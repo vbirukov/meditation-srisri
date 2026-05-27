@@ -1,0 +1,12 @@
+.practice-hub__catalog {
+  padding-bottom: var(--space-6);
+}
+
+.practice-hub__catalog > .practice-tools {
+  margin-top: var(--space-4);
+  margin-bottom: 0;
+}
+
+.practice-hub__hint {
+  margin: calc(-1 * var(--space-2)) 0 var(--space-4);
+}

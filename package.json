@@ -1,0 +1,32 @@
+{
+  "name": "meditate-with-sri-sri",
+  "private": true,
+  "version": "0.1.0",
+  "engines": {
+    "node": ">=16.14"
+  },
+  "type": "module",
+  "scripts": {
+    "media:manifest": "node scripts/generate-media-manifest.mjs",
+    "posters:manifest": "npm run media:manifest",
+    "dev": "npm run media:manifest && vite",
+    "build": "npm run media:manifest && tsc --noEmit && vite build",
+    "generate-media": "node scripts/generate-media.mjs",
+    "preview": "vite preview",
+    "start": "npm run build && npm run preview"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.28.0",
+    "zustand": "^4.5.5"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "~5.6.3",
+    "vite": "^4.5.5",
+    "vite-plugin-pwa": "^0.20.5"
+  }
+}

@@ -49,7 +49,7 @@
     "title": "Таттва медитация",
     "description": "Управляемая медитация",
     "durationSeconds": 1200,
-    "mediaUrl": "/media/video/tattva.mp3",
+    "mediaUrl": "/media/audio/tattva.mp3",
     "backgroundScene": "sea",
     "isOfflinePrecached": true,
     "language": "ru"

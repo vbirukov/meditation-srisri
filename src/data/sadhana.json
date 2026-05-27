@@ -76,6 +76,13 @@
       "durationSeconds": 420,
       "startingAudioUrl": "/media/audio/bell.mp3",
       "finishingAudioUrl": "/media/audio/bell.mp3"
+    },
+    {
+      "id":"yoga-nidra",
+      "title": "Йога нидра",
+      "description": "Практика глубокого расслабления",
+      "durationSeconds": 1200,
+      "audioUrl": "/media/audio/yoga-nidra.mp3"
     }
   ]
 }

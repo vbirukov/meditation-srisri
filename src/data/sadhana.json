@@ -5,11 +5,14 @@
       "title": "Короткая утренняя садхана",
       "description": "Сударшан крия - сахадж - тишина - надишодхана пранаяма",
       "phases": [
+        { "id": "lets-start" },
+        { "id": "smile" },
         { "id": "kriya" },
-        { "id": "sahaj", "label": "Медитация", "durationSeconds": 600 },
+        { "id": "sahaj" },
         { "id": "silence", "label": "Сутры", "durationSeconds": 300 },
         { "id": "rest", "label": "Отдых", "durationSeconds": 180 },
-        { "id": "nadi-shodhana-pranayam", "label": "Надишодхана пранаяма", "durationSeconds": 300 }
+        { "id": "nadi-shodhana-pranayam" },
+        { "id": "finished" }
       ]
     },
     {
@@ -17,10 +20,13 @@
       "title": "Короткая саньям садхана",
       "description": "Богар пранаяма - сахадж - тишина - надишодхана пранаяма",
       "phases": [
+        { "id": "lets-start" },
+        { "id": "smile" },
         { "id": "bogar-pranayam" },
         { "id": "sahaj" },
         { "id": "silence" },
-        { "id": "nadi-shodhana-pranayam" }
+        { "id": "nadi-shodhana-pranayam" },
+        { "id": "finished" }
       ]
     },
     {
@@ -28,11 +34,14 @@
       "title": "Полная саньям садхана",
       "description": "Падмасадхана асаны - Богар пранаяма - сахадж - тишина - надишодхана пранаяма",
       "phases": [
+        { "id": "lets-start" },
+        { "id": "smile" },
         { "id": "padmasadhana" },
         { "id": "bogar-pranayam" },
         { "id": "sahaj" },
         { "id": "silence" },
-        { "id": "nadi-shodhana-pranayam" }
+        { "id": "nadi-shodhana-pranayam" },
+        { "id": "finished" }
       ]
     }
   ],
@@ -83,6 +92,31 @@
       "description": "Практика глубокого расслабления",
       "durationSeconds": 1200,
       "audioUrl": "/media/audio/yoga-nidra.mp3"
+    },
+    {
+      "id":"nadi-shodhana-pranayam",
+      "title": "Надишодхана пранаяма",
+      "description": "Надишодхана пранаяма 10 минут",
+      "durationSeconds": 600,
+      "audioUrl": "/media/audio/nadi-shodhan.mp3",
+      "finishingAudioUrl": "/media/audio/bell.mp3"
+    },
+    {
+      "id":"finished",
+      "title": "Завершение",
+      "description": "Гуруджи говорит вам спасибо за вашу практику",
+      "audioUrl": "/media/audio/we-finished.mp3"
+    },
+    {
+      "id":"lets-start",
+      "title": "Давайте начнем",
+      "description": "Давайте начнем нашу практику",
+      "audioUrl": "/media/audio/lets-start.mp3"
+    },
+    {
+      "id": "smile",
+      "title": "С улыбкой",
+      "audioUrl": "/media/audio/smile-on-your-face.mp3"
     }
   ]
 }

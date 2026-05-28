@@ -82,7 +82,7 @@
       "id":"silence",
       "title": "Тишина",
       "description": "Тишина 5 минут",
-      "durationSeconds": 420,
+      "durationSeconds": 300,
       "startingAudioUrl": "/media/audio/bell.mp3",
       "finishingAudioUrl": "/media/audio/bell.mp3"
     },
@@ -96,7 +96,7 @@
     {
       "id":"nadi-shodhana-pranayam",
       "title": "Надишодхана пранаяма",
-      "description": "Надишодхана пранаяма 10 минут",
+      "description": "Надишодхана пранаяма 5 минут",
       "durationSeconds": 300,
       "audioUrl": "/media/audio/nadi-shodhan.mp3",
       "finishingAudioUrl": "/media/audio/bell.mp3"

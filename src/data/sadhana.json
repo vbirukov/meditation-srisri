@@ -58,7 +58,7 @@
       "id": "bogar-pranayam",
       "title": "Богар Пранаяма",
       "description": "Богар Пранаяма 5 минут",
-      "durationSeconds": 540,
+      "durationSeconds": 300,
       "audioUrl": "/media/audio/bogar-pranayam.mp3",
       "finishingAudioUrl": "/media/audio/bell.mp3"
     },
@@ -81,7 +81,7 @@
     {
       "id":"silence",
       "title": "Тишина",
-      "description": "Тишина 7 минут",
+      "description": "Тишина 5 минут",
       "durationSeconds": 420,
       "startingAudioUrl": "/media/audio/bell.mp3",
       "finishingAudioUrl": "/media/audio/bell.mp3"
@@ -97,7 +97,7 @@
       "id":"nadi-shodhana-pranayam",
       "title": "Надишодхана пранаяма",
       "description": "Надишодхана пранаяма 10 минут",
-      "durationSeconds": 600,
+      "durationSeconds": 300,
       "audioUrl": "/media/audio/nadi-shodhan.mp3",
       "finishingAudioUrl": "/media/audio/bell.mp3"
     },

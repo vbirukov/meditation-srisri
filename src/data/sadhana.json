@@ -24,7 +24,8 @@
         { "id": "smile" },
         { "id": "bogar-pranayam" },
         { "id": "sahaj" },
-        { "id": "silence" },
+        { "id": "silence-no-sound" },
+        { "id": "lie-down" },
         { "id": "nadi-shodhana-pranayam" },
         { "id": "finished" }
       ]
@@ -37,9 +38,10 @@
         { "id": "lets-start" },
         { "id": "smile" },
         { "id": "padmasadhana" },
-        { "id": "bogar-pranayam" },
+        { "id": "bogar-pranayam" },        
         { "id": "sahaj" },
-        { "id": "silence" },
+        { "id": "silence-no-sound" },
+        { "id": "lie-down" },
         { "id": "nadi-shodhana-pranayam" },
         { "id": "finished" }
       ]
@@ -86,6 +88,12 @@
       "startingAudioUrl": "/media/audio/bell.mp3",
       "finishingAudioUrl": "/media/audio/bell.mp3"
     },
+        {
+      "id":"silence-no-sound",
+      "title": "Тишина",
+      "description": "Тишина 5 минут",
+      "durationSeconds": 300
+    },
     {
       "id":"yoga-nidra",
       "title": "Йога нидра",
@@ -117,6 +125,13 @@
       "id": "smile",
       "title": "С улыбкой",
       "audioUrl": "/media/audio/smile-on-your-face.mp3"
+    },
+    {
+      "id": "lie-down",
+      "title": "Лежа на спине",
+      "description": "Лежа на спине 5 минут",
+      "durationSeconds": 300,
+      "audioUrl": "/media/audio/lie-down.mp3"
     }
   ]
 }

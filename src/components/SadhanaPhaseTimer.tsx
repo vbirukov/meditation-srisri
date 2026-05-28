@@ -206,6 +206,7 @@ export function SadhanaPhaseTimer({
       onComplete();
       return;
     }
+    completedRef.current = false;
     setPhaseIndex((i) => i + 1);
     setProgress(0);
     startedAtRef.current = null;

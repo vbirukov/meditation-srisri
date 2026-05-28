@@ -52,10 +52,10 @@ export default defineConfig({
             },
           },
           {
-            urlPattern: /^\/media\/.+\.(?:mp3|mp4|webm|m4a|ogg|wav)$/i,
+            urlPattern: /^\/media\/.+\.(?:mp3|m4a|ogg|wav)$/i,
             handler: 'StaleWhileRevalidate',
             options: {
-              cacheName: 'media-audio-video-cache',
+              cacheName: 'media-audio-cache',
               expiration: { maxEntries: 32, maxAgeSeconds: 60 * 60 * 24 * 30 },
             },
           },

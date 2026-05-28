@@ -30,6 +30,21 @@
         { "id": "finished" }
       ]
     },
+        {
+      "id": "sanyam-short",
+      "title": "Короткая саньям садхана TEST",
+      "description": "Богар пранаяма - сахадж - тишина - надишодхана пранаяма",
+      "phases": [
+        { "id": "lets-start" },
+        { "id": "smile" },
+        { "id": "bogar-pranayam" },
+        { "id": "sahaj-short" },
+        { "id": "silence-no-sound" },
+        { "id": "lie-down" },
+        { "id": "nadi-shodhana-pranayam" },
+        { "id": "finished" }
+      ]
+    },
     {
       "id": "sanyam-full",
       "title": "Полная саньям садхана",
@@ -77,6 +92,14 @@
       "title": "Сахадж",
       "description": "Сахадж самадхи медитация 20 минут",
       "durationSeconds": 1200,
+      "audioUrl": "/media/audio/sahaj.mp3",
+      "finishingAudioUrl": "/media/audio/bell.mp3"
+    },
+    {
+      "id":"sahaj-short",
+      "title": "Сахадж",
+      "description": "Сахадж самадхи медитация 20 минут",
+      "durationSeconds": 20,
       "audioUrl": "/media/audio/sahaj.mp3",
       "finishingAudioUrl": "/media/audio/bell.mp3"
     },

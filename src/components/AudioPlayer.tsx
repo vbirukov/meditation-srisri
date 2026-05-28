@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { textureStyle, withTexture } from '@/utils/textures';
+import { acquireScreenWakeLock } from '@/hooks/useWakeLock';
 import { formatTime } from '@/utils/time';
 import '@/styles/textured-surface.css';
 import './AudioPlayer.css';
@@ -36,6 +37,7 @@ export function AudioPlayer({
     const a = audioRef.current;
     if (!a) return;
     if (a.paused) {
+      void acquireScreenWakeLock();
       a.play().then(() => setPlaying(true)).catch(() => setError(true));
     } else {
       a.pause();
@@ -92,6 +94,7 @@ export function AudioPlayer({
   useEffect(() => {
     const a = audioRef.current;
     if (!a || error || !autoPlay) return;
+    void acquireScreenWakeLock();
     a.play().then(() => setPlaying(true)).catch(() => {});
   }, [src, error, autoPlay]);
 

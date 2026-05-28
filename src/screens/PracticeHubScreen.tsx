@@ -14,6 +14,7 @@ import { PracticeTools } from '@/components/PracticeTools';
 import { RecentContinueCard } from '@/components/RecentContinueCard';
 import { useT } from '@/i18n';
 import { useOnline } from '@/hooks/useOnline';
+import { acquireScreenWakeLock } from '@/hooks/useWakeLock';
 import { useSessionStore } from '@/store/sessionStore';
 import { useCustomTrackStore } from '@/store/customTrackStore';
 import { useRecentPracticeStore } from '@/store/recentPracticeStore';
@@ -88,6 +89,7 @@ export function PracticeHubScreen() {
     setLastMeditation(id);
     setMode('guided', id);
     setTargetDuration(m.durationSeconds);
+    void acquireScreenWakeLock();
     navigate(sessionUrl(false));
   };
 

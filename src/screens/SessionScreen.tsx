@@ -16,6 +16,7 @@ import { useCustomTrackStore } from '@/store/customTrackStore';
 import { formatTime } from '@/utils/time';
 import { useSessionPanelTexture, textureStyle, withTexture } from '@/utils/textures';
 import { resolveSadhanaPhases } from '@/utils/sadhana';
+import { acquireScreenWakeLock, useWakeLock } from '@/hooks/useWakeLock';
 import '@/styles/textured-surface.css';
 import './SessionScreen.css';
 
@@ -57,6 +58,22 @@ export function SessionScreen() {
   const resolvedSadhanaPhases = useMemo(
     () => (sadhana ? resolveSadhanaPhases(sadhana, sadhanaBlocks) : null),
     [sadhana],
+  );
+
+  const keepAwake =
+    !setup &&
+    (mode === 'guided' ||
+      ((mode === 'sadhana' || mode === 'timer' || mode === 'custom') && timerRunning));
+
+  useWakeLock(keepAwake);
+
+  const onTimerRunningChange = useCallback(
+    (running: boolean) => {
+      if (running) void acquireScreenWakeLock();
+      setTimerRunning(running);
+      if (running) start();
+    },
+    [start],
   );
 
   useEffect(() => {
@@ -193,10 +210,7 @@ export function SessionScreen() {
             phases={resolvedSadhanaPhases}
             onComplete={handleComplete}
             running={timerRunning}
-            onRunningChange={(r) => {
-              setTimerRunning(r);
-              if (r) start();
-            }}
+            onRunningChange={onTimerRunningChange}
             setupMode={setup}
             onTotalDurationChange={(totalSeconds) => setTargetDuration(totalSeconds)}
             labels={{
@@ -218,10 +232,7 @@ export function SessionScreen() {
             onTargetChange={setTargetDuration}
             onComplete={handleComplete}
             running={timerRunning}
-            onRunningChange={(r) => {
-              setTimerRunning(r);
-              if (r) start();
-            }}
+            onRunningChange={onTimerRunningChange}
             setupMode={setup}
             textureUrl={panelTexture}
             labels={{
@@ -255,10 +266,7 @@ export function SessionScreen() {
               onTargetChange={setTargetDuration}
               onComplete={handleComplete}
               running={timerRunning}
-              onRunningChange={(r) => {
-                setTimerRunning(r);
-                if (r) start();
-              }}
+              onRunningChange={onTimerRunningChange}
               setupMode={setup}
               textureUrl={panelTexture}
               labels={{

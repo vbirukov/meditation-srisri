@@ -9,7 +9,7 @@
         { "id": "smile" },
         { "id": "kriya" },
         { "id": "sahaj" },
-        { "id": "silence", "label": "Сутры", "durationSeconds": 300 },
+        { "id": "silence-no-sound" },
         { "id": "rest", "label": "Отдых", "durationSeconds": 180 },
         { "id": "nadi-shodhana-pranayam" },
         { "id": "finished" }
@@ -24,21 +24,6 @@
         { "id": "smile" },
         { "id": "bogar-pranayam" },
         { "id": "sahaj" },
-        { "id": "silence-no-sound" },
-        { "id": "lie-down" },
-        { "id": "nadi-shodhana-pranayam" },
-        { "id": "finished" }
-      ]
-    },
-        {
-      "id": "sanyam-short",
-      "title": "Короткая саньям садхана TEST",
-      "description": "Богар пранаяма - сахадж - тишина - надишодхана пранаяма",
-      "phases": [
-        { "id": "lets-start" },
-        { "id": "smile" },
-        { "id": "bogar-pranayam" },
-        { "id": "sahaj-short" },
         { "id": "silence-no-sound" },
         { "id": "lie-down" },
         { "id": "nadi-shodhana-pranayam" },
@@ -114,8 +99,8 @@
         {
       "id":"silence-no-sound",
       "title": "Тишина",
-      "description": "Тишина 5 минут",
-      "durationSeconds": 300
+      "description": "Тишина 8 минут",
+      "durationSeconds": 480
     },
     {
       "id":"yoga-nidra",

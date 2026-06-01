@@ -19,6 +19,7 @@ import { formatTime } from '@/utils/time';
 import { useSessionPanelTexture, textureStyle, withTexture } from '@/utils/textures';
 import { resolveSadhanaPhases } from '@/utils/sadhana';
 import { acquireScreenWakeLock, useWakeLock } from '@/hooks/useWakeLock';
+import { useSadhanaDebug } from '@/hooks/useSadhanaDebug';
 import '@/styles/textured-surface.css';
 import './SessionScreen.css';
 
@@ -48,6 +49,29 @@ export function SessionScreen() {
 
   const customTrack = useCustomTrackStore((s) => s.track);
   const customPractices = useCustomPracticeStore((s) => s.practices);
+  const { debugMode, setDebugMode } = useSadhanaDebug(params);
+
+  const sadhanaTimerLabels = useMemo(
+    () => ({
+      phases: t('sadhana.phases'),
+      total: t('sadhana.total'),
+      start: t('timer.start'),
+      pause: t('timer.pause'),
+      resume: t('timer.resume'),
+      restart: t('timer.restart'),
+      remaining: t('session.remaining'),
+      phaseOf: t('sadhana.phaseOf'),
+      prevPhase: t('sadhana.prevPhase'),
+      nextPhase: t('sadhana.nextPhase'),
+      debugMode: t('sadhana.debugMode'),
+      debugHint: t('sadhana.debugHint'),
+      debugSkip: t('sadhana.debugSkip'),
+      debugAudioMain: t('sadhana.debugAudioMain'),
+      debugAudioStart: t('sadhana.debugAudioStart'),
+      debugAudioEnd: t('sadhana.debugAudioEnd'),
+    }),
+    [t],
+  );
 
   const returnTab = params.get('tab') === 'sadhana' ? 'sadhana' : 'meditations';
   const practicePath =
@@ -239,17 +263,10 @@ export function SessionScreen() {
               running={timerRunning}
               onRunningChange={onTimerRunningChange}
               setupMode={setup}
+              debugMode={debugMode}
+              onDebugModeChange={setDebugMode}
               onTotalDurationChange={(totalSeconds) => setTargetDuration(totalSeconds)}
-              labels={{
-                phases: t('sadhana.phases'),
-                total: t('sadhana.total'),
-                start: t('timer.start'),
-                pause: t('timer.pause'),
-                resume: t('timer.resume'),
-                restart: t('timer.restart'),
-                remaining: t('session.remaining'),
-                phaseOf: t('sadhana.phaseOf'),
-              }}
+              labels={sadhanaTimerLabels}
             />
           )}
 
@@ -260,17 +277,10 @@ export function SessionScreen() {
             running={timerRunning}
             onRunningChange={onTimerRunningChange}
             setupMode={setup}
+            debugMode={debugMode}
+            onDebugModeChange={setDebugMode}
             onTotalDurationChange={(totalSeconds) => setTargetDuration(totalSeconds)}
-            labels={{
-              phases: t('sadhana.phases'),
-              total: t('sadhana.total'),
-              start: t('timer.start'),
-              pause: t('timer.pause'),
-              resume: t('timer.resume'),
-              restart: t('timer.restart'),
-              remaining: t('session.remaining'),
-              phaseOf: t('sadhana.phaseOf'),
-            }}
+            labels={sadhanaTimerLabels}
           />
         )}
 

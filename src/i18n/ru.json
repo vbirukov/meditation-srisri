@@ -21,7 +21,15 @@
   "sadhana": {
     "phases": "Этапы",
     "total": "Всего",
-    "phaseOf": "Этап {current} из {total}"
+    "phaseOf": "Этап {current} из {total}",
+    "prevPhase": "Назад",
+    "nextPhase": "Вперёд",
+    "debugMode": "Режим отладки ({sec} сек на фазу)",
+    "debugHint": "Отладка: таймер фазы до {sec} сек, звуки по-прежнему проигрываются. Смотри консоль [sadhana-debug].",
+    "debugSkip": "Пропустить фазу",
+    "debugAudioMain": "основной",
+    "debugAudioStart": "старт",
+    "debugAudioEnd": "финиш"
   },
   "picker": {
     "title": "Выберите практику",
@@ -110,6 +118,13 @@
     "peaceful": "Покой",
     "energized": "Бодрость",
     "tired": "Усталость"
+  },
+  "pwa": {
+    "installTitle": "Установить приложение",
+    "installHint": "Быстрый доступ с экрана телефона и работа офлайн.",
+    "installIos": "В Safari: «Поделиться» → «На экран Домой».",
+    "installAction": "Установить",
+    "installLater": "Позже"
   },
   "common": {
     "back": "Назад",

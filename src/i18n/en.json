@@ -21,7 +21,15 @@
   "sadhana": {
     "phases": "Phases",
     "total": "Total",
-    "phaseOf": "Phase {current} of {total}"
+    "phaseOf": "Phase {current} of {total}",
+    "prevPhase": "Back",
+    "nextPhase": "Next",
+    "debugMode": "Debug mode ({sec} sec per phase)",
+    "debugHint": "Debug: phase timer capped at {sec} sec; audio still plays. See console [sadhana-debug].",
+    "debugSkip": "Skip phase",
+    "debugAudioMain": "main",
+    "debugAudioStart": "start",
+    "debugAudioEnd": "end"
   },
   "picker": {
     "title": "Choose your practice",
@@ -110,6 +118,13 @@
     "peaceful": "Peaceful",
     "energized": "Energized",
     "tired": "Tired"
+  },
+  "pwa": {
+    "installTitle": "Install the app",
+    "installHint": "Quick access from your home screen and offline use.",
+    "installIos": "In Safari: Share → Add to Home Screen.",
+    "installAction": "Install",
+    "installLater": "Later"
   },
   "common": {
     "back": "Back",

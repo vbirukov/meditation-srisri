@@ -8,12 +8,18 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icons/*.svg'],
+      includeAssets: ['icons/*.svg', 'icons/*.png'],
+      devOptions: {
+        enabled: true,
+        type: 'module',
+      },
       manifest: {
+        id: '/',
         name: 'Meditate with Sri Sri',
         short_name: 'Sri Sri Meditate',
         description: 'Спокойные медитации — guided и таймер',
         start_url: '/welcome',
+        scope: '/',
         display: 'standalone',
         background_color: '#F9F6EE',
         theme_color: '#F9F6EE',
@@ -21,22 +27,28 @@ export default defineConfig({
         lang: 'ru',
         icons: [
           {
+            src: 'icons/icon-192.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'any',
+          },
+          {
+            src: 'icons/icon-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any',
+          },
+          {
+            src: 'icons/icon-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable',
+          },
+          {
             src: 'icons/icon-192.svg',
             sizes: '192x192',
             type: 'image/svg+xml',
             purpose: 'any',
-          },
-          {
-            src: 'icons/icon-512.svg',
-            sizes: '512x512',
-            type: 'image/svg+xml',
-            purpose: 'any',
-          },
-          {
-            src: 'icons/icon-512.svg',
-            sizes: '512x512',
-            type: 'image/svg+xml',
-            purpose: 'maskable',
           },
         ],
       },

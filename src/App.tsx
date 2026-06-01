@@ -6,6 +6,7 @@ import { PracticeHubScreen } from '@/screens/PracticeHubScreen';
 import { PickerScreen } from '@/screens/PickerScreen';
 import { SessionScreen } from '@/screens/SessionScreen';
 import { EndScreen } from '@/screens/EndScreen';
+import { InstallPrompt } from '@/components/InstallPrompt';
 import { useCustomTrackStore } from '@/store/customTrackStore';
 
 export function App() {
@@ -24,6 +25,7 @@ export function App() {
         <Route path="/end" element={<EndScreen />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      <InstallPrompt />
     </div>
   );
 }

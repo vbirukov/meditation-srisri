@@ -54,9 +54,27 @@
 }
 
 .sadhana-timer-active__phase-name {
-  margin: 0 0 var(--space-4);
+  margin: 0 0 var(--space-3);
   font-size: var(--font-size-lg);
   font-weight: 600;
+}
+
+.sadhana-timer-active__phase-nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.sadhana-timer-active__phase-nav-btn {
+  min-height: 2.5rem;
+  padding-inline: var(--space-2);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+}
+
+.sadhana-timer-active__phase-nav-btn:disabled {
+  opacity: 0.35;
 }
 
 .sadhana-timer-active__steps {
@@ -86,4 +104,79 @@
 .sadhana-timer-active__step--done {
   background: var(--color-green-soft);
   color: var(--color-green);
+}
+
+.sadhana-debug-banner {
+  margin: 0 0 var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, #c45c26 18%, var(--color-surface));
+  border: 1px dashed #c45c26;
+  font-size: var(--font-size-xs);
+  color: var(--color-text);
+  text-align: left;
+}
+
+.sadhana-debug-toggle {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.sadhana-debug-toggle input {
+  margin-top: 2px;
+}
+
+.sadhana-debug-audio {
+  font-size: 0.65rem;
+  letter-spacing: 0.04em;
+  color: var(--color-text-faint);
+  font-family: ui-monospace, monospace;
+}
+
+.sadhana-timer-setup__list--debug li {
+  grid-template-columns: 1.5rem 1fr auto auto;
+}
+
+.sadhana-debug-audio--active {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+  margin: calc(-1 * var(--space-2)) 0 var(--space-3);
+  font-size: var(--font-size-xs);
+}
+
+.sadhana-debug-audio--active span {
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-muted);
+  opacity: 0.45;
+}
+
+.sadhana-debug-audio--on {
+  opacity: 1;
+  background: var(--color-secondary-soft);
+  color: var(--color-secondary);
+  font-weight: 600;
+}
+
+.sadhana-debug-skip {
+  grid-column: 1 / -1;
+  width: 100%;
+}
+
+.sadhana-timer-active--debug .timer-active__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.sadhana-timer-active--debug .timer-active__controls .btn-primary,
+.sadhana-timer-active--debug .timer-active__controls .btn-secondary {
+  flex: 1 1 calc(50% - var(--space-2));
 }

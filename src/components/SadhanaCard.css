@@ -1,8 +1,87 @@
+.sadhana-card-swipe {
+  position: relative;
+  margin-bottom: var(--space-2);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+.sadhana-card-swipe__behind {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: stretch;
+  background: color-mix(in srgb, var(--color-error) 18%, var(--color-surface));
+}
+
+.sadhana-card-swipe__delete {
+  width: 5.75rem;
+  flex-shrink: 0;
+  border: none;
+  padding: 0 var(--space-2);
+  background: var(--color-error);
+  color: #fff;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sadhana-card-swipe__front {
+  margin-bottom: 0;
+  transition: transform 0.22s ease;
+  touch-action: pan-y;
+}
+
+.sadhana-card-swipe__front--dragging {
+  transition: none;
+}
+
 .sadhana-card {
   width: 100%;
   text-align: left;
   margin-bottom: var(--space-2);
   padding: var(--space-3) var(--space-4);
+}
+
+.sadhana-card-swipe .sadhana-card {
+  margin-bottom: 0;
+}
+
+.sadhana-card__body {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 0;
+  border: none;
+  background: transparent;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+}
+
+.sadhana-card--custom .sadhana-card__row {
+  align-items: stretch;
+}
+
+.sadhana-card__actions {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  align-self: center;
+  gap: var(--space-1);
+}
+
+.sadhana-card__action {
+  font-size: 1rem;
+  color: var(--color-secondary);
+}
+
+.sadhana-card__action--delete {
+  color: var(--color-error);
 }
 
 .card.sadhana-card.card--has-texture {
@@ -11,14 +90,19 @@
 
 .sadhana-card__row {
   display: flex;
-  justify-content: space-between;
   align-items: flex-start;
-  gap: var(--space-3);
+  gap: var(--space-2);
 }
 
 .sadhana-card__main {
   min-width: 0;
   flex: 1;
+}
+
+.sadhana-card__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
 }
 
 .sadhana-card__title {
@@ -33,6 +117,10 @@
   font-weight: 500;
   color: var(--color-text-muted);
   white-space: nowrap;
+  padding-top: var(--space-4);
+}
+
+.sadhana-card__body .sadhana-card__duration {
   padding-top: var(--space-4);
 }
 

@@ -80,6 +80,8 @@ export interface CustomPractice {
   description?: string;
   steps: CustomPracticeStep[];
   updatedAt: number;
+  /** Черновик в конструкторе — не показывается в списке сохранённых до «Сохранить». */
+  isDraft?: boolean;
 }
 
 export interface MeditationSession {

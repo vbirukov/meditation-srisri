@@ -10,6 +10,7 @@ interface RecentPracticeState {
   setLastMeditation: (id: string) => void;
   setLastSadhana: (id: string) => void;
   setLastCustomPractice: (id: string) => void;
+  clearLastCustomPracticeIf: (id: string) => void;
 }
 
 export const useRecentPracticeStore = create(
@@ -40,6 +41,10 @@ export const useRecentPracticeStore = create(
           lastMeditationId: null,
           lastSadhanaId: null,
         }),
+      clearLastCustomPracticeIf: (id) =>
+        set((s) =>
+          s.lastCustomPracticeId === id ? { lastCustomPracticeId: null } : {},
+        ),
     }),
     { name: 'meditate-recent-practice' },
   ),

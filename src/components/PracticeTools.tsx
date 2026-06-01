@@ -8,23 +8,28 @@ import '@/styles/textured-surface.css';
 import './PracticeTools.css';
 
 interface PracticeToolsProps {
-  onStartTimer: () => void;
   onStartCustom?: () => void;
-  onStartBuilder?: (practiceId: string) => void;
   sadhanaBlocks?: readonly SadhanaBlock[];
   textureUrl?: string;
+  builderOpen?: boolean;
+  onBuilderOpenChange?: (open: boolean) => void;
+  builderEditId?: string | null;
 }
 
 export function PracticeTools({
-  onStartTimer,
   onStartCustom,
-  onStartBuilder,
   sadhanaBlocks = [],
   textureUrl,
+  builderOpen = false,
+  onBuilderOpenChange,
+  builderEditId = null,
 }: PracticeToolsProps) {
   const t = useT();
   const [trackOpen, setTrackOpen] = useState(false);
-  const [builderOpen, setBuilderOpen] = useState(false);
+
+  const setBuilderOpen = (open: boolean) => {
+    onBuilderOpenChange?.(open);
+  };
 
   return (
     <section
@@ -38,12 +43,6 @@ export function PracticeTools({
     >
       <h2 className="practice-tools__heading">{t('hub.toolsTitle')}</h2>
       <div className="practice-tools__row">
-        <button type="button" className="practice-tools__chip" onClick={onStartTimer}>
-          <span className="practice-tools__chip-icon" aria-hidden>
-            ◯
-          </span>
-          <span className="practice-tools__chip-label">{t('picker.timerSection')}</span>
-        </button>
         <button
           type="button"
           className={`practice-tools__chip ${trackOpen ? 'practice-tools__chip--active' : ''}`}
@@ -58,13 +57,13 @@ export function PracticeTools({
           </span>
           <span className="practice-tools__chip-label">{t('picker.customSection')}</span>
         </button>
-        {onStartBuilder && sadhanaBlocks.length > 0 && (
+        {onBuilderOpenChange && sadhanaBlocks.length > 0 && (
           <button
             type="button"
             className={`practice-tools__chip ${builderOpen ? 'practice-tools__chip--active' : ''}`}
             onClick={() => {
               setTrackOpen(false);
-              setBuilderOpen((o) => !o);
+              setBuilderOpen(!builderOpen);
             }}
             aria-expanded={builderOpen}
           >
@@ -80,9 +79,9 @@ export function PracticeTools({
           <CustomTrackPanel onStart={onStartCustom} />
         </div>
       )}
-      {builderOpen && onStartBuilder && (
+      {builderOpen && onBuilderOpenChange && (
         <div className="practice-tools__track">
-          <CustomPracticeBuilder blocks={sadhanaBlocks} onStart={onStartBuilder} />
+          <CustomPracticeBuilder blocks={sadhanaBlocks} editPracticeId={builderEditId} />
         </div>
       )}
     </section>

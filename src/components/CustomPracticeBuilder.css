@@ -9,56 +9,26 @@
   font-size: var(--font-size-sm);
 }
 
-.custom-practice-builder__saved {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.custom-practice-builder__toolbar {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   gap: var(--space-2);
+  margin-bottom: var(--space-3);
 }
 
-.custom-practice-builder__saved li {
-  display: flex;
-  align-items: stretch;
-  gap: var(--space-1);
+.custom-practice-builder__save {
+  flex: 1 1 auto;
+  min-width: 8rem;
 }
 
-.custom-practice-builder__saved-btn {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-border-subtle);
-  background: var(--color-surface-alt);
-  text-align: left;
+.custom-practice-builder__start {
+  flex: 1 1 auto;
+  min-width: 8rem;
 }
 
-.custom-practice-builder__saved-btn--active {
-  border-color: var(--color-secondary);
-  background: var(--color-secondary-soft);
-}
-
-.custom-practice-builder__saved-title {
-  font-weight: 600;
-  font-size: var(--font-size-sm);
-}
-
-.custom-practice-builder__saved-meta {
-  font-size: var(--font-size-xs);
-}
-
-.custom-practice-builder__saved-actions {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.custom-practice-builder__new {
-  width: 100%;
+.custom-practice-builder__play {
+  color: var(--color-secondary);
+  font-size: 0.85rem;
 }
 
 .custom-practice-builder__field {

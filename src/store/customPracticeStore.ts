@@ -7,7 +7,7 @@ interface CustomPracticeState {
   practices: CustomPractice[];
   editingId: string | null;
   getEditing: () => CustomPractice | null;
-  startNew: () => string;
+  ensureDraft: () => string;
   loadForEdit: (id: string) => void;
   updateEditing: (patch: Partial<Pick<CustomPractice, 'title' | 'description' | 'steps'>>) => void;
   saveEditing: () => string | null;
@@ -25,6 +25,10 @@ function findPractice(practices: CustomPractice[], id: string | null): CustomPra
   return practices.find((p) => p.id === id) ?? null;
 }
 
+function isDraftPractice(p: CustomPractice): boolean {
+  return p.isDraft === true;
+}
+
 export const useCustomPracticeStore = create(
   persist<CustomPracticeState>(
     (set, get) => ({
@@ -33,7 +37,12 @@ export const useCustomPracticeStore = create(
 
       getEditing: () => findPractice(get().practices, get().editingId),
 
-      startNew: () => {
+      ensureDraft: () => {
+        const draft = get().practices.find(isDraftPractice);
+        if (draft) {
+          set({ editingId: draft.id });
+          return draft.id;
+        }
         const practice = createEmptyPractice();
         set((s) => ({
           practices: [...s.practices, practice],
@@ -61,20 +70,27 @@ export const useCustomPracticeStore = create(
         const practice = get().getEditing();
         if (!practice || practice.steps.length === 0) return null;
         const title =
-          practice.title.trim() ||
-          practice.steps[0]?.blockId ||
-          'Практика';
-        if (title !== practice.title) {
-          get().updateEditing({ title });
-        }
-        return practice.id;
+          practice.title.trim() || practice.steps[0]?.blockId || 'Практика';
+        const { editingId, practices } = get();
+        set({
+          practices: practices.map((p) =>
+            p.id === editingId
+              ? { ...p, title, isDraft: false, updatedAt: Date.now() }
+              : p,
+          ),
+        });
+        return editingId;
       },
 
       removePractice: (id) => {
-        set((s) => ({
-          practices: s.practices.filter((p) => p.id !== id),
-          editingId: s.editingId === id ? null : s.editingId,
-        }));
+        set((s) => {
+          const nextEditing =
+            s.editingId === id ? s.practices.find(isDraftPractice)?.id ?? null : s.editingId;
+          return {
+            practices: s.practices.filter((p) => p.id !== id),
+            editingId: nextEditing,
+          };
+        });
       },
 
       duplicatePractice: (id) => {
@@ -83,31 +99,28 @@ export const useCustomPracticeStore = create(
         const copy: CustomPractice = {
           ...source,
           id: newInstanceId(),
-          title: `${source.title} (копия)`,
+          title: `${source.title || 'Практика'} (копия)`,
           steps: source.steps.map((st) => ({ ...st, instanceId: newInstanceId() })),
           updatedAt: Date.now(),
+          isDraft: true,
         };
         set((s) => ({
-          practices: [...s.practices, copy],
+          practices: [...s.practices.filter((p) => !isDraftPractice(p)), copy],
           editingId: copy.id,
         }));
         return copy.id;
       },
 
       addBlock: (block) => {
-        const { editingId, practices } = get();
-        let id = editingId;
-        if (!id) {
-          id = get().startNew();
-        }
+        const id = get().ensureDraft();
         const step = createStepFromBlock(block);
-        set({
-          practices: practices.map((p) =>
+        set((s) => ({
+          practices: s.practices.map((p) =>
             p.id === id
               ? { ...p, steps: [...p.steps, step], updatedAt: Date.now() }
               : p,
           ),
-        });
+        }));
       },
 
       updateStep: (instanceId, patch) => {

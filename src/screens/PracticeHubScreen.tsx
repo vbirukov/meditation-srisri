@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import meditationsData from '@/data/meditations.json';
 import sadhanaData from '@/data/sadhana.json';
@@ -18,7 +18,11 @@ import { acquireScreenWakeLock } from '@/hooks/useWakeLock';
 import { useSessionStore } from '@/store/sessionStore';
 import { useCustomTrackStore } from '@/store/customTrackStore';
 import { useRecentPracticeStore } from '@/store/recentPracticeStore';
-import { customPracticeTotalSeconds } from '@/utils/customPractice';
+import {
+  customPracticeToSadhanaPractice,
+  customPracticeTotalSeconds,
+  listSavedCustomPractices,
+} from '@/utils/customPractice';
 import { sadhanaTotalSeconds } from '@/utils/sadhana';
 import { useCustomPracticeStore } from '@/store/customPracticeStore';
 import { splitRecent } from '@/utils/recentPractice';
@@ -48,12 +52,39 @@ export function PracticeHubScreen() {
   const customTrack = useCustomTrackStore((s) => s.track);
   const lastMeditationId = useRecentPracticeStore((s) => s.lastMeditationId);
   const lastSadhanaId = useRecentPracticeStore((s) => s.lastSadhanaId);
+  const lastCustomPracticeId = useRecentPracticeStore((s) => s.lastCustomPracticeId);
   const lastTab = useRecentPracticeStore((s) => s.lastTab);
   const setLastMeditation = useRecentPracticeStore((s) => s.setLastMeditation);
   const setLastSadhana = useRecentPracticeStore((s) => s.setLastSadhana);
   const setLastCustomPractice = useRecentPracticeStore((s) => s.setLastCustomPractice);
+  const clearLastCustomPracticeIf = useRecentPracticeStore((s) => s.clearLastCustomPracticeIf);
+  const removeCustomPractice = useCustomPracticeStore((s) => s.removePractice);
   const customPractices = useCustomPracticeStore((s) => s.practices);
   const pageTextures = usePageTextures(PRACTICE_HUB_TEXTURE_POOLS);
+  const [builderOpen, setBuilderOpen] = useState(false);
+  const [builderEditId, setBuilderEditId] = useState<string | null>(null);
+
+  const handleBuilderOpenChange = useCallback((open: boolean) => {
+    setBuilderOpen(open);
+    if (open) setBuilderEditId(null);
+  }, []);
+
+  const openBuilderForEdit = useCallback((id: string) => {
+    setBuilderEditId(id);
+    setBuilderOpen(true);
+  }, []);
+
+  const deleteCustomPractice = useCallback(
+    (id: string) => {
+      removeCustomPractice(id);
+      clearLastCustomPracticeIf(id);
+      if (builderEditId === id) {
+        setBuilderEditId(null);
+        setBuilderOpen(false);
+      }
+    },
+    [builderEditId, clearLastCustomPracticeIf, removeCustomPractice],
+  );
 
   useEffect(() => {
     if (params.has('tab') || !lastTab) return;
@@ -86,6 +117,21 @@ export function PracticeHubScreen() {
   const recentMeditation =
     audioSplit.recent ?? (videoSplit.recent?.id === lastMeditationId ? videoSplit.recent : null);
   const sadhanaSplit = splitRecent(sadhanas, lastSadhanaId);
+  const savedCustomPractices = useMemo(
+    () => listSavedCustomPractices(customPractices),
+    [customPractices],
+  );
+  const customSadhanaCards = useMemo(
+    () =>
+      savedCustomPractices.map((p) =>
+        customPracticeToSadhanaPractice(p, t('customPractice.untitled')),
+      ),
+    [savedCustomPractices, t],
+  );
+
+  const sadhanaRecentCustom = lastCustomPracticeId
+    ? customSadhanaCards.find((p) => p.id === lastCustomPracticeId)
+    : undefined;
 
   const startGuided = (id: string) => {
     const m = meditations.find((x) => x.id === id);
@@ -103,12 +149,6 @@ export function PracticeHubScreen() {
     setLastSadhana(id);
     setMode('sadhana', id);
     setTargetDuration(sadhanaTotalSeconds(practice, sadhanaBlocks).totalSeconds);
-    navigate(sessionUrl(true));
-  };
-
-  const startTimer = () => {
-    setMode('timer');
-    setTargetDuration(600);
     navigate(sessionUrl(true));
   };
 
@@ -161,26 +201,33 @@ export function PracticeHubScreen() {
           />
         )}
 
-        {tab === 'sadhana' && sadhanaSplit.recent && (
+        {tab === 'sadhana' && (sadhanaRecentCustom || sadhanaSplit.recent) && (
           <RecentContinueCard
             label={t('hub.recent')}
-            title={sadhanaSplit.recent.title}
+            title={sadhanaRecentCustom?.title ?? sadhanaSplit.recent!.title}
             meta={t('hub.phasesCount').replace(
               '{count}',
-              String(sadhanaSplit.recent.phases.length),
+              String(
+                sadhanaRecentCustom?.phases.length ?? sadhanaSplit.recent!.phases.length,
+              ),
             )}
             cta={t('hub.continue')}
-            onContinue={() => startSadhana(sadhanaSplit.recent!.id)}
+            onContinue={() =>
+              sadhanaRecentCustom
+                ? startCustomPractice(sadhanaRecentCustom.id)
+                : startSadhana(sadhanaSplit.recent!.id)
+            }
           />
         )}
 
         {tab === 'meditations' && (
           <PracticeTools
-            onStartTimer={startTimer}
             onStartCustom={customTrack ? startCustom : undefined}
-            onStartBuilder={startCustomPractice}
             sadhanaBlocks={sadhanaBlocks}
             textureUrl={pageTextures['practice-tools']}
+            builderOpen={builderOpen}
+            onBuilderOpenChange={handleBuilderOpenChange}
+            builderEditId={builderEditId}
           />
         )}
 
@@ -224,6 +271,18 @@ export function PracticeHubScreen() {
                 {t('hub.sadhanaSection')}
               </SectionTitle>
               <p className="text-muted practice-hub__hint">{t('hub.sadhanaHint')}</p>
+              {customSadhanaCards.map((practice) => (
+                <SadhanaCard
+                  key={practice.id}
+                  practice={practice}
+                  onSelect={startCustomPractice}
+                  onEdit={openBuilderForEdit}
+                  onDelete={deleteCustomPractice}
+                  textureUrl={pageTextures['sadhana-card']}
+                  blocks={sadhanaBlocks}
+                  badgeLabel={t('customPractice.badge')}
+                />
+              ))}
               {sadhanaSplit.rest.map((practice) => (
                 <SadhanaCard
                   key={practice.id}
@@ -235,11 +294,12 @@ export function PracticeHubScreen() {
               ))}
             </section>
             <PracticeTools
-              onStartTimer={startTimer}
               onStartCustom={customTrack ? startCustom : undefined}
-              onStartBuilder={startCustomPractice}
               sadhanaBlocks={sadhanaBlocks}
               textureUrl={pageTextures['practice-tools']}
+              builderOpen={builderOpen}
+              onBuilderOpenChange={handleBuilderOpenChange}
+              builderEditId={builderEditId}
             />
           </div>
         )}

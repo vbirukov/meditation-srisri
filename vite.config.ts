@@ -9,10 +9,6 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['icons/*.svg', 'icons/*.png'],
-      devOptions: {
-        enabled: true,
-        type: 'module',
-      },
       manifest: {
         id: '/',
         name: 'Meditate with Sri Sri',

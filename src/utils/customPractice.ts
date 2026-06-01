@@ -1,4 +1,4 @@
-import type { CustomPractice, CustomPracticeStep, SadhanaBlock } from '@/types';
+import type { CustomPractice, CustomPracticeStep, Locale, SadhanaBlock, SadhanaPractice } from '@/types';
 import {
   formatPhaseDuration,
   resolveSadhanaPhases,
@@ -19,6 +19,29 @@ export function createStepFromBlock(block: SadhanaBlock): CustomPracticeStep {
   };
 }
 
+export function listSavedCustomPractices(practices: readonly CustomPractice[]): CustomPractice[] {
+  return [...practices]
+    .filter((p) => p.isDraft !== true && p.steps.length > 0)
+    .sort((a, b) => b.updatedAt - a.updatedAt);
+}
+
+export function customPracticeToSadhanaPractice(
+  practice: CustomPractice,
+  untitledLabel: string,
+): SadhanaPractice {
+  return {
+    id: practice.id,
+    title: practice.title.trim() || untitledLabel,
+    description: practice.description,
+    phases: practice.steps.map((step) => ({
+      id: step.instanceId,
+      blockId: step.blockId,
+      label: step.label,
+      durationSeconds: step.durationSeconds,
+    })),
+  };
+}
+
 export function createEmptyPractice(): CustomPractice {
   const now = Date.now();
   return {
@@ -26,6 +49,7 @@ export function createEmptyPractice(): CustomPractice {
     title: '',
     steps: [],
     updatedAt: now,
+    isDraft: true,
   };
 }
 
@@ -99,6 +123,37 @@ export function formatCustomPracticeTotal(
   return hasUnknown
     ? `≈ ${formatPhaseDuration(totalSeconds)}`
     : formatPhaseDuration(totalSeconds);
+}
+
+export function formatPhaseCountLabel(count: number, locale: Locale): string {
+  if (locale === 'en') {
+    return count === 1 ? '1 phase' : `${count} phases`;
+  }
+  const mod10 = count % 10;
+  const mod100 = count % 100;
+  if (mod100 >= 11 && mod100 <= 14) return `${count} этапов`;
+  if (mod10 === 1) return `${count} этап`;
+  if (mod10 >= 2 && mod10 <= 4) return `${count} этапа`;
+  return `${count} этапов`;
+}
+
+export function formatCustomPracticeSavedSummary(
+  practice: CustomPractice,
+  blocks: readonly SadhanaBlock[],
+  locale: Locale,
+  messages: { empty: string; summary: string; summaryApprox: string },
+): string {
+  const count = practice.steps.length;
+  if (count === 0) return messages.empty;
+
+  const { totalSeconds, hasUnknown } = customPracticeTotalSeconds(practice, blocks);
+  const duration = hasUnknown
+    ? `≈ ${formatPhaseDuration(totalSeconds)}`
+    : formatPhaseDuration(totalSeconds);
+  const phases = formatPhaseCountLabel(count, locale);
+  const template = hasUnknown ? messages.summaryApprox : messages.summary;
+
+  return template.replace('{phases}', phases).replace('{duration}', duration);
 }
 
 export function blockDurationLabel(block: SadhanaBlock): string | null {

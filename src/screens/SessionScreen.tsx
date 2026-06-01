@@ -12,7 +12,9 @@ import { CustomTrackPanel } from '@/components/CustomTrackPanel';
 import { useT } from '@/i18n';
 import { useSessionStore } from '@/store/sessionStore';
 import { usePracticeStatsStore } from '@/store/practiceStatsStore';
+import { useCustomPracticeStore } from '@/store/customPracticeStore';
 import { useCustomTrackStore } from '@/store/customTrackStore';
+import { resolveCustomPracticeSteps } from '@/utils/customPractice';
 import { formatTime } from '@/utils/time';
 import { useSessionPanelTexture, textureStyle, withTexture } from '@/utils/textures';
 import { resolveSadhanaPhases } from '@/utils/sadhana';
@@ -36,6 +38,7 @@ export function SessionScreen() {
   const mode = useSessionStore((s) => s.mode);
   const meditationId = useSessionStore((s) => s.meditationId);
   const sadhanaId = useSessionStore((s) => s.sadhanaId);
+  const customPracticeId = useSessionStore((s) => s.customPracticeId);
   const targetDurationSeconds = useSessionStore((s) => s.targetDurationSeconds);
   const progressSeconds = useSessionStore((s) => s.progressSeconds);
   const setTargetDuration = useSessionStore((s) => s.setTargetDuration);
@@ -44,6 +47,7 @@ export function SessionScreen() {
   const start = useSessionStore((s) => s.start);
 
   const customTrack = useCustomTrackStore((s) => s.track);
+  const customPractices = useCustomPracticeStore((s) => s.practices);
 
   const returnTab = params.get('tab') === 'sadhana' ? 'sadhana' : 'meditations';
   const practicePath =
@@ -51,19 +55,32 @@ export function SessionScreen() {
 
   const setup =
     params.get('setup') === '1' &&
-    (mode === 'timer' || mode === 'custom' || mode === 'sadhana') &&
+    (mode === 'timer' ||
+      mode === 'custom' ||
+      mode === 'sadhana' ||
+      mode === 'custom-practice') &&
     !timerRunning;
   const meditation = meditations.find((m) => m.id === meditationId);
   const sadhana = sadhanas.find((s) => s.id === sadhanaId);
+  const customPractice = customPractices.find((p) => p.id === customPracticeId);
   const resolvedSadhanaPhases = useMemo(
     () => (sadhana ? resolveSadhanaPhases(sadhana, sadhanaBlocks) : null),
     [sadhana],
+  );
+  const resolvedCustomPhases = useMemo(
+    () =>
+      customPractice ? resolveCustomPracticeSteps(customPractice, sadhanaBlocks) : null,
+    [customPractice],
   );
 
   const keepAwake =
     !setup &&
     (mode === 'guided' ||
-      ((mode === 'sadhana' || mode === 'timer' || mode === 'custom') && timerRunning));
+      ((mode === 'sadhana' ||
+        mode === 'timer' ||
+        mode === 'custom' ||
+        mode === 'custom-practice') &&
+        timerRunning));
 
   useWakeLock(keepAwake);
 
@@ -83,7 +100,10 @@ export function SessionScreen() {
     if (mode === 'sadhana' && !sadhana) {
       navigate('/practice?tab=sadhana', { replace: true });
     }
-  }, [mode, customTrack, sadhana, navigate, practicePath]);
+    if (mode === 'custom-practice' && !customPractice) {
+      navigate('/practice?tab=sadhana', { replace: true });
+    }
+  }, [mode, customTrack, sadhana, customPractice, navigate, practicePath]);
 
   const recordSession = usePracticeStatsStore((s) => s.recordSession);
 
@@ -96,6 +116,7 @@ export function SessionScreen() {
       mode,
       meditationId: mode === 'guided' ? meditationId : undefined,
       sadhanaId: mode === 'sadhana' ? sadhanaId : undefined,
+      customPracticeId: mode === 'custom-practice' ? customPracticeId : undefined,
       durationSeconds,
     });
     complete();
@@ -107,6 +128,7 @@ export function SessionScreen() {
     mode,
     meditationId,
     sadhanaId,
+    customPracticeId,
     progressSeconds,
     targetDurationSeconds,
   ]);
@@ -135,7 +157,9 @@ export function SessionScreen() {
         ? t('timer.title')
         : mode === 'sadhana'
           ? sadhana?.title ?? t('hub.sadhana')
-          : meditation?.title;
+          : mode === 'custom-practice'
+            ? customPractice?.title.trim() || t('customPractice.untitled')
+            : meditation?.title;
 
   const panelTexture = useSessionPanelTexture();
 
@@ -204,6 +228,30 @@ export function SessionScreen() {
             />
           </div>
         )}
+
+        {mode === 'custom-practice' &&
+          customPractice &&
+          resolvedCustomPhases &&
+          resolvedCustomPhases.length > 0 && (
+            <SadhanaPhaseTimer
+              phases={resolvedCustomPhases}
+              onComplete={handleComplete}
+              running={timerRunning}
+              onRunningChange={onTimerRunningChange}
+              setupMode={setup}
+              onTotalDurationChange={(totalSeconds) => setTargetDuration(totalSeconds)}
+              labels={{
+                phases: t('sadhana.phases'),
+                total: t('sadhana.total'),
+                start: t('timer.start'),
+                pause: t('timer.pause'),
+                resume: t('timer.resume'),
+                restart: t('timer.restart'),
+                remaining: t('session.remaining'),
+                phaseOf: t('sadhana.phaseOf'),
+              }}
+            />
+          )}
 
         {mode === 'sadhana' && sadhana && resolvedSadhanaPhases && (
           <SadhanaPhaseTimer

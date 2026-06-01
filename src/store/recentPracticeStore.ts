@@ -6,8 +6,10 @@ interface RecentPracticeState {
   lastTab: PracticeTab | null;
   lastMeditationId: string | null;
   lastSadhanaId: string | null;
+  lastCustomPracticeId: string | null;
   setLastMeditation: (id: string) => void;
   setLastSadhana: (id: string) => void;
+  setLastCustomPractice: (id: string) => void;
 }
 
 export const useRecentPracticeStore = create(
@@ -16,10 +18,28 @@ export const useRecentPracticeStore = create(
       lastTab: null,
       lastMeditationId: null,
       lastSadhanaId: null,
+      lastCustomPracticeId: null,
       setLastMeditation: (id) =>
-        set({ lastMeditationId: id, lastTab: 'meditations', lastSadhanaId: null }),
+        set({
+          lastMeditationId: id,
+          lastTab: 'meditations',
+          lastSadhanaId: null,
+          lastCustomPracticeId: null,
+        }),
       setLastSadhana: (id) =>
-        set({ lastSadhanaId: id, lastTab: 'sadhana', lastMeditationId: null }),
+        set({
+          lastSadhanaId: id,
+          lastTab: 'sadhana',
+          lastMeditationId: null,
+          lastCustomPracticeId: null,
+        }),
+      setLastCustomPractice: (id) =>
+        set({
+          lastCustomPracticeId: id,
+          lastTab: 'sadhana',
+          lastMeditationId: null,
+          lastSadhanaId: null,
+        }),
     }),
     { name: 'meditate-recent-practice' },
   ),

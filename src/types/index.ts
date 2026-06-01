@@ -16,7 +16,7 @@ export interface Meditation {
   language: MeditationLanguage;
 }
 
-export type SessionMode = 'guided' | 'timer' | 'custom' | 'sadhana';
+export type SessionMode = 'guided' | 'timer' | 'custom' | 'sadhana' | 'custom-practice';
 
 export type PracticeTab = 'meditations' | 'sadhana';
 
@@ -61,10 +61,32 @@ export interface SadhanaCatalog {
   blocks: SadhanaBlock[];
 }
 
+/** Шаг пользовательской практики (экземпляр блока из каталога). */
+export interface CustomPracticeStep {
+  instanceId: string;
+  blockId: string;
+  label?: string;
+  description?: string;
+  durationSeconds?: number;
+  /** false — не проигрывать, даже если есть в блоке */
+  playMainAudio?: boolean;
+  playStartingAudio?: boolean;
+  playFinishingAudio?: boolean;
+}
+
+export interface CustomPractice {
+  id: string;
+  title: string;
+  description?: string;
+  steps: CustomPracticeStep[];
+  updatedAt: number;
+}
+
 export interface MeditationSession {
   mode: SessionMode;
   meditationId?: string;
   sadhanaId?: string;
+  customPracticeId?: string;
   targetDurationSeconds: number;
   startedAt: number | null;
   pausedAt: number | null;

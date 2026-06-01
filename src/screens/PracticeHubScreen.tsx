@@ -18,7 +18,9 @@ import { acquireScreenWakeLock } from '@/hooks/useWakeLock';
 import { useSessionStore } from '@/store/sessionStore';
 import { useCustomTrackStore } from '@/store/customTrackStore';
 import { useRecentPracticeStore } from '@/store/recentPracticeStore';
+import { customPracticeTotalSeconds } from '@/utils/customPractice';
 import { sadhanaTotalSeconds } from '@/utils/sadhana';
+import { useCustomPracticeStore } from '@/store/customPracticeStore';
 import { splitRecent } from '@/utils/recentPractice';
 import { formatTime } from '@/utils/time';
 import '@/components/MeditationCard.css';
@@ -49,6 +51,8 @@ export function PracticeHubScreen() {
   const lastTab = useRecentPracticeStore((s) => s.lastTab);
   const setLastMeditation = useRecentPracticeStore((s) => s.setLastMeditation);
   const setLastSadhana = useRecentPracticeStore((s) => s.setLastSadhana);
+  const setLastCustomPractice = useRecentPracticeStore((s) => s.setLastCustomPractice);
+  const customPractices = useCustomPracticeStore((s) => s.practices);
   const pageTextures = usePageTextures(PRACTICE_HUB_TEXTURE_POOLS);
 
   useEffect(() => {
@@ -119,6 +123,16 @@ export function PracticeHubScreen() {
     navigate(sessionUrl(true));
   };
 
+  const startCustomPractice = (id: string) => {
+    const practice = customPractices.find((p) => p.id === id);
+    if (!practice || practice.steps.length === 0) return;
+    setLastCustomPractice(id);
+    setMode('custom-practice', id);
+    setTargetDuration(customPracticeTotalSeconds(practice, sadhanaBlocks).totalSeconds);
+    void acquireScreenWakeLock();
+    navigate(sessionUrl(true));
+  };
+
   return (
     <div className="screen screen--immersive practice-hub">
       <VideoBackground scene="picker" overlay={0.32} blur={2} variant="soft" />
@@ -164,6 +178,8 @@ export function PracticeHubScreen() {
           <PracticeTools
             onStartTimer={startTimer}
             onStartCustom={customTrack ? startCustom : undefined}
+            onStartBuilder={startCustomPractice}
+            sadhanaBlocks={sadhanaBlocks}
             textureUrl={pageTextures['practice-tools']}
           />
         )}
@@ -221,6 +237,8 @@ export function PracticeHubScreen() {
             <PracticeTools
               onStartTimer={startTimer}
               onStartCustom={customTrack ? startCustom : undefined}
+              onStartBuilder={startCustomPractice}
+              sadhanaBlocks={sadhanaBlocks}
               textureUrl={pageTextures['practice-tools']}
             />
           </div>

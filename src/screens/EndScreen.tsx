@@ -7,6 +7,7 @@ import { Header } from '@/components/Header';
 import { MoodSelector } from '@/components/MoodSelector';
 import { useLocaleStore, useT } from '@/i18n';
 import { useSessionStore } from '@/store/sessionStore';
+import { useCustomPracticeStore } from '@/store/customPracticeStore';
 import { usePracticeStatsStore } from '@/store/practiceStatsStore';
 import {
   getGurujiMedia,
@@ -45,16 +46,23 @@ export function EndScreen() {
   const [photoFailed, setPhotoFailed] = useState(false);
   const displayPhoto = photoFailed ? GURUJI_FALLBACK_PHOTO : photoSrc;
 
+  const customPractices = useCustomPracticeStore((s) => s.practices);
   const meditation = meditations.find((m) => m.id === lastSession?.meditationId);
   const sadhana = sadhanas.find((s) => s.id === lastSession?.sadhanaId);
+  const customPractice = customPractices.find(
+    (p) => p.id === lastSession?.customPracticeId,
+  );
   const practiceTitle =
     meditation?.title ??
     sadhana?.title ??
+    customPractice?.title.trim() ??
     (lastSession?.mode === 'timer'
       ? t('timer.title')
       : lastSession?.mode === 'custom'
         ? t('customTrack.yours')
-        : t('end.practiceFallback'));
+        : lastSession?.mode === 'custom-practice'
+          ? t('customPractice.untitled')
+          : t('end.practiceFallback'));
 
   const summaryText = lastSession
     ? getSessionSummary(
@@ -76,7 +84,11 @@ export function EndScreen() {
 
   const again = () => {
     reset();
-    navigate(lastSession?.sadhanaId ? '/practice?tab=sadhana' : '/practice');
+    navigate(
+      lastSession?.sadhanaId || lastSession?.customPracticeId
+        ? '/practice?tab=sadhana'
+        : '/practice',
+    );
   };
 
   return (

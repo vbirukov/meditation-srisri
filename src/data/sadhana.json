@@ -10,7 +10,8 @@
         { "id": "kriya" },
         { "id": "sahaj" },
         { "id": "silence-no-sound" },
-        { "id": "rest", "label": "Отдых", "durationSeconds": 180 },
+        { "id": "samaveda-short" },
+        { "id": "lie-down" },
         { "id": "nadi-shodhana-pranayam" },
         { "id": "finished" }
       ]
@@ -48,6 +49,12 @@
     }
   ],
   "blocks": [
+    {
+      "id": "samaveda-short",
+      "title": "Самаведы",
+      "description": "Самаведы короткие",
+      "audioUrl": "/media/audio/samaveda-short.mp3"
+    },
     {
       "id": "padmasadhana",
       "title": "Падмасадхана асаны",

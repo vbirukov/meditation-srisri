@@ -11,6 +11,7 @@ export interface LastPracticeSession {
   mode: SessionMode;
   meditationId?: string;
   sadhanaId?: string;
+  customPracticeId?: string;
   durationSeconds: number;
   completedAt: number;
 }

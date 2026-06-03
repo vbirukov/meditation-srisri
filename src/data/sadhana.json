@@ -51,9 +51,15 @@
   "blocks": [
     {
       "id": "samaveda-short",
-      "title": "Самаведы",
+      "title": "Самаведы 3 минуты",
       "description": "Самаведы короткие",
       "audioUrl": "/media/audio/samaveda-short.mp3"
+    },
+    {
+      "id": "samaveda-full",
+      "title": "Самаведы 8 минут",
+      "description": "Самаведы полные",
+      "audioUrl": "/media/audio/samaveda.mp3"
     },
     {
       "id": "padmasadhana",

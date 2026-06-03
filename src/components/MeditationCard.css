@@ -21,6 +21,17 @@
   flex: 1;
 }
 
+.meditation-card__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.meditation-card--offline-disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .meditation-card__type--video {
   background: var(--color-water-soft);
   color: var(--color-water);

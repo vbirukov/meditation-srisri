@@ -1,0 +1,81 @@
+{
+  "generatedAt": "2026-06-03T22:34:24.575Z",
+  "precacheUrls": [
+    "/media/audio/smile.mp3",
+    "/media/audio/om.mp3",
+    "/media/audio/om-short.mp3",
+    "/media/audio/panchakosha.mp3",
+    "/media/audio/tattva.mp3",
+    "/media/audio/samaveda-short.mp3",
+    "/media/audio/samaveda.mp3",
+    "/media/audio/padmasadhana.mp3",
+    "/media/audio/bell.mp3",
+    "/media/audio/bogar-pranayam.mp3",
+    "/media/audio/sudarshan-kriya.mp3",
+    "/media/audio/sahaj.mp3",
+    "/media/audio/yoga-nidra.mp3",
+    "/media/audio/nadi-shodhan.mp3",
+    "/media/audio/we-finished.mp3",
+    "/media/audio/lets-start.mp3",
+    "/media/audio/smile-on-your-face.mp3",
+    "/media/audio/lie-down.mp3"
+  ],
+  "videoUrls": [
+    "/media/video/welcome.mp4",
+    "/media/video/picker.mp4",
+    "/media/video/picker2.mp4",
+    "/media/video/session.mp4",
+    "/media/video/session2.mp4"
+  ],
+  "practices": [
+    {
+      "id": "morning-short",
+      "urls": [
+        "/media/audio/lets-start.mp3",
+        "/media/audio/smile-on-your-face.mp3",
+        "/media/audio/sudarshan-kriya.mp3",
+        "/media/audio/bell.mp3",
+        "/media/audio/sahaj.mp3",
+        "/media/audio/samaveda-short.mp3",
+        "/media/audio/lie-down.mp3",
+        "/media/audio/nadi-shodhan.mp3",
+        "/media/audio/we-finished.mp3"
+      ],
+      "offlineReady": true
+    },
+    {
+      "id": "sanyam-short",
+      "urls": [
+        "/media/audio/lets-start.mp3",
+        "/media/audio/smile-on-your-face.mp3",
+        "/media/audio/bogar-pranayam.mp3",
+        "/media/audio/bell.mp3",
+        "/media/audio/sahaj.mp3",
+        "/media/audio/lie-down.mp3",
+        "/media/audio/nadi-shodhan.mp3",
+        "/media/audio/we-finished.mp3"
+      ],
+      "offlineReady": true
+    },
+    {
+      "id": "sanyam-full",
+      "urls": [
+        "/media/audio/lets-start.mp3",
+        "/media/audio/smile-on-your-face.mp3",
+        "/media/audio/padmasadhana.mp3",
+        "/media/audio/bell.mp3",
+        "/media/audio/bogar-pranayam.mp3",
+        "/media/audio/sahaj.mp3",
+        "/media/audio/lie-down.mp3",
+        "/media/audio/nadi-shodhan.mp3",
+        "/media/audio/we-finished.mp3"
+      ],
+      "offlineReady": true
+    }
+  ],
+  "offlineReadyPracticeIds": [
+    "morning-short",
+    "sanyam-short",
+    "sanyam-full"
+  ]
+}

@@ -38,7 +38,8 @@
     "audioSection": "Audio meditations",
     "timerSection": "Your own practice",
     "timerHint": "A quiet timer with water in the background",
-    "offlineHint": "You are offline — cached meditations and the timer are available",
+    "offlineHint": "Cached meditations, sadhanas, and the timer are available",
+    "sadhanaOfflineHint": "Download practices first or go online",
     "customSection": "Your track"
   },
   "customPractice": {
@@ -125,6 +126,15 @@
     "peaceful": "Peaceful",
     "energized": "Energized",
     "tired": "Tired"
+  },
+  "offline": {
+    "title": "Offline pack",
+    "hint": "Download meditation and sadhana audio for offline practice",
+    "ready": "Pack ready. You can practice offline.",
+    "download": "Download for offline",
+    "downloading": "Downloading…",
+    "failed": "Failed to download {count} files",
+    "notCached": "Not available offline"
   },
   "pwa": {
     "installTitle": "Install the app",

@@ -94,6 +94,10 @@ export interface MeditationSession {
   pausedAt: number | null;
   progressSeconds: number;
   isCompleted: boolean;
+  sadhanaPhaseIndex?: number;
+  sadhanaPhaseProgress?: number;
+  timerRunning?: boolean;
+  guidedAudioSeconds?: number;
 }
 
 export type VideoScene = 'welcome' | 'picker' | 'session';

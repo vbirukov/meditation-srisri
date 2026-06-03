@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useT } from '@/i18n';
 import { textureStyle, withTexture } from '@/utils/textures';
 import { acquireScreenWakeLock } from '@/hooks/useWakeLock';
 import { formatTime } from '@/utils/time';
@@ -13,6 +14,7 @@ interface AudioPlayerProps {
   hidden?: boolean;
   loop?: boolean;
   autoPlay?: boolean;
+  initialTime?: number;
   textureUrl?: string;
 }
 
@@ -24,11 +26,13 @@ export function AudioPlayer({
   hidden,
   loop = false,
   autoPlay = true,
+  initialTime = 0,
   textureUrl,
 }: AudioPlayerProps) {
+  const t = useT();
   const audioRef = useRef<HTMLAudioElement>(null);
   const [playing, setPlaying] = useState(false);
-  const [current, setCurrent] = useState(0);
+  const [current, setCurrent] = useState(initialTime);
   const [duration, setDuration] = useState(durationSeconds);
   const [error, setError] = useState(false);
   const [volume, setVolume] = useState(1);
@@ -93,6 +97,17 @@ export function AudioPlayer({
 
   useEffect(() => {
     const a = audioRef.current;
+    if (!a || initialTime <= 0) return;
+    const apply = () => {
+      a.currentTime = initialTime;
+      setCurrent(initialTime);
+    };
+    if (a.readyState >= 1) apply();
+    else a.addEventListener('loadedmetadata', apply, { once: true });
+  }, [src, initialTime]);
+
+  useEffect(() => {
+    const a = audioRef.current;
     if (!a || error || !autoPlay) return;
     void acquireScreenWakeLock();
     a.play().then(() => setPlaying(true)).catch(() => {});
@@ -114,7 +129,7 @@ export function AudioPlayer({
       <audio ref={audioRef} src={src} preload="auto" loop={loop} />
       {error ? (
         <p className="audio-player__error" role="status">
-          Audio unavailable
+          {t('session.offlineFallback')}
         </p>
       ) : (
         <>

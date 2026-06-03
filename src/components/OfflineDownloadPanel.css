@@ -1,0 +1,47 @@
+.offline-download {
+  margin: 0 0 var(--space-md);
+  padding: var(--space-md);
+}
+
+.offline-download__title {
+  margin: 0 0 var(--space-xs);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.offline-download__text {
+  margin: 0 0 var(--space-sm);
+  font-size: 0.875rem;
+}
+
+.offline-download__progress {
+  position: relative;
+  height: 6px;
+  margin: 0 0 var(--space-sm);
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--color-ink) 12%, transparent);
+  overflow: hidden;
+}
+
+.offline-download__bar {
+  height: 100%;
+  background: var(--color-accent);
+  transition: width 0.2s ease;
+}
+
+.offline-download__pct {
+  display: block;
+  margin-top: var(--space-xs);
+  font-size: 0.75rem;
+  color: var(--color-muted);
+}
+
+.offline-download__btn {
+  width: 100%;
+}
+
+.offline-download__failed {
+  margin: var(--space-sm) 0 0;
+  font-size: 0.8125rem;
+  color: var(--color-error);
+}

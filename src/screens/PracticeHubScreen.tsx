@@ -13,7 +13,8 @@ import { PracticeTabs } from '@/components/PracticeTabs';
 import { PracticeTools } from '@/components/PracticeTools';
 import { RecentContinueCard } from '@/components/RecentContinueCard';
 import { useT } from '@/i18n';
-import { useOnline } from '@/hooks/useOnline';
+import { OfflineDownloadPanel } from '@/components/OfflineDownloadPanel';
+import { useOfflineCatalog } from '@/hooks/useOfflineCatalog';
 import { acquireScreenWakeLock } from '@/hooks/useWakeLock';
 import { useSessionStore } from '@/store/sessionStore';
 import { useCustomTrackStore } from '@/store/customTrackStore';
@@ -44,7 +45,6 @@ export function PracticeHubScreen() {
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   const t = useT();
-  const online = useOnline();
   const tab = useMemo(() => parseTab(params.get('tab')), [params]);
 
   const setMode = useSessionStore((s) => s.setMode);
@@ -60,6 +60,14 @@ export function PracticeHubScreen() {
   const clearLastCustomPracticeIf = useRecentPracticeStore((s) => s.clearLastCustomPracticeIf);
   const removeCustomPractice = useCustomPracticeStore((s) => s.removePractice);
   const customPractices = useCustomPracticeStore((s) => s.practices);
+  const {
+    online,
+    refresh: refreshOffline,
+    isMeditationAvailable,
+    isSadhanaAvailable,
+    isCustomPracticeAvailable,
+  } = useOfflineCatalog(customPractices);
+  const offlineLabel = t('offline.notCached');
   const pageTextures = usePageTextures(PRACTICE_HUB_TEXTURE_POOLS);
   const [builderOpen, setBuilderOpen] = useState(false);
   const [builderEditId, setBuilderEditId] = useState<string | null>(null);
@@ -108,7 +116,10 @@ export function PracticeHubScreen() {
   const audio = meditations.filter((m) => m.type === 'audio');
   const video = meditations.filter((m) => m.type === 'video');
   const visible = (list: Meditation[]) =>
-    online ? list : list.filter((m) => m.isOfflinePrecached);
+    online ? list : list.filter((m) => m.isOfflinePrecached && isMeditationAvailable(m.id));
+
+  const visibleSadhanas = (list: SadhanaPractice[]) =>
+    online ? list : list.filter((p) => isSadhanaAvailable(p.id));
 
   const visibleAudio = visible(audio);
   const visibleVideo = visible(video);
@@ -116,7 +127,7 @@ export function PracticeHubScreen() {
   const videoSplit = splitRecent(visibleVideo, lastMeditationId);
   const recentMeditation =
     audioSplit.recent ?? (videoSplit.recent?.id === lastMeditationId ? videoSplit.recent : null);
-  const sadhanaSplit = splitRecent(sadhanas, lastSadhanaId);
+  const sadhanaSplit = splitRecent(visibleSadhanas(sadhanas), lastSadhanaId);
   const savedCustomPractices = useMemo(
     () => listSavedCustomPractices(customPractices),
     [customPractices],
@@ -134,6 +145,7 @@ export function PracticeHubScreen() {
     : undefined;
 
   const startGuided = (id: string) => {
+    if (!isMeditationAvailable(id)) return;
     const m = meditations.find((x) => x.id === id);
     if (!m) return;
     setLastMeditation(id);
@@ -144,6 +156,7 @@ export function PracticeHubScreen() {
   };
 
   const startSadhana = (id: string) => {
+    if (!isSadhanaAvailable(id)) return;
     const practice = sadhanas.find((x) => x.id === id);
     if (!practice) return;
     setLastSadhana(id);
@@ -164,6 +177,7 @@ export function PracticeHubScreen() {
   };
 
   const startCustomPractice = (id: string) => {
+    if (!isCustomPracticeAvailable(id)) return;
     const practice = customPractices.find((p) => p.id === id);
     if (!practice || practice.steps.length === 0) return;
     setLastCustomPractice(id);
@@ -185,13 +199,15 @@ export function PracticeHubScreen() {
           </p>
         )}
 
+        <OfflineDownloadPanel onCached={() => void refreshOffline()} />
+
         <PracticeTabs
           active={tab}
           onChange={setTab}
           labels={{ meditations: t('hub.meditations'), sadhana: t('hub.sadhana') }}
         />
 
-        {tab === 'meditations' && recentMeditation && (
+        {tab === 'meditations' && recentMeditation && isMeditationAvailable(recentMeditation.id) && (
           <RecentContinueCard
             label={t('hub.recent')}
             title={recentMeditation.title}
@@ -201,7 +217,11 @@ export function PracticeHubScreen() {
           />
         )}
 
-        {tab === 'sadhana' && (sadhanaRecentCustom || sadhanaSplit.recent) && (
+        {tab === 'sadhana' &&
+          (sadhanaRecentCustom
+            ? isCustomPracticeAvailable(sadhanaRecentCustom.id)
+            : sadhanaSplit.recent && isSadhanaAvailable(sadhanaSplit.recent.id)) &&
+          (sadhanaRecentCustom || sadhanaSplit.recent) && (
           <RecentContinueCard
             label={t('hub.recent')}
             title={sadhanaRecentCustom?.title ?? sadhanaSplit.recent!.title}
@@ -244,6 +264,8 @@ export function PracticeHubScreen() {
                     meditation={m}
                     onSelect={startGuided}
                     textureUrl={pageTextures['meditation-card']}
+                    offlineUnavailable={!online && !isMeditationAvailable(m.id)}
+                    offlineLabel={offlineLabel}
                   />
                 ))}
               </section>
@@ -259,6 +281,8 @@ export function PracticeHubScreen() {
                     meditation={m}
                     onSelect={startGuided}
                     textureUrl={pageTextures['meditation-card']}
+                    offlineUnavailable={!online && !isMeditationAvailable(m.id)}
+                    offlineLabel={offlineLabel}
                   />
                 ))}
               </section>
@@ -270,7 +294,9 @@ export function PracticeHubScreen() {
               <SectionTitle textureUrl={pageTextures['section-header']}>
                 {t('hub.sadhanaSection')}
               </SectionTitle>
-              <p className="text-muted practice-hub__hint">{t('hub.sadhanaHint')}</p>
+              <p className="text-muted practice-hub__hint">
+                {!online ? t('picker.sadhanaOfflineHint') : t('hub.sadhanaHint')}
+              </p>
               {customSadhanaCards.map((practice) => (
                 <SadhanaCard
                   key={practice.id}
@@ -281,6 +307,8 @@ export function PracticeHubScreen() {
                   textureUrl={pageTextures['sadhana-card']}
                   blocks={sadhanaBlocks}
                   badgeLabel={t('customPractice.badge')}
+                  offlineUnavailable={!online && !isCustomPracticeAvailable(practice.id)}
+                  offlineLabel={offlineLabel}
                 />
               ))}
               {sadhanaSplit.rest.map((practice) => (
@@ -290,6 +318,8 @@ export function PracticeHubScreen() {
                   onSelect={startSadhana}
                   textureUrl={pageTextures['sadhana-card']}
                   blocks={sadhanaBlocks}
+                  offlineUnavailable={!online && !isSadhanaAvailable(practice.id)}
+                  offlineLabel={offlineLabel}
                 />
               ))}
             </section>

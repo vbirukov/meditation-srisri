@@ -19,6 +19,8 @@ interface SadhanaCardProps {
   textureUrl?: string;
   blocks?: readonly SadhanaBlock[];
   badgeLabel?: string;
+  offlineUnavailable?: boolean;
+  offlineLabel?: string;
 }
 
 export function SadhanaCard({
@@ -30,6 +32,8 @@ export function SadhanaCard({
   textureUrl,
   blocks = [],
   badgeLabel,
+  offlineUnavailable = false,
+  offlineLabel,
 }: SadhanaCardProps) {
   const t = useT();
   const swipeable = Boolean(onDelete);
@@ -129,7 +133,7 @@ export function SadhanaCard({
 
   const cardClassName = `card sadhana-card${textureUrl ? ' card--has-texture' : ''}${
     onEdit || onDelete ? ' sadhana-card--custom' : ''
-  }`;
+  }${offlineUnavailable ? ' sadhana-card--offline-disabled' : ''}`;
 
   const cardContent = (
     <>
@@ -138,7 +142,10 @@ export function SadhanaCard({
         <button
           type="button"
           className="sadhana-card__body"
+          disabled={offlineUnavailable}
+          aria-disabled={offlineUnavailable}
           onClick={() => {
+            if (offlineUnavailable) return;
             if (swipeOffset < 0) {
               setSwipeOffset(0);
               return;
@@ -150,6 +157,9 @@ export function SadhanaCard({
             <span className="sadhana-card__badges">
               {badgeLabel && <span className="badge badge--secondary">{badgeLabel}</span>}
               <span className="badge badge--secondary">{phasesBadge}</span>
+              {offlineUnavailable && offlineLabel && (
+                <span className="badge badge--secondary">{offlineLabel}</span>
+              )}
             </span>
             <h3 className="sadhana-card__title">{practice.title}</h3>
             {practice.description && (

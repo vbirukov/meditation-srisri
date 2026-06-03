@@ -32,6 +32,8 @@ npm run dev
 
 Садханы (многоэтапные таймеры) — `src/data/sadhana.json`.
 
+Офлайн-прекеш (аудио из `isOfflinePrecached` + блоки садханы): `npm run offline:manifest` → `src/data/offline-manifest.json` (запускается автоматически в `dev`/`build`).
+
 Сгенерировать тихие WAV-заглушки: `npm run generate-media`.
 
 ## Стек

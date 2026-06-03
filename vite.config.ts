@@ -1,7 +1,31 @@
+import fs from 'fs';
+import path from 'path';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
-import path from 'path';
+
+function loadOfflineManifest(): { precacheUrls: string[]; videoUrls: string[] } {
+  const manifestPath = path.resolve(__dirname, 'src/data/offline-manifest.json');
+  if (!fs.existsSync(manifestPath)) {
+    return { precacheUrls: [], videoUrls: [] };
+  }
+  const raw = JSON.parse(fs.readFileSync(manifestPath, 'utf8')) as {
+    precacheUrls?: string[];
+    videoUrls?: string[];
+  };
+  return {
+    precacheUrls: raw.precacheUrls ?? [],
+    videoUrls: raw.videoUrls ?? [],
+  };
+}
+
+const offlineManifest = loadOfflineManifest();
+const precacheAudioPattern = new RegExp(
+  `^/media/audio/(?:${offlineManifest.precacheUrls
+    .map((u) => u.replace(/^\/media\/audio\//, '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+    .join('|')})$`,
+  'i',
+);
 
 export default defineConfig({
   plugins: [
@@ -50,6 +74,10 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,svg,json,woff2}'],
+        additionalManifestEntries: offlineManifest.precacheUrls.map((url) => ({
+          url,
+          revision: null,
+        })),
         runtimeCaching: [
           {
             urlPattern: /^\/media\/.+\.(?:png|jpe?g|webp|gif|svg)$/i,
@@ -59,12 +87,35 @@ export default defineConfig({
               expiration: { maxEntries: 128, maxAgeSeconds: 60 * 60 * 24 * 30 },
             },
           },
+          ...(offlineManifest.precacheUrls.length > 0
+            ? [
+                {
+                  urlPattern: precacheAudioPattern,
+                  handler: 'CacheFirst' as const,
+                  options: {
+                    cacheName: 'meditate-precache-audio',
+                    expiration: {
+                      maxEntries: 64,
+                      maxAgeSeconds: 60 * 60 * 24 * 365,
+                    },
+                  },
+                },
+              ]
+            : []),
           {
             urlPattern: /^\/media\/.+\.(?:mp3|m4a|ogg|wav)$/i,
             handler: 'StaleWhileRevalidate',
             options: {
               cacheName: 'media-audio-cache',
-              expiration: { maxEntries: 32, maxAgeSeconds: 60 * 60 * 24 * 30 },
+              expiration: { maxEntries: 48, maxAgeSeconds: 60 * 60 * 24 * 30 },
+            },
+          },
+          {
+            urlPattern: /^\/media\/video\/.+\.(?:mp4|webm)$/i,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'media-video-cache',
+              expiration: { maxEntries: 12, maxAgeSeconds: 60 * 60 * 24 * 30 },
             },
           },
         ],

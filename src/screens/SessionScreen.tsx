@@ -33,8 +33,11 @@ export function SessionScreen() {
   const [params] = useSearchParams();
   const t = useT();
   const [focusMode, setFocusMode] = useState(false);
-  const [timerRunning, setTimerRunning] = useState(false);
+  const [timerRunning, setTimerRunning] = useState(
+    () => useSessionStore.getState().timerRunning ?? false,
+  );
   const [showExit, setShowExit] = useState(false);
+  const [sessionRestored, setSessionRestored] = useState(false);
 
   const mode = useSessionStore((s) => s.mode);
   const meditationId = useSessionStore((s) => s.meditationId);
@@ -46,6 +49,15 @@ export function SessionScreen() {
   const tick = useSessionStore((s) => s.tick);
   const complete = useSessionStore((s) => s.complete);
   const start = useSessionStore((s) => s.start);
+  const isCompleted = useSessionStore((s) => s.isCompleted);
+  const sadhanaPhaseIndex = useSessionStore((s) => s.sadhanaPhaseIndex) ?? 0;
+  const sadhanaPhaseProgress = useSessionStore((s) => s.sadhanaPhaseProgress) ?? 0;
+  const storedTimerRunning = useSessionStore((s) => s.timerRunning) ?? false;
+  const guidedAudioSeconds = useSessionStore((s) => s.guidedAudioSeconds) ?? 0;
+  const setTimerRunningStore = useSessionStore((s) => s.setTimerRunning);
+  const setSadhanaPhaseState = useSessionStore((s) => s.setSadhanaPhaseState);
+  const setGuidedAudioSeconds = useSessionStore((s) => s.setGuidedAudioSeconds);
+  const resetSession = useSessionStore((s) => s.reset);
 
   const customTrack = useCustomTrackStore((s) => s.track);
   const customPractices = useCustomPracticeStore((s) => s.practices);
@@ -112,10 +124,51 @@ export function SessionScreen() {
     (running: boolean) => {
       if (running) void acquireScreenWakeLock();
       setTimerRunning(running);
+      setTimerRunningStore(running);
       if (running) start();
     },
-    [start],
+    [setTimerRunningStore, start],
   );
+
+  const onSadhanaPhaseStateChange = useCallback(
+    (state: { phaseIndex: number; phaseProgress: number; running: boolean }) => {
+      setSadhanaPhaseState(state.phaseIndex, state.phaseProgress);
+      setTimerRunningStore(state.running);
+    },
+    [setSadhanaPhaseState, setTimerRunningStore],
+  );
+
+  useEffect(() => {
+    if (isCompleted) {
+      navigate('/end', { replace: true });
+      return;
+    }
+    const hasSadhanaProgress =
+      sadhanaPhaseIndex > 0 || sadhanaPhaseProgress > 0 || storedTimerRunning;
+    if (
+      params.get('setup') === '1' &&
+      (mode === 'sadhana' || mode === 'custom-practice') &&
+      hasSadhanaProgress
+    ) {
+      const next = new URLSearchParams(params);
+      next.delete('setup');
+      navigate(`/session?${next.toString()}`, { replace: true });
+      return;
+    }
+    if (!sessionRestored && storedTimerRunning) {
+      setTimerRunning(true);
+    }
+    setSessionRestored(true);
+  }, [
+    isCompleted,
+    mode,
+    navigate,
+    params,
+    sadhanaPhaseIndex,
+    sadhanaPhaseProgress,
+    sessionRestored,
+    storedTimerRunning,
+  ]);
 
   useEffect(() => {
     if (mode === 'custom' && !customTrack) {
@@ -157,6 +210,14 @@ export function SessionScreen() {
     targetDurationSeconds,
   ]);
 
+  const handleGuidedProgress = useCallback(
+    (seconds: number) => {
+      tick(seconds);
+      setGuidedAudioSeconds(seconds);
+    },
+    [setGuidedAudioSeconds, tick],
+  );
+
   const handleBack = () => {
     if (timerRunning || progressSeconds > 0) {
       setShowExit(true);
@@ -165,7 +226,10 @@ export function SessionScreen() {
     navigate(practicePath);
   };
 
-  const confirmExit = () => navigate(practicePath);
+  const confirmExit = () => {
+    resetSession();
+    navigate(practicePath);
+  };
 
   const toggleFocus = () => setFocusMode((f) => !f);
 
@@ -233,7 +297,8 @@ export function SessionScreen() {
           <AudioPlayer
             src={meditation.mediaUrl}
             durationSeconds={meditation.durationSeconds}
-            onProgress={tick}
+            initialTime={guidedAudioSeconds}
+            onProgress={handleGuidedProgress}
             onComplete={handleComplete}
             hidden={focusMode}
             textureUrl={panelTexture}
@@ -263,6 +328,10 @@ export function SessionScreen() {
               running={timerRunning}
               onRunningChange={onTimerRunningChange}
               setupMode={setup}
+              initialPhaseIndex={sadhanaPhaseIndex}
+              initialPhaseProgress={sadhanaPhaseProgress}
+              initialRunning={storedTimerRunning}
+              onPhaseStateChange={onSadhanaPhaseStateChange}
               debugMode={debugMode}
               onDebugModeChange={setDebugMode}
               onTotalDurationChange={(totalSeconds) => setTargetDuration(totalSeconds)}
@@ -277,6 +346,10 @@ export function SessionScreen() {
             running={timerRunning}
             onRunningChange={onTimerRunningChange}
             setupMode={setup}
+            initialPhaseIndex={sadhanaPhaseIndex}
+            initialPhaseProgress={sadhanaPhaseProgress}
+            initialRunning={storedTimerRunning}
+            onPhaseStateChange={onSadhanaPhaseStateChange}
             debugMode={debugMode}
             onDebugModeChange={setDebugMode}
             onTotalDurationChange={(totalSeconds) => setTargetDuration(totalSeconds)}

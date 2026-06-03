@@ -48,6 +48,14 @@
   margin-bottom: 0;
 }
 
+.sadhana-card--offline-disabled {
+  opacity: 0.55;
+}
+
+.sadhana-card--offline-disabled .sadhana-card__body {
+  cursor: not-allowed;
+}
+
 .sadhana-card__body {
   display: flex;
   flex: 1;

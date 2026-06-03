@@ -8,10 +8,11 @@
   "type": "module",
   "scripts": {
     "media:manifest": "node scripts/generate-media-manifest.mjs",
+    "offline:manifest": "node scripts/generate-offline-manifest.mjs",
     "pwa:icons": "node scripts/generate-pwa-icons.mjs",
     "posters:manifest": "npm run media:manifest",
-    "dev": "npm run media:manifest && vite",
-    "build": "npm run media:manifest && npm run pwa:icons && tsc --noEmit && vite build",
+    "dev": "npm run media:manifest && npm run offline:manifest && vite",
+    "build": "npm run media:manifest && npm run offline:manifest && npm run pwa:icons && tsc --noEmit && vite build",
     "generate-media": "node scripts/generate-media.mjs",
     "preview": "vite preview",
     "start": "npm run build && npm run preview"

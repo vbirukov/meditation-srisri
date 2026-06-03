@@ -104,6 +104,27 @@ export function formatPhaseDuration(seconds: number): string {
   return m > 0 ? `${h} ч ${m} мин` : `${h} ч`;
 }
 
+export function collectPhaseMediaUrls(
+  phases: ReadonlyArray<
+    Pick<SadhanaPhase, 'audioUrl' | 'startingAudioUrl' | 'finishingAudioUrl'>
+  >,
+): string[] {
+  const urls: string[] = [];
+  for (const p of phases) {
+    if (p.audioUrl) urls.push(p.audioUrl);
+    if (p.startingAudioUrl) urls.push(p.startingAudioUrl);
+    if (p.finishingAudioUrl) urls.push(p.finishingAudioUrl);
+  }
+  return [...new Set(urls)];
+}
+
+export function sadhanaPracticeMediaUrls(
+  practice: SadhanaPractice,
+  blocks: readonly SadhanaBlock[] = [],
+): string[] {
+  return collectPhaseMediaUrls(resolveSadhanaPhases(practice, blocks));
+}
+
 export function phaseListSummary(phases: SadhanaPhase[]): string {
   return phases
     .map((p) => {

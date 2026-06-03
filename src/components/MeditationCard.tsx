@@ -8,22 +8,37 @@ interface MeditationCardProps {
   meditation: Meditation;
   onSelect: (id: string) => void;
   textureUrl?: string;
+  offlineUnavailable?: boolean;
+  offlineLabel?: string;
 }
 
-export function MeditationCard({ meditation, onSelect, textureUrl }: MeditationCardProps) {
+export function MeditationCard({
+  meditation,
+  onSelect,
+  textureUrl,
+  offlineUnavailable = false,
+  offlineLabel,
+}: MeditationCardProps) {
   const minutes = Math.round(meditation.durationSeconds / 60);
 
   return (
     <button
       type="button"
-      className={`card card--interactive meditation-card${textureUrl ? ' card--has-texture' : ''}`}
+      className={`card card--interactive meditation-card${textureUrl ? ' card--has-texture' : ''}${offlineUnavailable ? ' meditation-card--offline-disabled' : ''}`}
       onClick={() => onSelect(meditation.id)}
+      disabled={offlineUnavailable}
+      aria-disabled={offlineUnavailable}
     >
       {textureUrl && <CardCornerTexture url={textureUrl} />}
       <div className="meditation-card__row">
         <div className="meditation-card__main">
-          <span className={`badge meditation-card__type meditation-card__type--${meditation.type}`}>
-            {meditation.type}
+          <span className="meditation-card__badges">
+            <span className={`badge meditation-card__type meditation-card__type--${meditation.type}`}>
+              {meditation.type}
+            </span>
+            {offlineUnavailable && offlineLabel && (
+              <span className="badge badge--secondary">{offlineLabel}</span>
+            )}
           </span>
           <h3 className="meditation-card__title">{meditation.title}</h3>
           {meditation.description && (

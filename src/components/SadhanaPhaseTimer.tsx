@@ -23,6 +23,14 @@ interface SadhanaPhaseTimerProps {
   running: boolean;
   onRunningChange: (running: boolean) => void;
   setupMode?: boolean;
+  initialPhaseIndex?: number;
+  initialPhaseProgress?: number;
+  initialRunning?: boolean;
+  onPhaseStateChange?: (state: {
+    phaseIndex: number;
+    phaseProgress: number;
+    running: boolean;
+  }) => void;
   debugMode?: boolean;
   onDebugModeChange?: (enabled: boolean) => void;
   onTotalDurationChange?: (totalSeconds: number) => void;
@@ -83,13 +91,17 @@ export function SadhanaPhaseTimer({
   running,
   onRunningChange,
   setupMode = false,
+  initialPhaseIndex = 0,
+  initialPhaseProgress = 0,
+  initialRunning = false,
+  onPhaseStateChange,
   debugMode = false,
   onDebugModeChange,
   onTotalDurationChange,
   labels,
 }: SadhanaPhaseTimerProps) {
-  const [phaseIndex, setPhaseIndex] = useState(0);
-  const [progress, setProgress] = useState(0);
+  const [phaseIndex, setPhaseIndex] = useState(initialPhaseIndex);
+  const [progress, setProgress] = useState(initialPhaseProgress);
   const startedAtRef = useRef<number | null>(null);
   const pausedAtRef = useRef<number | null>(null);
   const pausedProgressRef = useRef(0);
@@ -100,6 +112,26 @@ export function SadhanaPhaseTimer({
   const [audioDurations, setAudioDurations] = useState<Record<string, number>>({});
   const [phaseOverlay, setPhaseOverlay] = useState<'starting' | 'finishing' | null>(null);
   const phaseRunIdRef = useRef(0);
+  const restoredRef = useRef(false);
+
+  useEffect(() => {
+    if (restoredRef.current || setupMode) return;
+    if (initialPhaseIndex <= 0 && initialPhaseProgress <= 0) return;
+    restoredRef.current = true;
+    pausedProgressRef.current = initialPhaseProgress;
+    if (initialRunning && initialPhaseProgress > 0) {
+      startedAtRef.current = Date.now() - initialPhaseProgress * 1000;
+      pausedAtRef.current = null;
+    } else if (initialPhaseProgress > 0) {
+      pausedAtRef.current = Date.now();
+      startedAtRef.current = null;
+    }
+  }, [initialPhaseIndex, initialPhaseProgress, initialRunning, setupMode]);
+
+  useEffect(() => {
+    if (setupMode || !onPhaseStateChange) return;
+    onPhaseStateChange({ phaseIndex, phaseProgress: progress, running });
+  }, [phaseIndex, progress, running, setupMode, onPhaseStateChange]);
 
   const overlayActive = phaseOverlay !== null;
 

@@ -8,7 +8,9 @@
 
 .timer-setup.glass-panel,
 .timer-ring-wrap.glass-panel {
-  padding: var(--space-5);
+  padding: var(--space-6) var(--space-5);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-elevated), var(--shadow-inset-highlight);
 }
 
 .timer-presets {
@@ -26,13 +28,28 @@
   border: 1px solid var(--color-border-subtle);
   font-weight: 500;
   font-size: var(--font-size-sm);
-  transition: background var(--transition-fast);
+  font-variant-numeric: tabular-nums;
+  box-shadow: var(--shadow-inset-highlight);
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.timer-preset:hover:not(.timer-preset--active) {
+  border-color: var(--color-border-strong);
+}
+
+.timer-preset:active {
+  transform: scale(0.97);
 }
 
 .timer-preset--active {
   background: var(--color-primary);
   color: var(--color-text-on-accent);
   border-color: transparent;
+  box-shadow: var(--shadow-glow-sun), var(--shadow-inset-highlight);
 }
 
 .timer-custom {
@@ -45,11 +62,20 @@
 
 .timer-custom input {
   min-height: var(--btn-height-md);
-  padding: 0 var(--space-3);
-  border-radius: var(--radius-sm);
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-md);
   border: 1px solid var(--color-border-subtle);
   font: inherit;
+  font-variant-numeric: tabular-nums;
   background: var(--color-surface-alt);
+  box-shadow: var(--shadow-inset-highlight);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.timer-custom input:focus {
+  outline: none;
+  border-color: color-mix(in srgb, var(--color-secondary) 40%, var(--color-border-subtle));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary-soft) 80%, transparent);
 }
 
 .timer-start-btn {

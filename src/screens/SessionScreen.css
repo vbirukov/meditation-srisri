@@ -51,9 +51,9 @@
   width: 100%;
   max-width: 28rem;
   text-align: center;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-xl);
   border: 1px solid color-mix(in srgb, var(--color-secondary) 22%, var(--glass-border));
-  box-shadow: var(--shadow-elevated);
+  box-shadow: var(--shadow-elevated), var(--shadow-inset-highlight);
 }
 
 .session-screen__chrome:not(.textured-surface) {
@@ -141,6 +141,8 @@
   max-width: 320px;
   width: 100%;
   text-align: center;
+  border-radius: var(--radius-xl);
+  animation: fadeIn 0.28s var(--ease-out) backwards;
 }
 
 .session-dialog__actions {

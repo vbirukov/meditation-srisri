@@ -24,7 +24,7 @@ function pickOne(item: string | string[] | undefined): string | undefined {
 
 const pickMp4 = pickOne;
 
-type OverlayVariant = 'dark' | 'soft' | 'welcome';
+type OverlayVariant = 'dark' | 'soft' | 'welcome' | 'session';
 
 interface VideoBackgroundProps {
   scene: VideoScene;

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-03T22:34:24.575Z",
+  "generatedAt": "2026-06-04T10:00:07.041Z",
   "precacheUrls": [
     "/media/audio/smile.mp3",
     "/media/audio/om.mp3",
@@ -36,7 +36,21 @@
         "/media/audio/sudarshan-kriya.mp3",
         "/media/audio/bell.mp3",
         "/media/audio/sahaj.mp3",
+        "/media/audio/lie-down.mp3",
         "/media/audio/samaveda-short.mp3",
+        "/media/audio/nadi-shodhan.mp3",
+        "/media/audio/we-finished.mp3"
+      ],
+      "offlineReady": true
+    },
+    {
+      "id": "sanyam-short",
+      "urls": [
+        "/media/audio/lets-start.mp3",
+        "/media/audio/smile-on-your-face.mp3",
+        "/media/audio/bogar-pranayam.mp3",
+        "/media/audio/bell.mp3",
+        "/media/audio/sahaj.mp3",
         "/media/audio/lie-down.mp3",
         "/media/audio/nadi-shodhan.mp3",
         "/media/audio/we-finished.mp3"
@@ -67,6 +81,7 @@
         "/media/audio/bogar-pranayam.mp3",
         "/media/audio/sahaj.mp3",
         "/media/audio/lie-down.mp3",
+        "/media/audio/samaveda.mp3",
         "/media/audio/nadi-shodhan.mp3",
         "/media/audio/we-finished.mp3"
       ],
@@ -75,6 +90,7 @@
   ],
   "offlineReadyPracticeIds": [
     "morning-short",
+    "sanyam-short",
     "sanyam-short",
     "sanyam-full"
   ]

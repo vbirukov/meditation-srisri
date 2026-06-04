@@ -1,39 +1,47 @@
 .offline-download {
-  margin: 0 0 var(--space-md);
-  padding: var(--space-md);
+  margin: 0 0 var(--space-5);
+  padding: var(--space-4) var(--space-5);
 }
 
 .offline-download__title {
-  margin: 0 0 var(--space-xs);
-  font-size: 1rem;
-  font-weight: 600;
+  margin: 0 0 var(--space-1);
+  font-family: var(--font-display);
+  font-size: var(--font-size-lg);
+  font-weight: 400;
+  line-height: 1.2;
 }
 
 .offline-download__text {
-  margin: 0 0 var(--space-sm);
-  font-size: 0.875rem;
+  margin: 0 0 var(--space-3);
 }
 
 .offline-download__progress {
   position: relative;
-  height: 6px;
-  margin: 0 0 var(--space-sm);
-  border-radius: 3px;
-  background: color-mix(in srgb, var(--color-ink) 12%, transparent);
+  height: 8px;
+  margin: 0 0 var(--space-3);
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--color-text) 8%, var(--color-surface));
   overflow: hidden;
 }
 
 .offline-download__bar {
   height: 100%;
-  background: var(--color-accent);
-  transition: width 0.2s ease;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    var(--color-primary) 0%,
+    var(--color-primary-hover) 100%
+  );
+  transition: width var(--transition-base);
 }
 
 .offline-download__pct {
   display: block;
-  margin-top: var(--space-xs);
-  font-size: 0.75rem;
-  color: var(--color-muted);
+  margin-top: var(--space-2);
+  font-size: var(--font-size-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+  text-align: right;
 }
 
 .offline-download__btn {
@@ -41,7 +49,7 @@
 }
 
 .offline-download__failed {
-  margin: var(--space-sm) 0 0;
-  font-size: 0.8125rem;
+  margin: var(--space-3) 0 0;
+  font-size: var(--font-size-sm);
   color: var(--color-error);
 }

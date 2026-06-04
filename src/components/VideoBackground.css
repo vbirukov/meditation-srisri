@@ -18,43 +18,72 @@
 .video-bg__poster {
   background-size: cover;
   background-position: center;
-  filter: blur(var(--blur, 0px));
-  transform: scale(1.05);
+  filter: blur(var(--blur, 0px)) saturate(0.92);
+  transform: scale(1.06);
 }
 
 .video-bg__video {
-  filter: blur(var(--blur, 0px));
+  filter: blur(var(--blur, 0px)) saturate(0.92);
+  transform: scale(1.02);
 }
 
 .video-bg__overlay {
   position: absolute;
   inset: 0;
-  background: radial-gradient(
-    circle at center,
-    rgba(0, 0, 0, calc(var(--overlay) * 0.55)),
-    rgba(0, 0, 0, var(--overlay))
-  );
+  background:
+    radial-gradient(
+      ellipse 120% 80% at 50% 100%,
+      rgba(42, 48, 42, calc(var(--overlay) * 0.35)) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      circle at center,
+      rgba(42, 48, 42, calc(var(--overlay) * 0.45)),
+      rgba(42, 48, 42, var(--overlay))
+    );
 }
 
 .video-bg--soft .video-bg__overlay {
-  background: radial-gradient(
-    circle at center,
-    rgba(249, 246, 238, calc(0.55 + var(--overlay) * 0.2)),
-    rgba(242, 229, 207, calc(0.85 + var(--overlay) * 0.1))
-  );
+  background:
+    radial-gradient(
+      ellipse 100% 70% at 50% 0%,
+      rgba(255, 246, 220, calc(0.35 + var(--overlay) * 0.15)) 0%,
+      transparent 50%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(249, 246, 238, calc(0.72 + var(--overlay) * 0.12)) 0%,
+      rgba(242, 229, 207, calc(0.88 + var(--overlay) * 0.08)) 45%,
+      rgba(249, 246, 238, calc(0.94 + var(--overlay) * 0.04)) 100%
+    );
 }
 
 .video-bg--welcome .video-bg__overlay {
   background:
+    radial-gradient(
+      ellipse 90% 60% at 20% 15%,
+      rgba(255, 225, 90, 0.28) 0%,
+      transparent 55%
+    ),
     linear-gradient(
       165deg,
-      rgba(255, 225, 90, 0.35) 0%,
-      rgba(198, 116, 74, 0.45) 55%,
-      rgba(0, 0, 0, var(--overlay)) 100%
-    ),
+      rgba(255, 225, 90, 0.22) 0%,
+      rgba(198, 116, 74, 0.38) 48%,
+      rgba(42, 48, 42, var(--overlay)) 100%
+    );
+}
+
+.video-bg--session .video-bg__overlay {
+  background:
     radial-gradient(
-      circle at 30% 20%,
-      rgba(0, 0, 0, calc(var(--overlay) * 0.35)),
-      rgba(0, 0, 0, var(--overlay)) 70%
+      ellipse 80% 55% at 50% 85%,
+      rgba(95, 140, 87, calc(var(--overlay) * 0.12)) 0%,
+      transparent 50%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(249, 246, 238, calc(0.5 + var(--overlay) * 0.2)) 0%,
+      rgba(249, 246, 238, calc(0.78 + var(--overlay) * 0.12)) 38%,
+      rgba(42, 48, 42, calc(var(--overlay) * 0.55)) 100%
     );
 }

@@ -1,6 +1,6 @@
 .section-title--banner {
-  margin-top: var(--space-6);
-  margin-bottom: var(--space-3);
+  margin-top: var(--space-8);
+  margin-bottom: var(--space-4);
   padding: 0;
   border: none;
 }
@@ -10,15 +10,22 @@
 }
 
 .section-title.textured-surface {
-  min-height: 52px;
+  min-height: 56px;
   display: flex;
   align-items: center;
+  border-radius: var(--radius-lg);
   border: 1px solid var(--color-border-subtle);
-  box-shadow: var(--shadow-soft);
+  box-shadow: var(--shadow-soft), var(--shadow-inset-highlight);
+  overflow: hidden;
 }
 
 .section-title__label {
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-3) var(--space-5);
   width: 100%;
-  max-width: 62%;
+  max-width: 58%;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-secondary);
 }

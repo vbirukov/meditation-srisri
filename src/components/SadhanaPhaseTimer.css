@@ -1,10 +1,12 @@
 .sadhana-timer-setup {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--space-4);
   width: 100%;
   max-width: 360px;
-  padding: var(--space-5);
+  padding: var(--space-6) var(--space-5);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-elevated), var(--shadow-inset-highlight);
 }
 
 .sadhana-timer-setup__list {
@@ -46,17 +48,20 @@
 }
 
 .sadhana-timer-active__phase-meta {
-  margin: 0 0 var(--space-1);
-  font-size: var(--font-size-xs);
+  margin: 0 0 var(--space-2);
+  font-size: 10px;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.12em;
+  font-weight: 600;
   color: var(--color-secondary);
 }
 
 .sadhana-timer-active__phase-name {
-  margin: 0 0 var(--space-3);
+  margin: 0 0 var(--space-4);
   font-size: var(--font-size-lg);
   font-weight: 600;
+  line-height: 1.25;
+  text-wrap: balance;
 }
 
 .sadhana-timer-active__phase-nav {
@@ -67,10 +72,16 @@
 }
 
 .sadhana-timer-active__phase-nav-btn {
-  min-height: 2.5rem;
-  padding-inline: var(--space-2);
+  min-height: 2.75rem;
+  padding-inline: var(--space-3);
   font-size: var(--font-size-xs);
   font-weight: 600;
+  border-radius: var(--radius-pill);
+  transition: transform var(--transition-fast), opacity var(--transition-fast);
+}
+
+.sadhana-timer-active__phase-nav-btn:not(:disabled):active {
+  transform: scale(0.97);
 }
 
 .sadhana-timer-active__phase-nav-btn:disabled {
@@ -89,21 +100,29 @@
 
 .sadhana-timer-active__steps li {
   font-size: var(--font-size-xs);
-  padding: var(--space-1) var(--space-2);
+  padding: var(--space-1) var(--space-3);
   border-radius: var(--radius-pill);
   background: var(--color-surface-muted);
   color: var(--color-text-faint);
+  border: 1px solid transparent;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast),
+    border-color var(--transition-fast);
 }
 
 .sadhana-timer-active__step--current {
   background: var(--color-primary-soft);
   color: var(--color-text);
   font-weight: 600;
+  border-color: color-mix(in srgb, var(--color-primary) 40%, transparent);
+  box-shadow: var(--shadow-inset-highlight);
 }
 
 .sadhana-timer-active__step--done {
   background: var(--color-green-soft);
   color: var(--color-green);
+  border-color: color-mix(in srgb, var(--color-green) 25%, transparent);
 }
 
 .sadhana-debug-banner {

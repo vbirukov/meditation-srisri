@@ -17,18 +17,22 @@
 }
 
 .splash-screen__logo {
-  font-size: 4rem;
-  margin-bottom: var(--space-5);
+  font-size: 4.5rem;
+  margin-bottom: var(--space-6);
   color: var(--color-secondary);
-  filter: drop-shadow(0 4px 16px rgba(198, 116, 74, 0.25));
+  filter: drop-shadow(0 6px 20px rgba(198, 116, 74, 0.28));
+  animation: fadeIn 0.8s var(--ease-out) backwards;
 }
 
-.splash-screen__title {
+.splash-screen .splash-screen__title {
   max-width: 16ch;
-  margin-bottom: var(--space-2);
+  margin-bottom: var(--space-3);
+  letter-spacing: -0.02em;
+  animation: fadeIn 0.8s var(--ease-out) 0.1s backwards;
 }
 
 .splash-screen__tagline {
   font-size: var(--font-size-sm);
   color: var(--color-text-muted);
+  animation: fadeIn 0.8s var(--ease-out) 0.2s backwards;
 }

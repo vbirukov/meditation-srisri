@@ -1,18 +1,18 @@
 .audio-player {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--space-4);
   align-items: center;
   width: 100%;
   max-width: 360px;
-  padding: var(--space-5);
-  border-radius: var(--radius-lg);
+  padding: var(--space-6) var(--space-5);
+  border-radius: var(--radius-xl);
   border: 1px solid color-mix(in srgb, var(--color-secondary) 18%, var(--glass-border));
-  box-shadow: var(--shadow-elevated);
+  box-shadow: var(--shadow-elevated), var(--shadow-inset-highlight);
 }
 
 .audio-player:not(.textured-surface) {
-  background: rgba(249, 246, 238, 0.55);
+  background: rgba(249, 246, 238, 0.58);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 }
@@ -27,36 +27,55 @@
   justify-content: space-between;
   width: 100%;
   font-size: var(--font-size-sm);
+  font-variant-numeric: tabular-nums;
   color: var(--color-text-muted);
 }
 
 .audio-player__controls {
   display: flex;
   align-items: center;
-  gap: var(--space-4);
+  gap: var(--space-5);
 }
 
 .audio-player__play {
-  min-width: 56px;
-  min-height: 56px;
+  min-width: 60px;
+  min-height: 60px;
   border-radius: 50%;
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-lg);
   background: var(--color-primary);
   color: var(--color-text-on-accent);
+  box-shadow:
+    0 0 0 4px color-mix(in srgb, var(--color-primary-soft) 80%, transparent),
+    var(--shadow-glow-sun),
+    var(--shadow-inset-highlight);
+  transition:
+    background var(--transition-fast),
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
 }
 
 .audio-player__play:hover {
   background: var(--color-primary-hover);
+  box-shadow:
+    0 0 0 6px color-mix(in srgb, var(--color-primary-soft) 90%, transparent),
+    var(--shadow-glow-sun),
+    var(--shadow-inset-highlight);
+}
+
+.audio-player__play:active {
+  transform: scale(0.96);
 }
 
 .audio-player__volume {
   width: 100%;
-  max-width: 200px;
+  max-width: 220px;
 }
 
 .audio-player__volume input {
   width: 100%;
+  height: 6px;
   accent-color: var(--color-primary-active);
+  cursor: pointer;
 }
 
 .audio-player__error {

@@ -1,30 +1,45 @@
 .install-prompt {
   position: fixed;
-  inset-inline: var(--space-3);
-  bottom: max(var(--space-3), env(safe-area-inset-bottom));
+  inset-inline: var(--space-4);
+  bottom: max(var(--space-4), var(--safe-bottom));
   z-index: 200;
   pointer-events: none;
+  animation: installSlideUp 0.45s var(--ease-spring) backwards;
+}
+
+@keyframes installSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .install-prompt__body {
   pointer-events: auto;
-  padding: var(--space-4);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border-subtle);
-  background: color-mix(in srgb, var(--color-surface) 94%, transparent);
-  backdrop-filter: blur(12px);
-  box-shadow: var(--shadow-elevated, 0 8px 32px rgb(0 0 0 / 12%));
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: var(--shadow-elevated), var(--shadow-inset-highlight);
 }
 
 .install-prompt__title {
   margin: 0 0 var(--space-1);
-  font-size: var(--font-size-sm);
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-size: var(--font-size-md);
+  font-weight: 400;
+  line-height: 1.2;
 }
 
 .install-prompt__text {
-  margin: 0 0 var(--space-3);
-  font-size: var(--font-size-xs);
+  margin: 0 0 var(--space-4);
+  font-size: var(--font-size-sm);
   color: var(--color-text-muted);
   line-height: 1.45;
 }
@@ -39,4 +54,10 @@
 .install-prompt__actions .btn-secondary {
   flex: 1 1 auto;
   min-width: 7rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .install-prompt {
+    animation: none;
+  }
 }

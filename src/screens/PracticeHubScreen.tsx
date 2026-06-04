@@ -189,7 +189,7 @@ export function PracticeHubScreen() {
 
   return (
     <div className="screen screen--immersive practice-hub">
-      <VideoBackground scene="picker" overlay={0.32} blur={2} variant="soft" />
+      <VideoBackground scene="picker" overlay={0.28} blur={2} variant="soft" />
       <div className="screen__body screen__body--scroll fade-in">
         <Header showBack onBack={() => navigate('/welcome')} transparent title={t('hub.title')} />
 

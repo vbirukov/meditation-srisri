@@ -19,8 +19,6 @@ export function MeditationCard({
   offlineUnavailable = false,
   offlineLabel,
 }: MeditationCardProps) {
-  const minutes = Math.round(meditation.durationSeconds / 60);
-
   return (
     <button
       type="button"
@@ -46,7 +44,7 @@ export function MeditationCard({
           )}
         </div>
         <span className="meditation-card__duration">
-          {minutes} {formatTime(meditation.durationSeconds)}
+          {formatTime(meditation.durationSeconds)}
         </span>
       </div>
     </button>

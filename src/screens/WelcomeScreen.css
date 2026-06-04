@@ -11,15 +11,17 @@
 }
 
 .welcome-screen__card {
-  padding: var(--space-5) var(--space-5);
+  padding: var(--space-6) var(--space-5);
   max-width: 100%;
+  border-radius: var(--radius-xl);
 }
 
 .welcome-screen__greeting {
   color: var(--color-text);
-  margin-bottom: var(--space-5);
-  font-size: clamp(1.375rem, 4.8vw, 1.625rem);
-  line-height: 1.3;
+  margin-bottom: var(--space-6);
+  font-size: clamp(1.5rem, 5vw, 1.75rem);
+  line-height: 1.28;
+  letter-spacing: -0.02em;
   text-align: center;
   text-wrap: balance;
 }
@@ -41,6 +43,10 @@
 .welcome-screen__cta {
   width: 100%;
   --welcome-cta-bg: url('/media/images/welcome-cta-bg.png');
+  transition:
+    background-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    transform var(--transition-fast);
 }
 
 .btn-terracotta {
@@ -78,7 +84,7 @@
 }
 
 .btn-terracotta:active {
-  transform: translateY(1px);
+  transform: scale(0.98);
 }
 
 .welcome-screen__cta.btn-terracotta {

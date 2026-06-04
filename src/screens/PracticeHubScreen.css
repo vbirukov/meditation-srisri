@@ -1,12 +1,22 @@
 .practice-hub__catalog {
-  padding-bottom: var(--space-6);
+  padding-bottom: var(--space-8);
 }
 
 .practice-hub__catalog > .practice-tools {
-  margin-top: var(--space-4);
+  margin-top: var(--space-5);
   margin-bottom: 0;
 }
 
+.practice-hub__catalog > section + section {
+  margin-top: var(--space-2);
+}
+
 .practice-hub__hint {
-  margin: calc(-1 * var(--space-2)) 0 var(--space-4);
+  margin: calc(-1 * var(--space-1)) 0 var(--space-5);
+  line-height: 1.5;
+  max-width: 36ch;
+}
+
+.practice-hub .offline-badge {
+  border: 1px solid color-mix(in srgb, var(--color-green) 25%, transparent);
 }

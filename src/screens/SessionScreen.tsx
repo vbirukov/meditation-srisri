@@ -257,7 +257,7 @@ export function SessionScreen() {
       onClick={toggleFocus}
       role="presentation"
     >
-      <VideoBackground scene="session" overlay={0.5} />
+      <VideoBackground scene="session" overlay={0.44} blur={1} variant="session" />
       {!focusMode && <Header showBack onBack={handleBack} transparent />}
 
       <div

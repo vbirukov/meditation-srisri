@@ -7,12 +7,12 @@
       "phases": [
         { "id": "lets-start" },
         { "id": "smile" },
-        { "id": "kriya" },
+        { "id": "kriya", "altId": "kriya-chakra" },
         { "id": "sahaj" },
-        { "id": "silence-no-sound" },
+        { "id": "silence-8-minutes" },
         { "id": "lie-down", "durationSeconds": 60 },
         { "id": "samaveda-short" },
-        { "id": "lie-down", "durationSeconds": 180 },
+        { "id": "silence", "durationSeconds": 180 },
         { "id": "nadi-shodhana-pranayam" },
         { "id": "finished" }
       ]
@@ -26,7 +26,7 @@
         { "id": "smile" },
         { "id": "bogar-pranayam" },
         { "id": "sahaj" },
-        { "id": "silence-no-sound" },
+        { "id": "silence-8-minutes" },
         { "id": "lie-down" },
         { "id": "nadi-shodhana-pranayam" },
         { "id": "finished" }
@@ -41,7 +41,7 @@
         { "id": "smile" },
         { "id": "bogar-pranayam" },
         { "id": "sahaj" },
-        { "id": "silence-no-sound" },
+        { "id": "silence-8-minutes" },
         { "id": "lie-down" },
         { "id": "nadi-shodhana-pranayam" },
         { "id": "finished" }
@@ -57,7 +57,7 @@
         { "id": "padmasadhana" },
         { "id": "bogar-pranayam" },        
         { "id": "sahaj" },
-        { "id": "silence-no-sound" },
+        { "id": "silence-8-minutes" },
         { "id": "lie-down", "durationSeconds": 60 },
         { "id": "samaveda-full" },
         { "id": "lie-down", "durationSeconds": 180 },
@@ -104,15 +104,19 @@
       "finishingAudioUrl": "/media/audio/bell.mp3"
     },
     {
-      "id":"sahaj",
-      "title": "Сахадж",
-      "description": "Сахадж самадхи медитация 20 минут",
-      "durationSeconds": 1200,
-      "audioUrl": "/media/audio/sahaj.mp3",
+      "id": "kriya-chakra",
+      "title": "Сударшан-Чакра Крия",
+      "description": "Сударшан-Чакра Крия 10 минут + 5 минут тишины ",
+      "includes": {
+        "blocks": [
+          "kriya",
+          "silence"
+        ]
+      },
       "finishingAudioUrl": "/media/audio/bell.mp3"
     },
     {
-      "id":"sahaj-short",
+      "id":"sahaj",
       "title": "Сахадж",
       "description": "Сахадж самадхи медитация 20 минут",
       "durationSeconds": 20,
@@ -124,11 +128,10 @@
       "title": "Тишина",
       "description": "Тишина 5 минут",
       "durationSeconds": 300,
-      "startingAudioUrl": "/media/audio/bell.mp3",
       "finishingAudioUrl": "/media/audio/bell.mp3"
     },
-        {
-      "id":"silence-no-sound",
+    {
+      "id":"silence-8-minutes",
       "title": "Тишина",
       "description": "Тишина 8 минут",
       "durationSeconds": 480

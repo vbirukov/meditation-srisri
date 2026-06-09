@@ -6,9 +6,13 @@ import { formatPhaseDuration, resolveSadhanaPractice, sadhanaTotalSeconds } from
 import '@/styles/textured-surface.css';
 import './SadhanaCard.css';
 
-const SWIPE_ACTION_WIDTH = 76;
+const SWIPE_ACTION_WIDTH = 92;
 const SWIPE_OPEN_THRESHOLD = 36;
-const SWIPE_DELETE_THRESHOLD = 96;
+const SWIPE_DELETE_THRESHOLD = 112;
+
+function isInteractiveTarget(target: EventTarget | null): boolean {
+  return target instanceof Element && Boolean(target.closest('button, a, input, textarea, select, label'));
+}
 
 interface SadhanaCardProps {
   practice: SadhanaPractice;
@@ -82,7 +86,7 @@ export function SadhanaCard({
   );
 
   const onSwipePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!swipeable || e.button !== 0) return;
+    if (!swipeable || e.button !== 0 || isInteractiveTarget(e.target)) return;
     dragRef.current = {
       startX: e.clientX,
       startY: e.clientY,
@@ -175,6 +179,7 @@ export function SadhanaCard({
               <button
                 type="button"
                 className="btn-icon sadhana-card__action"
+                onPointerDown={(e) => e.stopPropagation()}
                 onClick={(e) => {
                   e.stopPropagation();
                   onEdit(practice.id);
@@ -189,6 +194,7 @@ export function SadhanaCard({
               <button
                 type="button"
                 className="btn-icon sadhana-card__action sadhana-card__action--delete"
+                onPointerDown={(e) => e.stopPropagation()}
                 onClick={(e) => {
                   e.stopPropagation();
                   confirmDelete();
@@ -234,7 +240,11 @@ export function SadhanaCard({
         <button
           type="button"
           className="sadhana-card-swipe__delete"
-          onClick={confirmDelete}
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation();
+            confirmDelete();
+          }}
           tabIndex={swipeOffset < 0 ? 0 : -1}
         >
           {t('customPractice.delete')}

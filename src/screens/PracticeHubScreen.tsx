@@ -77,10 +77,16 @@ export function PracticeHubScreen() {
     if (open) setBuilderEditId(null);
   }, []);
 
-  const openBuilderForEdit = useCallback((id: string) => {
-    setBuilderEditId(id);
-    setBuilderOpen(true);
-  }, []);
+  const loadForEdit = useCustomPracticeStore((s) => s.loadForEdit);
+
+  const openBuilderForEdit = useCallback(
+    (id: string) => {
+      loadForEdit(id);
+      setBuilderEditId(id);
+      setBuilderOpen(true);
+    },
+    [loadForEdit],
+  );
 
   const deleteCustomPractice = useCallback(
     (id: string) => {

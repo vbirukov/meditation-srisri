@@ -119,7 +119,6 @@
       "id":"sahaj",
       "title": "Сахадж",
       "description": "Сахадж самадхи медитация 20 минут",
-      "durationSeconds": 20,
       "audioUrl": "/media/audio/sahaj.mp3",
       "finishingAudioUrl": "/media/audio/bell.mp3"
     },

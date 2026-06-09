@@ -17,7 +17,6 @@ export interface GurujiContent {
     photos?: string[];
     video?: string | null;
   };
-  quotes: GurujiQuote[];
   summaries: {
     default: LocalizedText;
     byMode?: Partial<Record<SessionMode, LocalizedText>>;

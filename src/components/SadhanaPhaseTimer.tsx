@@ -5,6 +5,7 @@ import {
   phaseAudioFlags,
   SADHANA_DEBUG_PHASE_CAP_SEC,
 } from '@/utils/sadhanaDebug';
+import type { SadhanaPhaseSlot } from '@/types';
 import { formatPhaseDuration } from '@/utils/sadhana';
 import './SadhanaPhaseTimer.css';
 
@@ -19,6 +20,8 @@ type Phase = {
 
 interface SadhanaPhaseTimerProps {
   phases: Phase[];
+  slots?: SadhanaPhaseSlot[];
+  onBlockChoiceChange?: (slotIndex: number, blockId: string) => void;
   onComplete: () => void;
   running: boolean;
   onRunningChange: (running: boolean) => void;
@@ -51,6 +54,7 @@ interface SadhanaPhaseTimerProps {
     debugAudioMain: string;
     debugAudioStart: string;
     debugAudioEnd: string;
+    chooseBlock?: string;
   };
 }
 
@@ -87,6 +91,8 @@ function loadAudioDurationSeconds(url: string): Promise<number> {
 
 export function SadhanaPhaseTimer({
   phases,
+  slots,
+  onBlockChoiceChange,
   onComplete,
   running,
   onRunningChange,
@@ -400,6 +406,17 @@ export function SadhanaPhaseTimer({
 
   if (setupMode) {
     const total = phases.reduce((s, p) => s + (p.durationSeconds ?? 0), 0);
+    const setupSlots: SadhanaPhaseSlot[] =
+      slots ??
+      phases.map((phase, i) => ({
+        slotIndex: i,
+        label: phase.label,
+        durationSeconds: phase.durationSeconds,
+        hasUnknownDuration: typeof phase.durationSeconds !== 'number' && Boolean(phase.audioUrl),
+        selectedBlockId: phase.id,
+        phaseCount: 1,
+      }));
+
     return (
       <div className="sadhana-timer-setup glass-panel">
         {debugMode && (
@@ -410,31 +427,77 @@ export function SadhanaPhaseTimer({
         {debugToggle}
         <p className="section-title">{labels.phases}</p>
         <ol className={`sadhana-timer-setup__list${debugMode ? ' sadhana-timer-setup__list--debug' : ''}`}>
-          {phases.map((phase, i) => {
-            const flags = phaseAudioFlags(phase);
-            const audioDur = phase.audioUrl ? audioDurations[phase.audioUrl] : undefined;
-            const debugSec = debugPhaseTargetSeconds(debugMode, phase.durationSeconds, audioDur);
+          {(() => {
+            let phaseOffset = 0;
+            return setupSlots.map((slot, i) => {
+            const slotPhases = slots
+              ? phases.slice(phaseOffset, phaseOffset + slot.phaseCount)
+              : [phases[i]!].filter(Boolean);
+            phaseOffset += slot.phaseCount;
+
+            const flags = slotPhases[0] ? phaseAudioFlags(slotPhases[0]) : null;
+            const audioDur = slotPhases[0]?.audioUrl
+              ? audioDurations[slotPhases[0].audioUrl]
+              : undefined;
+            const debugSec = slotPhases[0]
+              ? debugPhaseTargetSeconds(debugMode, slot.durationSeconds, audioDur)
+              : undefined;
+
             return (
-              <li key={phase.id}>
+              <li
+                key={`slot-${slot.slotIndex}`}
+                className={slot.alternatives ? 'sadhana-timer-setup__item--choice' : undefined}
+              >
                 <span className="sadhana-timer-setup__num">{i + 1}</span>
-                <span className="sadhana-timer-setup__label">{phase.label}</span>
+                <div className="sadhana-timer-setup__body">
+                  {slot.alternatives && slot.alternatives.length > 1 ? (
+                    <fieldset className="sadhana-timer-setup__choices">
+                      <legend className="sadhana-timer-setup__label">
+                        {labels.chooseBlock ?? 'Выбор'}
+                      </legend>
+                      {slot.alternatives.map((alt) => (
+                        <label key={alt.blockId} className="sadhana-timer-setup__choice">
+                          <input
+                            type="radio"
+                            name={`sadhana-slot-${slot.slotIndex}`}
+                            value={alt.blockId}
+                            checked={slot.selectedBlockId === alt.blockId}
+                            onChange={() => onBlockChoiceChange?.(slot.slotIndex, alt.blockId)}
+                          />
+                          <span className="sadhana-timer-setup__choice-label">{alt.label}</span>
+                          {alt.description && (
+                            <span className="sadhana-timer-setup__choice-desc">{alt.description}</span>
+                          )}
+                        </label>
+                      ))}
+                    </fieldset>
+                  ) : (
+                    <span className="sadhana-timer-setup__label">{slot.label}</span>
+                  )}
+                  {slot.phaseCount > 1 && (
+                    <span className="sadhana-timer-setup__subphases">
+                      {slotPhases.map((p) => p.label).join(' → ')}
+                    </span>
+                  )}
+                </div>
                 <span className="sadhana-timer-setup__dur">
                   {debugMode && debugSec != null
                     ? formatPhaseDuration(debugSec)
-                    : typeof phase.durationSeconds === 'number'
-                      ? formatPhaseDuration(phase.durationSeconds)
-                      : phase.audioUrl
-                        ? formatPhaseDuration(audioDurations[phase.audioUrl] ?? 0)
+                    : typeof slot.durationSeconds === 'number'
+                      ? formatPhaseDuration(slot.durationSeconds)
+                      : slot.hasUnknownDuration
+                        ? '—'
                         : '—'}
                 </span>
-                {debugMode && (
+                {debugMode && flags && (
                   <span className="sadhana-debug-audio" title="main / start / end">
                     {[flags.main ? 'M' : '·', flags.starting ? 'S' : '·', flags.finishing ? 'E' : '·'].join('')}
                   </span>
                 )}
               </li>
             );
-          })}
+          });
+          })()}
         </ol>
         <p className="sadhana-timer-setup__total text-muted">
           {labels.total}: {formatPhaseDuration(totalSeconds || total)}

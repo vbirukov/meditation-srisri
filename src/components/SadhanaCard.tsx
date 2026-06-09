@@ -2,7 +2,7 @@ import { useCallback, useRef, useState } from 'react';
 import type { SadhanaBlock, SadhanaPractice } from '@/types';
 import { CardCornerTexture } from '@/components/CardCornerTexture';
 import { useT } from '@/i18n';
-import { formatPhaseDuration, sadhanaTotalSeconds } from '@/utils/sadhana';
+import { formatPhaseDuration, resolveSadhanaPractice, sadhanaTotalSeconds } from '@/utils/sadhana';
 import '@/styles/textured-surface.css';
 import './SadhanaCard.css';
 
@@ -48,8 +48,9 @@ export function SadhanaCard({
     axis: 'x' | 'y' | null;
   } | null>(null);
 
+  const resolved = resolveSadhanaPractice(practice, blocks);
   const total = sadhanaTotalSeconds(practice, blocks);
-  const phaseCount = practice.phases.length;
+  const phaseCount = resolved.slots.length;
   const phasesBadge = t('hub.phasesCount').replace('{count}', String(phaseCount));
   const totalLabel = total.hasUnknown
     ? `≈ ${formatPhaseDuration(total.totalSeconds)}`
@@ -203,13 +204,17 @@ export function SadhanaCard({
       </div>
       {expanded && (
         <ol className="sadhana-card__phases">
-          {practice.phases.map((phase, i) => (
-            <li key={phase.id}>
+          {resolved.slots.map((slot, i) => (
+            <li key={slot.slotIndex}>
               <span className="sadhana-card__phase-num">{i + 1}</span>
-              <span className="sadhana-card__phase-label">{phase.label}</span>
+              <span className="sadhana-card__phase-label">
+                {slot.alternatives
+                  ? slot.alternatives.map((a) => a.label).join(' / ')
+                  : slot.label}
+              </span>
               <span className="sadhana-card__phase-time">
-                {typeof phase.durationSeconds === 'number'
-                  ? formatPhaseDuration(phase.durationSeconds)
+                {typeof slot.durationSeconds === 'number'
+                  ? formatPhaseDuration(slot.durationSeconds)
                   : '—'}
               </span>
             </li>

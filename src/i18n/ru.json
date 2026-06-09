@@ -29,7 +29,8 @@
     "debugSkip": "Пропустить фазу",
     "debugAudioMain": "основной",
     "debugAudioStart": "старт",
-    "debugAudioEnd": "финиш"
+    "debugAudioEnd": "финиш",
+    "chooseBlock": "Вариант"
   },
   "picker": {
     "title": "Выберите практику",

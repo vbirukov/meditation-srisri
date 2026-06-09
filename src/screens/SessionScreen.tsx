@@ -17,7 +17,8 @@ import { useCustomTrackStore } from '@/store/customTrackStore';
 import { resolveCustomPracticeSteps } from '@/utils/customPractice';
 import { formatTime } from '@/utils/time';
 import { useSessionPanelTexture, textureStyle, withTexture } from '@/utils/textures';
-import { resolveSadhanaPhases } from '@/utils/sadhana';
+import { useSadhanaChoicesStore } from '@/store/sadhanaChoicesStore';
+import { resolveSadhanaPractice } from '@/utils/sadhana';
 import { acquireScreenWakeLock, useWakeLock } from '@/hooks/useWakeLock';
 import { useSadhanaDebug } from '@/hooks/useSadhanaDebug';
 import '@/styles/textured-surface.css';
@@ -27,6 +28,7 @@ const meditations = meditationsData as Meditation[];
 const sadhanaCatalog = sadhanaData as unknown as SadhanaCatalog;
 const sadhanas = (sadhanaCatalog.practices ?? []) as SadhanaPractice[];
 const sadhanaBlocks = sadhanaCatalog.blocks ?? [];
+const EMPTY_BLOCK_CHOICES: Record<number, string> = {};
 
 export function SessionScreen() {
   const navigate = useNavigate();
@@ -81,6 +83,7 @@ export function SessionScreen() {
       debugAudioMain: t('sadhana.debugAudioMain'),
       debugAudioStart: t('sadhana.debugAudioStart'),
       debugAudioEnd: t('sadhana.debugAudioEnd'),
+      chooseBlock: t('sadhana.chooseBlock'),
     }),
     [t],
   );
@@ -99,9 +102,27 @@ export function SessionScreen() {
   const meditation = meditations.find((m) => m.id === meditationId);
   const sadhana = sadhanas.find((s) => s.id === sadhanaId);
   const customPractice = customPractices.find((p) => p.id === customPracticeId);
-  const resolvedSadhanaPhases = useMemo(
-    () => (sadhana ? resolveSadhanaPhases(sadhana, sadhanaBlocks) : null),
-    [sadhana],
+  const sadhanaBlockChoices = useSadhanaChoicesStore((s) =>
+    sadhanaId ? s.choices[sadhanaId] : undefined,
+  ) ?? EMPTY_BLOCK_CHOICES;
+  const setSadhanaBlockChoice = useSadhanaChoicesStore((s) => s.setChoice);
+
+  const resolvedSadhana = useMemo(
+    () =>
+      sadhana
+        ? resolveSadhanaPractice(sadhana, sadhanaBlocks, sadhanaBlockChoices)
+        : null,
+    [sadhana, sadhanaBlockChoices],
+  );
+  const resolvedSadhanaPhases = resolvedSadhana?.phases ?? null;
+  const resolvedSadhanaSlots = resolvedSadhana?.slots;
+
+  const onSadhanaBlockChoiceChange = useCallback(
+    (slotIndex: number, blockId: string) => {
+      if (!sadhanaId) return;
+      setSadhanaBlockChoice(sadhanaId, slotIndex, blockId);
+    },
+    [sadhanaId, setSadhanaBlockChoice],
   );
   const resolvedCustomPhases = useMemo(
     () =>
@@ -342,6 +363,8 @@ export function SessionScreen() {
         {mode === 'sadhana' && sadhana && resolvedSadhanaPhases && (
           <SadhanaPhaseTimer
             phases={resolvedSadhanaPhases}
+            slots={resolvedSadhanaSlots}
+            onBlockChoiceChange={onSadhanaBlockChoiceChange}
             onComplete={handleComplete}
             running={timerRunning}
             onRunningChange={onTimerRunningChange}

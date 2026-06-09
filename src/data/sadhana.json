@@ -7,7 +7,7 @@
       "phases": [
         { "id": "lets-start" },
         { "id": "smile" },
-        { "id": "kriya", "altId": "kriya-chakra" },
+        { "alternatives": ["kriya", "kriya-chakra"] },
         { "id": "sahaj" },
         { "id": "silence-8-minutes" },
         { "id": "lie-down", "durationSeconds": 60 },

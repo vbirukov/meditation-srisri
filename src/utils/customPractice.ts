@@ -1,7 +1,7 @@
 import type { CustomPractice, CustomPracticeStep, Locale, SadhanaBlock, SadhanaPractice } from '@/types';
 import {
+  expandBlockPhases,
   formatPhaseDuration,
-  resolveSadhanaPhases,
   type ResolvedSadhanaPhase,
 } from '@/utils/sadhana';
 
@@ -59,40 +59,44 @@ export function resolveCustomPracticeSteps(
 ): ResolvedSadhanaPhase[] {
   const byId = Object.fromEntries(blocks.map((b) => [b.id, b]));
 
-  return practice.steps.map((step) => {
-    const block = byId[step.blockId];
-    const asPractice = {
-      id: practice.id,
-      title: practice.title,
-      phases: [
-        {
-          id: step.instanceId,
-          blockId: step.blockId,
-          label: step.label,
-          durationSeconds: step.durationSeconds,
-        },
-      ],
-    };
-    const [resolved] = resolveSadhanaPhases(asPractice, block ? [block] : blocks);
+  const phases: ResolvedSadhanaPhase[] = [];
 
-    let audioUrl = resolved.audioUrl;
-    let startingAudioUrl = resolved.startingAudioUrl;
-    let finishingAudioUrl = resolved.finishingAudioUrl;
-
-    if (step.playMainAudio === false) audioUrl = undefined;
-    if (step.playStartingAudio === false) startingAudioUrl = undefined;
-    if (step.playFinishingAudio === false) finishingAudioUrl = undefined;
-
-    return {
+  for (const step of practice.steps) {
+    const overrides = {
       id: step.instanceId,
-      label: step.label || resolved.label,
-      durationSeconds: step.durationSeconds ?? resolved.durationSeconds,
-      audioUrl,
-      startingAudioUrl,
-      finishingAudioUrl,
-      sourceBlockId: step.blockId,
+      blockId: step.blockId,
+      label: step.label,
+      durationSeconds: step.durationSeconds,
     };
-  });
+    const expanded = expandBlockPhases(step.blockId, byId, overrides);
+
+    for (let i = 0; i < expanded.length; i++) {
+      const resolved = expanded[i]!;
+      const isFirst = i === 0;
+
+      let audioUrl = resolved.audioUrl;
+      let startingAudioUrl = resolved.startingAudioUrl;
+      let finishingAudioUrl = resolved.finishingAudioUrl;
+
+      if (step.playMainAudio === false) audioUrl = undefined;
+      if (step.playStartingAudio === false) startingAudioUrl = undefined;
+      if (step.playFinishingAudio === false) finishingAudioUrl = undefined;
+
+      phases.push({
+        id: isFirst ? step.instanceId : `${step.instanceId}--${resolved.sourceBlockId ?? i}`,
+        label: isFirst && step.label ? step.label : resolved.label,
+        durationSeconds: isFirst
+          ? (step.durationSeconds ?? resolved.durationSeconds)
+          : resolved.durationSeconds,
+        audioUrl,
+        startingAudioUrl,
+        finishingAudioUrl,
+        sourceBlockId: resolved.sourceBlockId ?? step.blockId,
+      });
+    }
+  }
+
+  return phases;
 }
 
 export function customPracticeTotalSeconds(

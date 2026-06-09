@@ -26,6 +26,59 @@
   font-size: var(--font-size-sm);
 }
 
+.sadhana-timer-setup__item--choice {
+  align-items: start;
+}
+
+.sadhana-timer-setup__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.sadhana-timer-setup__choices {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.sadhana-timer-setup__choices legend {
+  padding: 0;
+  margin-bottom: var(--space-1);
+}
+
+.sadhana-timer-setup__choice {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-2);
+  align-items: start;
+  cursor: pointer;
+}
+
+.sadhana-timer-setup__choice input {
+  margin-top: 0.15rem;
+}
+
+.sadhana-timer-setup__choice-label {
+  font-weight: 600;
+}
+
+.sadhana-timer-setup__choice-desc {
+  grid-column: 2;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  line-height: 1.35;
+}
+
+.sadhana-timer-setup__subphases {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
 .sadhana-timer-setup__num {
   color: var(--color-secondary);
   font-weight: 600;

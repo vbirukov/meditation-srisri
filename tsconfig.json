@@ -17,6 +17,7 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
     "resolveJsonModule": true,
+    "allowJs": true,
     "baseUrl": ".",
     "paths": { "@/*": ["src/*"] }
   },

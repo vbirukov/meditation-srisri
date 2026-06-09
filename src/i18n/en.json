@@ -29,7 +29,8 @@
     "debugSkip": "Skip phase",
     "debugAudioMain": "main",
     "debugAudioStart": "start",
-    "debugAudioEnd": "end"
+    "debugAudioEnd": "end",
+    "chooseBlock": "Option"
   },
   "picker": {
     "title": "Choose your practice",

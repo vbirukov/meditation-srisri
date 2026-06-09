@@ -1,4 +1,5 @@
 import gurujiContent from '@/data/guruji-content.json';
+import { SRI_SRI_RAVI_SHANKAR_QUOTES } from '@/data/guruji-quotes.js';
 import type { GurujiContent, GurujiQuote, LocalizedText } from '@/types/guruji';
 import type { Locale, SessionMode } from '@/types';
 
@@ -20,15 +21,19 @@ export function pickPhoto(): string | undefined {
   return pickFromList(media.photos ?? media.photo);
 }
 
-export function pickQuote(): GurujiQuote {
-  const { quotes } = content;
-  if (quotes.length === 0) {
-    return {
-      id: 'fallback',
-      text: { ru: '', en: '' },
-    };
+export function pickQuote(locale: Locale = 'ru'): GurujiQuote {
+  const forLocale = SRI_SRI_RAVI_SHANKAR_QUOTES.filter((q) => q.language === locale);
+  const pool = forLocale.length > 0 ? forLocale : SRI_SRI_RAVI_SHANKAR_QUOTES;
+  const picked = pool[Math.floor(Math.random() * pool.length)];
+
+  if (!picked) {
+    return { id: 'fallback', text: { ru: '', en: '' } };
   }
-  return quotes[Math.floor(Math.random() * quotes.length)];
+
+  return {
+    id: String(picked.id),
+    text: { ru: picked.text, en: picked.text },
+  };
 }
 
 export function getLocalized(text: LocalizedText | Partial<LocalizedText>, locale: Locale): string {

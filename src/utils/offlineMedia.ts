@@ -3,7 +3,7 @@ import meditationsData from '@/data/meditations.json';
 import sadhanaData from '@/data/sadhana.json';
 import type { CustomPractice, Meditation, SadhanaBlock, SadhanaPractice } from '@/types';
 import { resolveCustomPracticeSteps } from '@/utils/customPractice';
-import { collectPhaseMediaUrls, sadhanaPracticeMediaUrls } from '@/utils/sadhana';
+import { collectPhaseMediaUrls, sadhanaPracticeAllMediaUrls } from '@/utils/sadhana';
 
 export const USER_OFFLINE_CACHE = 'meditate-offline-user-v1';
 
@@ -69,7 +69,7 @@ export async function isSadhanaOfflineReady(
   practice: SadhanaPractice,
   blocks: readonly SadhanaBlock[] = sadhanaBlocks,
 ): Promise<boolean> {
-  const urls = sadhanaPracticeMediaUrls(practice, blocks);
+  const urls = sadhanaPracticeAllMediaUrls(practice, blocks);
   if (urls.length === 0) return true;
   if (isBuildOfflineReadySadhana(practice.id) && urls.every((u) => defaultPrecache.has(u))) {
     return areAllUrlsCached(urls);

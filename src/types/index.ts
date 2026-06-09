@@ -35,6 +35,10 @@ export interface SadhanaPhase {
    */
   blockId?: string;
   preset?: string;
+  /** Альтернативные блоки — пользователь выбирает один (первый — по умолчанию). */
+  alternatives?: string[];
+  /** @deprecated используйте `alternatives` */
+  altId?: string;
 }
 
 export interface SadhanaPractice {
@@ -42,6 +46,10 @@ export interface SadhanaPractice {
   title: string;
   description?: string;
   phases: SadhanaPhase[];
+}
+
+export interface SadhanaBlockIncludes {
+  blocks: string[];
 }
 
 export interface SadhanaBlock {
@@ -54,6 +62,24 @@ export interface SadhanaBlock {
   startingAudioUrl?: string;
   durationSeconds?: number;
   finishingAudioUrl?: string;
+  /** Составной блок — разворачивается в последовательность вложенных блоков. */
+  includes?: SadhanaBlockIncludes;
+}
+
+export interface SadhanaPhaseAlternative {
+  blockId: string;
+  label: string;
+  description?: string;
+}
+
+export interface SadhanaPhaseSlot {
+  slotIndex: number;
+  label: string;
+  durationSeconds?: number;
+  hasUnknownDuration: boolean;
+  alternatives?: SadhanaPhaseAlternative[];
+  selectedBlockId: string;
+  phaseCount: number;
 }
 
 export interface SadhanaCatalog {

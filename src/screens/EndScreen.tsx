@@ -39,7 +39,7 @@ export function EndScreen() {
   const secondsThisMonth = usePracticeStatsStore((s) => s.secondsThisMonth);
   const totalSessions = usePracticeStatsStore((s) => s.totalSessions);
 
-  const quote = useMemo(() => pickQuote(), []);
+  const quote = useMemo(() => pickQuote(locale), [locale]);
   const photoSrc = useMemo(() => pickPhoto() ?? GURUJI_FALLBACK_PHOTO, []);
   const textures = usePageTextures(END_SCREEN_TEXTURE_POOLS);
   const media = getGurujiMedia();

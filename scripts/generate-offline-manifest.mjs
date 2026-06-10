@@ -101,12 +101,17 @@ const practiceMedia = practices.map((practice) => {
   };
 });
 
+const meditationVideoUrls = meditations
+  .filter((m) => m.type === 'video' && m.mediaUrl)
+  .map((m) => m.mediaUrl);
+
 const videoUrls = unique([
   '/media/video/welcome.mp4',
   '/media/video/picker.mp4',
   '/media/video/picker2.mp4',
   '/media/video/session.mp4',
   '/media/video/session2.mp4',
+  ...meditationVideoUrls,
 ]);
 
 const manifest = {

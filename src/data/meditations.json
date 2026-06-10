@@ -53,5 +53,77 @@
     "backgroundScene": "sea",
     "isOfflinePrecached": true,
     "language": "ru"
+  },
+  {
+    "id": "spine-breath",
+    "type": "video",
+    "title": "Медитация на дыхание вдоль позвоночника",
+    "durationSeconds": 776,
+    "mediaUrl": "/media/video/meditations/Медитация на дыхание вдоль позвоночника.mp4",
+    "language": "ru"
+  },
+  {
+    "id": "five-dimensions",
+    "type": "video",
+    "title": "Медитация «на 5 измерений»",
+    "durationSeconds": 1241,
+    "mediaUrl": "/media/video/meditations/Медитация «на 5 измерений».mp4",
+    "language": "ru"
+  },
+  {
+    "id": "yantra",
+    "type": "video",
+    "title": "Янтра медитация",
+    "durationSeconds": 1853,
+    "mediaUrl": "/media/video/meditations/Янтра медитация.mp4",
+    "language": "ru"
+  },
+  {
+    "id": "emptiness",
+    "type": "video",
+    "title": "Медитация пребывания в пустоте",
+    "durationSeconds": 1113,
+    "mediaUrl": "/media/video/meditations/Медитация пребывания в пустоте.mp4",
+    "language": "ru"
+  },
+  {
+    "id": "i-and-not-i",
+    "type": "video",
+    "title": "Медитация на «что есть я и не я»",
+    "durationSeconds": 916,
+    "mediaUrl": "/media/video/meditations/Медитация  на «что есть я и не я».mp4",
+    "language": "ru"
+  },
+  {
+    "id": "yantra-triangle",
+    "type": "video",
+    "title": "Медитация на янтру – треугольник между бровями и ладонями",
+    "durationSeconds": 992,
+    "mediaUrl": "/media/video/meditations/Медитация на янтру – треугольник между бровями и ладонями.mp4",
+    "language": "ru"
+  },
+  {
+    "id": "changing-unchanging",
+    "type": "video",
+    "title": "Медитация на меняющееся и неизменное",
+    "durationSeconds": 1040,
+    "mediaUrl": "/media/video/meditations/Медитация на меняющееся и неизменное.mp4",
+    "language": "ru"
+  },
+  {
+    "id": "gravity-fire-air",
+    "type": "video",
+    "title": "Медитация на «опровержение гравитации с помощью стихий огня и воздуха»",
+    "durationSeconds": 1054,
+    "mediaUrl": "/media/video/meditations/Медитация на «опровержение гравитации с помощью стихий огня и воздуха».mp4",
+    "language": "ru"
+  },
+  {
+    "id": "love",
+    "type": "video",
+    "title": "Медитация любви",
+    "durationSeconds": 1323,
+    "mediaUrl": "/media/video/meditations/Медитация любви.mp4",
+    "language": "ru"
   }
 ]

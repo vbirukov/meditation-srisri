@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-09T14:36:22.742Z",
+  "generatedAt": "2026-06-09T20:36:58.953Z",
   "precacheUrls": [
     "/media/audio/smile.mp3",
     "/media/audio/om.mp3",
@@ -25,7 +25,16 @@
     "/media/video/picker.mp4",
     "/media/video/picker2.mp4",
     "/media/video/session.mp4",
-    "/media/video/session2.mp4"
+    "/media/video/session2.mp4",
+    "/media/video/meditations/Медитация на дыхание вдоль позвоночника.mp4",
+    "/media/video/meditations/Медитация «на 5 измерений».mp4",
+    "/media/video/meditations/Янтра медитация.mp4",
+    "/media/video/meditations/Медитация пребывания в пустоте.mp4",
+    "/media/video/meditations/Медитация  на «что есть я и не я».mp4",
+    "/media/video/meditations/Медитация на янтру – треугольник между бровями и ладонями.mp4",
+    "/media/video/meditations/Медитация на меняющееся и неизменное.mp4",
+    "/media/video/meditations/Медитация на «опровержение гравитации с помощью стихий огня и воздуха».mp4",
+    "/media/video/meditations/Медитация любви.mp4"
   ],
   "practices": [
     {

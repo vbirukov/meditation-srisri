@@ -32,6 +32,8 @@ interface VideoBackgroundProps {
   blur?: number;
   variant?: OverlayVariant;
   className?: string;
+  /** Только постер — без фонового видео (чтобы не мешать guided-видео). */
+  staticOnly?: boolean;
 }
 
 export function VideoBackground({
@@ -40,6 +42,7 @@ export function VideoBackground({
   blur = 0,
   variant = 'dark',
   className = '',
+  staticOnly = false,
 }: VideoBackgroundProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const reducedMotion = useReducedMotion();
@@ -49,9 +52,9 @@ export function VideoBackground({
   const mp4Src = useMemo(() => pickMp4(sources.mp4), [scene]);
 
   useEffect(() => {
-    const preferStatic = reducedMotion || shouldUseStaticBackground() || !mp4Src;
+    const preferStatic = staticOnly || reducedMotion || shouldUseStaticBackground() || !mp4Src;
     setUseVideo(!preferStatic);
-  }, [reducedMotion, mp4Src]);
+  }, [staticOnly, reducedMotion, mp4Src]);
 
   useEffect(() => {
     const v = videoRef.current;

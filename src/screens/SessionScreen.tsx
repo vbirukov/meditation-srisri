@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import meditationsData from '@/data/meditations.json';
 import sadhanaData from '@/data/sadhana.json';
@@ -7,6 +7,7 @@ import { SadhanaPhaseTimer } from '@/components/SadhanaPhaseTimer';
 import { VideoBackground } from '@/components/VideoBackground';
 import { Header } from '@/components/Header';
 import { AudioPlayer } from '@/components/AudioPlayer';
+import { GuidedVideoPlayer } from '@/components/GuidedVideoPlayer';
 import { Timer } from '@/components/Timer';
 import { CustomTrackPanel } from '@/components/CustomTrackPanel';
 import { useT } from '@/i18n';
@@ -56,6 +57,7 @@ export function SessionScreen() {
   const sadhanaPhaseProgress = useSessionStore((s) => s.sadhanaPhaseProgress) ?? 0;
   const storedTimerRunning = useSessionStore((s) => s.timerRunning) ?? false;
   const guidedAudioSeconds = useSessionStore((s) => s.guidedAudioSeconds) ?? 0;
+  const guidedResumeRef = useRef(guidedAudioSeconds);
   const setTimerRunningStore = useSessionStore((s) => s.setTimerRunning);
   const setSadhanaPhaseState = useSessionStore((s) => s.setSadhanaPhaseState);
   const setGuidedAudioSeconds = useSessionStore((s) => s.setGuidedAudioSeconds);
@@ -271,6 +273,12 @@ export function SessionScreen() {
             : meditation?.title;
 
   const panelTexture = useSessionPanelTexture();
+  const isGuidedVideo = mode === 'guided' && meditation?.type === 'video';
+
+  const handleGuidedStart = useCallback(() => {
+    void acquireScreenWakeLock();
+    start();
+  }, [start]);
 
   return (
     <div
@@ -278,7 +286,13 @@ export function SessionScreen() {
       onClick={toggleFocus}
       role="presentation"
     >
-      <VideoBackground scene="session" overlay={0.44} blur={1} variant="session" />
+      <VideoBackground
+        scene="session"
+        overlay={0.44}
+        blur={1}
+        variant="session"
+        staticOnly={isGuidedVideo}
+      />
       {!focusMode && <Header showBack onBack={handleBack} transparent />}
 
       <div
@@ -326,17 +340,17 @@ export function SessionScreen() {
           />
         )}
 
-        {mode === 'guided' && meditation?.type === 'video' && (
-          <div className="session-screen__video-wrap">
-            <video
-              className="session-screen__guided-video"
-              src={meditation.mediaUrl}
-              controls={!focusMode}
-              playsInline
-              onEnded={handleComplete}
-              onTimeUpdate={(e) => tick(e.currentTarget.currentTime)}
-            />
-          </div>
+        {isGuidedVideo && meditation && (
+          <GuidedVideoPlayer
+            src={meditation.mediaUrl}
+            durationSeconds={meditation.durationSeconds}
+            initialTime={guidedResumeRef.current}
+            onProgress={handleGuidedProgress}
+            onComplete={handleComplete}
+            onStart={handleGuidedStart}
+            hidden={focusMode}
+            textureUrl={panelTexture}
+          />
         )}
 
         {mode === 'custom-practice' &&

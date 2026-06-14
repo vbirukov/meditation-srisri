@@ -332,7 +332,7 @@ export function SessionScreen() {
           <AudioPlayer
             src={meditation.mediaUrl}
             durationSeconds={meditation.durationSeconds}
-            initialTime={guidedAudioSeconds}
+            initialTime={guidedResumeRef.current}
             onProgress={handleGuidedProgress}
             onComplete={handleComplete}
             hidden={focusMode}

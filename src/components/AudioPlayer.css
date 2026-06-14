@@ -12,9 +12,19 @@
 }
 
 .audio-player:not(.textured-surface) {
-  background: rgba(249, 246, 238, 0.58);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(249, 246, 238, 0.92);
+}
+
+.audio-player--hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+  padding: 0;
+  margin: -1px;
 }
 
 .audio-player.textured-surface > * {

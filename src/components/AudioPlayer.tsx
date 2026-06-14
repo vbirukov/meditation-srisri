@@ -23,7 +23,7 @@ export function AudioPlayer({
   durationSeconds,
   onComplete,
   onProgress,
-  hidden,
+  hidden = false,
   loop = false,
   autoPlay = true,
   initialTime = 0,
@@ -31,11 +31,18 @@ export function AudioPlayer({
 }: AudioPlayerProps) {
   const t = useT();
   const audioRef = useRef<HTMLAudioElement>(null);
+  const initialSeekDoneRef = useRef(false);
+  const lastUiSecondRef = useRef(-1);
+  const onCompleteRef = useRef(onComplete);
+  const onProgressRef = useRef(onProgress);
   const [playing, setPlaying] = useState(false);
   const [current, setCurrent] = useState(initialTime);
   const [duration, setDuration] = useState(durationSeconds);
   const [error, setError] = useState(false);
   const [volume, setVolume] = useState(1);
+
+  onCompleteRef.current = onComplete;
+  onProgressRef.current = onProgress;
 
   const toggle = useCallback(() => {
     const a = audioRef.current;
@@ -49,43 +56,68 @@ export function AudioPlayer({
     }
   }, []);
 
-  const seek = useCallback((delta: number) => {
-    const a = audioRef.current;
-    if (!a) return;
-    a.currentTime = Math.max(0, Math.min(a.duration || durationSeconds, a.currentTime + delta));
-  }, [durationSeconds]);
+  const seek = useCallback(
+    (delta: number) => {
+      const a = audioRef.current;
+      if (!a) return;
+      a.currentTime = Math.max(0, Math.min(a.duration || durationSeconds, a.currentTime + delta));
+    },
+    [durationSeconds],
+  );
+
+  useEffect(() => {
+    initialSeekDoneRef.current = false;
+    lastUiSecondRef.current = -1;
+    setError(false);
+  }, [src]);
 
   useEffect(() => {
     const a = audioRef.current;
     if (!a) return;
 
     const onTime = () => {
-      setCurrent(a.currentTime);
-      onProgress?.(a.currentTime);
+      const t = a.currentTime;
+      const sec = Math.floor(t);
+      if (sec === lastUiSecondRef.current) return;
+      lastUiSecondRef.current = sec;
+      setCurrent(t);
+      onProgressRef.current?.(t);
     };
     const onMeta = () => {
       if (Number.isFinite(a.duration) && a.duration > 0) {
         setDuration(a.duration);
       }
+      if (!initialSeekDoneRef.current && initialTime > 0) {
+        initialSeekDoneRef.current = true;
+        a.currentTime = initialTime;
+        setCurrent(initialTime);
+        lastUiSecondRef.current = Math.floor(initialTime);
+      }
     };
     const onEnd = () => {
       setPlaying(false);
-      onComplete?.();
+      onCompleteRef.current?.();
     };
     const onErr = () => setError(true);
+    const onPlay = () => setPlaying(true);
+    const onPause = () => setPlaying(false);
 
     a.addEventListener('timeupdate', onTime);
     a.addEventListener('loadedmetadata', onMeta);
     a.addEventListener('ended', onEnd);
     a.addEventListener('error', onErr);
+    a.addEventListener('play', onPlay);
+    a.addEventListener('pause', onPause);
 
     return () => {
       a.removeEventListener('timeupdate', onTime);
       a.removeEventListener('loadedmetadata', onMeta);
       a.removeEventListener('ended', onEnd);
       a.removeEventListener('error', onErr);
+      a.removeEventListener('play', onPlay);
+      a.removeEventListener('pause', onPause);
     };
-  }, [onComplete, onProgress]);
+  }, [src, initialTime]);
 
   useEffect(() => {
     const a = audioRef.current;
@@ -97,41 +129,30 @@ export function AudioPlayer({
 
   useEffect(() => {
     const a = audioRef.current;
-    if (!a || initialTime <= 0) return;
-    const apply = () => {
-      a.currentTime = initialTime;
-      setCurrent(initialTime);
-    };
-    if (a.readyState >= 1) apply();
-    else a.addEventListener('loadedmetadata', apply, { once: true });
-  }, [src, initialTime]);
-
-  useEffect(() => {
-    const a = audioRef.current;
     if (!a || error || !autoPlay) return;
     void acquireScreenWakeLock();
     a.play().then(() => setPlaying(true)).catch(() => {});
   }, [src, error, autoPlay]);
 
-  if (hidden) {
-    return <audio ref={audioRef} src={src} preload="auto" loop={loop} className="sr-only" />;
-  }
-
-  return (
-    <div
-      className={withTexture(
+  const panelClass = hidden
+    ? `audio-player audio-player--hidden${error ? ' audio-player--error' : ''}`
+    : withTexture(
         `audio-player glass-panel${error ? ' audio-player--error' : ''}`,
         textureUrl,
         'textured-surface--session-panel',
-      )}
-      style={textureStyle(textureUrl)}
-    >
-      <audio ref={audioRef} src={src} preload="auto" loop={loop} />
-      {error ? (
+      );
+
+  return (
+    <div className={panelClass} style={hidden ? undefined : textureStyle(textureUrl)}>
+      <audio ref={audioRef} src={src} preload="auto" loop={loop} className="sr-only" />
+
+      {!hidden && error && (
         <p className="audio-player__error" role="status">
           {t('session.offlineFallback')}
         </p>
-      ) : (
+      )}
+
+      {!hidden && !error && (
         <>
           <div className="audio-player__times">
             <span>{formatTime(current)}</span>
@@ -141,7 +162,12 @@ export function AudioPlayer({
             <button type="button" className="btn-icon" onClick={() => seek(-15)} aria-label="Back 15s">
               −15
             </button>
-            <button type="button" className="btn-primary audio-player__play" onClick={toggle} aria-label={playing ? 'Pause' : 'Play'}>
+            <button
+              type="button"
+              className="btn-primary audio-player__play"
+              onClick={toggle}
+              aria-label={playing ? 'Pause' : 'Play'}
+            >
               {playing ? '❚❚' : '▶'}
             </button>
             <button type="button" className="btn-icon" onClick={() => seek(15)} aria-label="Forward 15s">

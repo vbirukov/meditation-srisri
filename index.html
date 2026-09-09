@@ -21,13 +21,15 @@
     <script src="/vk-bridge.min.js"></script>
     <script>
       (function () {
+        // На vk.* всегда init; иначе — по launch-параметрам
         var q = location.search || '';
         var inVk =
           location.hostname === 'vk.aolapp.ru' ||
-          /(?:^|[?&])vk_app_id=/.test(q) ||
-          (window.parent !== window && /(?:^|[?&#])vk_/.test(q + location.hash));
+          /(?:^|[?&])vk_app_id=/.test(q);
         if (!inVk || !window.vkBridge) return;
-        window.__vkInitPromise = window.vkBridge.send('VKWebAppInit');
+        try {
+          window.__vkInitPromise = window.vkBridge.send('VKWebAppInit');
+        } catch (e) {}
       })();
     </script>
     <title>Meditate with Sri Sri</title>

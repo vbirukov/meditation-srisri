@@ -17,6 +17,10 @@ export interface PracticeStatsSnapshot {
   lastSession: LastPracticeSession | null;
 }
 
+let suppressPush = false;
+let pushTimer: ReturnType<typeof setTimeout> | null = null;
+let started = false;
+
 function snapshotFromStore(): PracticeStatsSnapshot {
   const s = usePracticeStatsStore.getState();
   return {
@@ -45,27 +49,55 @@ export function pickNewerSnapshot(
 }
 
 function applySnapshot(snap: PracticeStatsSnapshot) {
-  usePracticeStatsStore.setState({
-    totalSessions: snap.totalSessions,
-    streakDays: snap.streakDays,
-    lastPracticeDate: snap.lastPracticeDate,
-    monthKey: snap.monthKey,
-    secondsThisMonth: snap.secondsThisMonth,
-    lastSession: snap.lastSession,
+  suppressPush = true;
+  try {
+    usePracticeStatsStore.setState({
+      totalSessions: snap.totalSessions,
+      streakDays: snap.streakDays,
+      lastPracticeDate: snap.lastPracticeDate,
+      monthKey: snap.monthKey,
+      secondsThisMonth: snap.secondsThisMonth,
+      lastSession: snap.lastSession,
+    });
+  } finally {
+    // persist middleware пишет sync; отпускаем на следующем тике
+    queueMicrotask(() => {
+      suppressPush = false;
+    });
+  }
+}
+
+function waitLocalPersistHydrated(): Promise<void> {
+  const api = usePracticeStatsStore.persist;
+  if (api.hasHydrated()) return Promise.resolve();
+  return new Promise((resolve) => {
+    const unsub = api.onFinishHydration(() => {
+      unsub();
+      resolve();
+    });
   });
 }
 
 export async function hydratePracticeStatsFromVk(): Promise<boolean> {
   if (!isVkMiniApp()) return false;
+  await waitLocalPersistHydrated();
   try {
     const data = await bridge.send('VKWebAppStorageGet', { keys: [STORAGE_KEY] });
     const raw = data.keys?.find((k) => k.key === STORAGE_KEY)?.value;
-    if (!raw) return false;
+    if (!raw) {
+      // в VK ещё пусто — зальём локальное, если есть прогресс
+      const local = snapshotFromStore();
+      if (local.totalSessions > 0 || local.lastSession) {
+        await pushPracticeStatsToVk();
+      }
+      return false;
+    }
     const remote = JSON.parse(raw) as PracticeStatsSnapshot;
     if (remote?.v !== 1) return false;
-    const merged = pickNewerSnapshot(snapshotFromStore(), remote);
+    const local = snapshotFromStore();
+    const merged = pickNewerSnapshot(local, remote);
     applySnapshot(merged);
-    if (merged !== remote && completedAt(merged) >= completedAt(remote)) {
+    if (completedAt(merged) > completedAt(remote) || merged.totalSessions > remote.totalSessions) {
       await pushPracticeStatsToVk();
     }
     return true;
@@ -75,7 +107,7 @@ export async function hydratePracticeStatsFromVk(): Promise<boolean> {
 }
 
 export async function pushPracticeStatsToVk(): Promise<boolean> {
-  if (!isVkMiniApp()) return false;
+  if (!isVkMiniApp() || suppressPush) return false;
   try {
     const value = JSON.stringify(snapshotFromStore());
     if (value.length > 4000) return false;
@@ -86,15 +118,42 @@ export async function pushPracticeStatsToVk(): Promise<boolean> {
   }
 }
 
-let pushTimer: ReturnType<typeof setTimeout> | null = null;
-
 export function schedulePushPracticeStatsToVk(delayMs = 600) {
-  if (!isVkMiniApp()) return;
+  if (!isVkMiniApp() || suppressPush) return;
   if (pushTimer) clearTimeout(pushTimer);
   pushTimer = setTimeout(() => {
     pushTimer = null;
     void pushPracticeStatsToVk();
   }, delayMs);
+}
+
+/** Старт sync: hydrate → подписка на изменения store */
+export function startPracticeStatsVkSync(): () => void {
+  if (!isVkMiniApp() || started) return () => undefined;
+  started = true;
+  void hydratePracticeStatsFromVk();
+  const unsub = usePracticeStatsStore.subscribe((state, prev) => {
+    if (suppressPush) return;
+    if (
+      state.totalSessions === prev.totalSessions &&
+      state.streakDays === prev.streakDays &&
+      state.lastPracticeDate === prev.lastPracticeDate &&
+      state.monthKey === prev.monthKey &&
+      state.secondsThisMonth === prev.secondsThisMonth &&
+      state.lastSession === prev.lastSession
+    ) {
+      return;
+    }
+    schedulePushPracticeStatsToVk();
+  });
+  return () => {
+    unsub();
+    started = false;
+    if (pushTimer) {
+      clearTimeout(pushTimer);
+      pushTimer = null;
+    }
+  };
 }
 
 /** self-check: fails loud if merge regresses */
@@ -112,7 +171,11 @@ export function assertPickNewerWorks() {
       completedAt: 1000,
     },
   };
-  const newer = { ...older, totalSessions: 5, lastSession: { ...older.lastSession!, completedAt: 2000 } };
+  const newer = {
+    ...older,
+    totalSessions: 5,
+    lastSession: { ...older.lastSession!, completedAt: 2000 },
+  };
   const picked = pickNewerSnapshot(older, newer);
   if (picked.totalSessions !== 5) throw new Error('pickNewerSnapshot broken');
 }

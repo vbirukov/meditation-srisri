@@ -57,6 +57,7 @@ export function PracticeHubScreen() {
   const setLastMeditation = useRecentPracticeStore((s) => s.setLastMeditation);
   const setLastSadhana = useRecentPracticeStore((s) => s.setLastSadhana);
   const setLastCustomPractice = useRecentPracticeStore((s) => s.setLastCustomPractice);
+  const setLastTab = useRecentPracticeStore((s) => s.setLastTab);
   const clearLastCustomPracticeIf = useRecentPracticeStore((s) => s.clearLastCustomPracticeIf);
   const removeCustomPractice = useCustomPracticeStore((s) => s.removePractice);
   const customPractices = useCustomPracticeStore((s) => s.practices);
@@ -107,9 +108,10 @@ export function PracticeHubScreen() {
 
   const setTab = useCallback(
     (next: PracticeTab) => {
+      setLastTab(next);
       setParams({ tab: next }, { replace: true });
     },
-    [setParams],
+    [setLastTab, setParams],
   );
 
   const sessionUrl = (setup: boolean) => {

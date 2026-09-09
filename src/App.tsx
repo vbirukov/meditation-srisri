@@ -8,14 +8,10 @@ import { SessionScreen } from '@/screens/SessionScreen';
 import { EndScreen } from '@/screens/EndScreen';
 import { InstallPrompt } from '@/components/InstallPrompt';
 import { useCustomTrackStore } from '@/store/customTrackStore';
-import { usePracticeStatsStore } from '@/store/practiceStatsStore';
 import { useVkUserStore } from '@/store/vkUserStore';
 import { isVkMiniApp } from '@/utils/vk';
-import {
-  assertPickNewerWorks,
-  hydratePracticeStatsFromVk,
-  schedulePushPracticeStatsToVk,
-} from '@/vk/statsSync';
+import { assertPickNewerWorks, startPracticeStatsVkSync } from '@/vk/statsSync';
+import { startRecentPracticeVkSync } from '@/vk/recentSync';
 
 export function App() {
   useEffect(() => {
@@ -24,12 +20,18 @@ export function App() {
 
   useEffect(() => {
     if (!isVkMiniApp()) return;
-    assertPickNewerWorks();
-    void hydratePracticeStatsFromVk();
+    try {
+      assertPickNewerWorks();
+    } catch {
+      /* ignore self-check in prod */
+    }
     void useVkUserStore.getState().fetch();
-    return usePracticeStatsStore.subscribe(() => {
-      schedulePushPracticeStatsToVk();
-    });
+    const stopStats = startPracticeStatsVkSync();
+    const stopRecent = startRecentPracticeVkSync();
+    return () => {
+      stopStats();
+      stopRecent();
+    };
   }, []);
 
   return (

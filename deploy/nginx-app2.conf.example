@@ -1,4 +1,4 @@
-# Пример для app2.aolapp.ru
+# Пример для старого хоста (закрыт). Актуальный: nginx-aolapp.conf.example
 # DEPLOY_PATH — значение secrets.DEPLOY_PATH (например /var/www/meditation-app2)
 
 server {

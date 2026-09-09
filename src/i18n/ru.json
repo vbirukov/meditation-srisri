@@ -119,7 +119,10 @@
     "monthTotal": "в этом месяце",
     "totalSessions": "всего практик",
     "again": "Ещё одна медитация",
-    "finish": "Завершить"
+    "finish": "Завершить",
+    "shareWall": "На стену ВК",
+    "shareStory": "В историю",
+    "shareLink": "Поделиться"
   },
   "mood": {
     "calm": "Спокойствие",

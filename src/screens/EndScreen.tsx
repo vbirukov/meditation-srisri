@@ -17,11 +17,14 @@ import {
   pickQuote,
 } from '@/utils/gurujiContent';
 import { formatMonthTotal, formatPracticeDuration } from '@/utils/practiceStats';
+import { absoluteMediaUrl, isVkMiniApp } from '@/utils/vk';
+import { buildShareMessage, shareLink, shareToStory, shareToWall } from '@/vk/share';
 import { END_SCREEN_TEXTURE_POOLS, textureStyle, usePageTextures, withTexture } from '@/utils/textures';
 import '@/styles/textured-surface.css';
 import './EndScreen.css';
 
 const GURUJI_FALLBACK_PHOTO = '/media/images/guruji.svg';
+const STORY_BG = '/media/posters/welcome1.jpg';
 const meditations = meditationsData as Meditation[];
 const sadhanaCatalog = sadhanaData as unknown as SadhanaCatalog;
 const sadhanas = (sadhanaCatalog.practices ?? []) as SadhanaPractice[];
@@ -33,6 +36,7 @@ export function EndScreen() {
   const mood = useSessionStore((s) => s.mood);
   const setMood = useSessionStore((s) => s.setMood);
   const reset = useSessionStore((s) => s.reset);
+  const inVk = isVkMiniApp();
 
   const lastSession = usePracticeStatsStore((s) => s.lastSession);
   const streakDays = usePracticeStatsStore((s) => s.streakDays);
@@ -44,6 +48,7 @@ export function EndScreen() {
   const textures = usePageTextures(END_SCREEN_TEXTURE_POOLS);
   const media = getGurujiMedia();
   const [photoFailed, setPhotoFailed] = useState(false);
+  const [shareBusy, setShareBusy] = useState<'wall' | 'story' | 'link' | null>(null);
   const displayPhoto = photoFailed ? GURUJI_FALLBACK_PHOTO : photoSrc;
 
   const customPractices = useCustomPracticeStore((s) => s.practices);
@@ -89,6 +94,29 @@ export function EndScreen() {
         ? '/practice?tab=sadhana'
         : '/practice',
     );
+  };
+
+  const runShare = async (kind: 'wall' | 'story' | 'link') => {
+    if (shareBusy) return;
+    setShareBusy(kind);
+    try {
+      if (kind === 'wall') {
+        await shareToWall(
+          buildShareMessage({
+            locale,
+            practiceTitle,
+            durationLabel,
+            streakDays,
+          }),
+        );
+      } else if (kind === 'story') {
+        await shareToStory(absoluteMediaUrl(STORY_BG));
+      } else {
+        await shareLink();
+      }
+    } finally {
+      setShareBusy(null);
+    }
   };
 
   return (
@@ -177,6 +205,34 @@ export function EndScreen() {
         </section>
 
         <div className="end-screen__actions">
+          {inVk && (
+            <div className="end-screen__share" role="group" aria-label={t('end.shareLink')}>
+              <button
+                type="button"
+                className="btn-secondary"
+                disabled={shareBusy !== null}
+                onClick={() => void runShare('wall')}
+              >
+                {t('end.shareWall')}
+              </button>
+              <button
+                type="button"
+                className="btn-secondary"
+                disabled={shareBusy !== null}
+                onClick={() => void runShare('story')}
+              >
+                {t('end.shareStory')}
+              </button>
+              <button
+                type="button"
+                className="btn-secondary end-screen__share-link"
+                disabled={shareBusy !== null}
+                onClick={() => void runShare('link')}
+              >
+                {t('end.shareLink')}
+              </button>
+            </div>
+          )}
           <button type="button" className="btn-primary btn-primary--lg" onClick={again}>
             {t('end.again')}
           </button>

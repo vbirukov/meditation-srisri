@@ -279,6 +279,16 @@
   padding-bottom: var(--space-6);
 }
 
+.end-screen__share {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+
+.end-screen__share-link {
+  grid-column: 1 / -1;
+}
+
 .end-screen__actions .btn-primary,
 .end-screen__actions .btn-secondary {
   width: 100%;

@@ -8,10 +8,26 @@ import { SessionScreen } from '@/screens/SessionScreen';
 import { EndScreen } from '@/screens/EndScreen';
 import { InstallPrompt } from '@/components/InstallPrompt';
 import { useCustomTrackStore } from '@/store/customTrackStore';
+import { usePracticeStatsStore } from '@/store/practiceStatsStore';
+import { isVkMiniApp } from '@/utils/vk';
+import {
+  assertPickNewerWorks,
+  hydratePracticeStatsFromVk,
+  schedulePushPracticeStatsToVk,
+} from '@/vk/statsSync';
 
 export function App() {
   useEffect(() => {
     useCustomTrackStore.getState().init();
+  }, []);
+
+  useEffect(() => {
+    if (!isVkMiniApp()) return;
+    assertPickNewerWorks();
+    void hydratePracticeStatsFromVk();
+    return usePracticeStatsStore.subscribe(() => {
+      schedulePushPracticeStatsToVk();
+    });
   }, []);
 
   return (
@@ -25,7 +41,7 @@ export function App() {
         <Route path="/end" element={<EndScreen />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-      <InstallPrompt />
+      {!isVkMiniApp() && <InstallPrompt />}
     </div>
   );
 }

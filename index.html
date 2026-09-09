@@ -17,6 +17,19 @@
       href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Work+Sans:wght@300;400;500;600&display=swap"
       rel="stylesheet"
     />
+    <!-- VK: Init ДО React, иначе «приложение не инициализировано» -->
+    <script src="/vk-bridge.min.js"></script>
+    <script>
+      (function () {
+        var q = location.search || '';
+        var inVk =
+          location.hostname === 'vk.aolapp.ru' ||
+          /(?:^|[?&])vk_app_id=/.test(q) ||
+          (window.parent !== window && /(?:^|[?&#])vk_/.test(q + location.hash));
+        if (!inVk || !window.vkBridge) return;
+        window.__vkInitPromise = window.vkBridge.send('VKWebAppInit');
+      })();
+    </script>
     <title>Meditate with Sri Sri</title>
   </head>
   <body>

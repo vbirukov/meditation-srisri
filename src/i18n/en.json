@@ -119,7 +119,10 @@
     "monthTotal": "this month",
     "totalSessions": "total sessions",
     "again": "Another meditation",
-    "finish": "Finish"
+    "finish": "Finish",
+    "shareWall": "Post to VK",
+    "shareStory": "Share story",
+    "shareLink": "Share link"
   },
   "mood": {
     "calm": "Calm",

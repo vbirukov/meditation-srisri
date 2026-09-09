@@ -123,7 +123,12 @@
     "finish": "Finish",
     "shareWall": "Post to VK",
     "shareStory": "Share story",
-    "shareLink": "Share link"
+    "shareLink": "Share link",
+    "favoritesTitle": "Add to favorites?",
+    "favoritesHint": "Keep the app one tap away in VK.",
+    "favoritesAction": "Add to favorites",
+    "favoritesLater": "Not now",
+    "inviteFriends": "Invite friends"
   },
   "mood": {
     "calm": "Calm",

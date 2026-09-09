@@ -123,7 +123,12 @@
     "finish": "Завершить",
     "shareWall": "На стену ВК",
     "shareStory": "В историю",
-    "shareLink": "Поделиться"
+    "shareLink": "Поделиться",
+    "favoritesTitle": "Добавить в избранное?",
+    "favoritesHint": "Так приложение всегда будет под рукой в VK.",
+    "favoritesAction": "В избранное",
+    "favoritesLater": "Не сейчас",
+    "inviteFriends": "Пригласить друзей"
   },
   "mood": {
     "calm": "Спокойствие",

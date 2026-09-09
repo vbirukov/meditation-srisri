@@ -19,6 +19,12 @@ import {
 import { formatMonthTotal, formatPracticeDuration } from '@/utils/practiceStats';
 import { absoluteMediaUrl, isVkMiniApp } from '@/utils/vk';
 import { buildShareMessage, shareLink, shareToStory, shareToWall } from '@/vk/share';
+import {
+  addAppToFavorites,
+  shouldOfferFavorites,
+  useVkFavoritesStore,
+} from '@/vk/favorites';
+import { showInviteBox } from '@/vk/invite';
 import { END_SCREEN_TEXTURE_POOLS, textureStyle, usePageTextures, withTexture } from '@/utils/textures';
 import '@/styles/textured-surface.css';
 import './EndScreen.css';
@@ -48,7 +54,10 @@ export function EndScreen() {
   const textures = usePageTextures(END_SCREEN_TEXTURE_POOLS);
   const media = getGurujiMedia();
   const [photoFailed, setPhotoFailed] = useState(false);
-  const [shareBusy, setShareBusy] = useState<'wall' | 'story' | 'link' | null>(null);
+  const [shareBusy, setShareBusy] = useState<'wall' | 'story' | 'link' | 'invite' | null>(null);
+  const [favBusy, setFavBusy] = useState(false);
+  const [showFavorites, setShowFavorites] = useState(() => shouldOfferFavorites(totalSessions));
+  const markAsked = useVkFavoritesStore((s) => s.markAsked);
   const displayPhoto = photoFailed ? GURUJI_FALLBACK_PHOTO : photoSrc;
 
   const customPractices = useCustomPracticeStore((s) => s.practices);
@@ -96,7 +105,7 @@ export function EndScreen() {
     );
   };
 
-  const runShare = async (kind: 'wall' | 'story' | 'link') => {
+  const runShare = async (kind: 'wall' | 'story' | 'link' | 'invite') => {
     if (shareBusy) return;
     setShareBusy(kind);
     try {
@@ -111,12 +120,30 @@ export function EndScreen() {
         );
       } else if (kind === 'story') {
         await shareToStory(absoluteMediaUrl(STORY_BG));
+      } else if (kind === 'invite') {
+        await showInviteBox();
       } else {
         await shareLink();
       }
     } finally {
       setShareBusy(null);
     }
+  };
+
+  const runFavorites = async () => {
+    if (favBusy) return;
+    setFavBusy(true);
+    try {
+      await addAppToFavorites();
+    } finally {
+      setFavBusy(false);
+      setShowFavorites(false);
+    }
+  };
+
+  const dismissFavorites = () => {
+    markAsked();
+    setShowFavorites(false);
   };
 
   return (
@@ -205,6 +232,25 @@ export function EndScreen() {
         </section>
 
         <div className="end-screen__actions">
+          {showFavorites && (
+            <section className="end-screen__favorites glass-panel" aria-label={t('end.favoritesTitle')}>
+              <p className="end-screen__favorites-title">{t('end.favoritesTitle')}</p>
+              <p className="end-screen__favorites-hint text-muted">{t('end.favoritesHint')}</p>
+              <div className="end-screen__favorites-actions">
+                <button
+                  type="button"
+                  className="btn-primary"
+                  disabled={favBusy}
+                  onClick={() => void runFavorites()}
+                >
+                  {t('end.favoritesAction')}
+                </button>
+                <button type="button" className="btn-secondary" disabled={favBusy} onClick={dismissFavorites}>
+                  {t('end.favoritesLater')}
+                </button>
+              </div>
+            </section>
+          )}
           {inVk && (
             <div className="end-screen__share" role="group" aria-label={t('end.shareLink')}>
               <button
@@ -230,6 +276,14 @@ export function EndScreen() {
                 onClick={() => void runShare('link')}
               >
                 {t('end.shareLink')}
+              </button>
+              <button
+                type="button"
+                className="btn-secondary end-screen__share-link"
+                disabled={shareBusy !== null}
+                onClick={() => void runShare('invite')}
+              >
+                {t('end.inviteFriends')}
               </button>
             </div>
           )}

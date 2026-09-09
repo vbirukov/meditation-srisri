@@ -279,6 +279,28 @@
   padding-bottom: var(--space-6);
 }
 
+.end-screen__favorites {
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+
+.end-screen__favorites-title {
+  margin: 0 0 var(--space-2);
+  font-weight: 600;
+}
+
+.end-screen__favorites-hint {
+  margin: 0 0 var(--space-4);
+  font-size: 0.9rem;
+}
+
+.end-screen__favorites-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+
 .end-screen__share {
   display: grid;
   grid-template-columns: 1fr 1fr;

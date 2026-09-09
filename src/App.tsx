@@ -9,6 +9,7 @@ import { EndScreen } from '@/screens/EndScreen';
 import { InstallPrompt } from '@/components/InstallPrompt';
 import { useCustomTrackStore } from '@/store/customTrackStore';
 import { usePracticeStatsStore } from '@/store/practiceStatsStore';
+import { useVkUserStore } from '@/store/vkUserStore';
 import { isVkMiniApp } from '@/utils/vk';
 import {
   assertPickNewerWorks,
@@ -25,6 +26,7 @@ export function App() {
     if (!isVkMiniApp()) return;
     assertPickNewerWorks();
     void hydratePracticeStatsFromVk();
+    void useVkUserStore.getState().fetch();
     return usePracticeStatsStore.subscribe(() => {
       schedulePushPracticeStatsToVk();
     });

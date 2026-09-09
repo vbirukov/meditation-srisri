@@ -3,6 +3,7 @@
   "splash": "Loading…",
   "welcome": {
     "greeting": "Namaste, let us sit for meditation",
+    "greetingNamed": "Namaste, {name}. Let us sit for meditation",
     "cta": "Begin meditation",
     "disclaimer": "This app does not replace medical care. If you need help, please consult a professional."
   },

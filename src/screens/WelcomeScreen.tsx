@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { VideoBackground } from '@/components/VideoBackground';
 import { Header } from '@/components/Header';
 import { useT } from '@/i18n';
+import { useVkUserStore } from '@/store/vkUserStore';
 import { getTexturePool, pickRandomFromUrls, textureStyle, withTexture } from '@/utils/textures';
 import '@/styles/textured-surface.css';
 import './WelcomeScreen.css';
@@ -20,6 +21,11 @@ export function WelcomeScreen() {
   const navigate = useNavigate();
   const t = useT();
   const greetingTexture = useMemo(() => pickWelcomeGreetingTexture(), []);
+  const user = useVkUserStore((s) => s.user);
+
+  const greeting = user?.firstName
+    ? t('welcome.greetingNamed').replace('{name}', user.firstName)
+    : t('welcome.greeting');
 
   return (
     <div className="screen screen--immersive welcome-screen">
@@ -27,6 +33,16 @@ export function WelcomeScreen() {
       <Header transparent />
       <div className="welcome-screen__body fade-in">
         <div className="welcome-screen__card glass-bar">
+          {user?.photoUrl && (
+            <img
+              className="welcome-screen__avatar"
+              src={user.photoUrl}
+              alt=""
+              width={56}
+              height={56}
+              decoding="async"
+            />
+          )}
           <h1
             className={withTexture(
               'heading-serif welcome-screen__greeting',
@@ -35,7 +51,7 @@ export function WelcomeScreen() {
             )}
             style={textureStyle(greetingTexture)}
           >
-            <span className="welcome-screen__greeting-text">{t('welcome.greeting')}</span>
+            <span className="welcome-screen__greeting-text">{greeting}</span>
           </h1>
           <button
             type="button"

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { track } from '@/analytics/track';
 import { useT } from '@/i18n';
 import {
   cacheUrlsForOffline,
@@ -38,6 +39,7 @@ export function OfflineDownloadPanel({ onCached }: OfflineDownloadPanelProps) {
     const result = await cacheUrlsForOffline(bundle, setProgress);
     setDownloading(false);
     if (result.failed.length > 0) setFailed(result.failed);
+    else track('offline_download', { count: bundle.length });
     await checkReady();
     onCached?.();
   };

@@ -1,68 +1,67 @@
 {
   "meditation-card": [
-    "/media/textures/meditation-card.png",
-    "/media/textures/meditation-card1.png",
-    "/media/textures/meditation-card2.png",
-    "/media/textures/meditation-card3.png",
-    "/media/textures/meditation-card4.png"
+    "/media/textures/meditation-card.webp",
+    "/media/textures/meditation-card1.webp",
+    "/media/textures/meditation-card2.webp",
+    "/media/textures/meditation-card3.webp",
+    "/media/textures/meditation-card4.webp"
   ],
   "sadhana-card": [
-    "/media/textures/sadhana-card.png",
-    "/media/textures/sadhana-card1.png",
-    "/media/textures/sadhana-card2.png",
-    "/media/textures/sadhana-card3.png",
-    "/media/textures/sadhana-card4.png"
+    "/media/textures/sadhana-card.webp",
+    "/media/textures/sadhana-card1.webp",
+    "/media/textures/sadhana-card2.webp",
+    "/media/textures/sadhana-card3.webp",
+    "/media/textures/sadhana-card4.webp"
   ],
   "section-header": [
-    "/media/textures/section-header.png",
-    "/media/textures/section-header1.png",
-    "/media/textures/section-header2.png",
-    "/media/textures/section-header3.png",
-    "/media/textures/section-header4.png",
-    "/media/textures/section-header5.png",
-    "/media/textures/section-header6.png",
-    "/media/textures/section-header7.png",
-    "/media/textures/section-header8.png",
-    "/media/textures/section-header9.png",
-    "/media/textures/section-header10.png"
+    "/media/textures/section-header.webp",
+    "/media/textures/section-header1.webp",
+    "/media/textures/section-header2.webp",
+    "/media/textures/section-header3.webp",
+    "/media/textures/section-header4.webp",
+    "/media/textures/section-header5.webp",
+    "/media/textures/section-header6.webp",
+    "/media/textures/section-header7.webp",
+    "/media/textures/section-header8.webp",
+    "/media/textures/section-header9.webp",
+    "/media/textures/section-header10.webp"
   ],
   "practice-tools": [
-    "/media/textures/practice-tools.png",
-    "/media/textures/practice-tools1.png",
-    "/media/textures/practice-tools2.png",
-    "/media/textures/practice-tools3.png"
+    "/media/textures/practice-tools.webp",
+    "/media/textures/practice-tools1.webp",
+    "/media/textures/practice-tools2.webp",
+    "/media/textures/practice-tools3.webp"
   ],
   "session-chrome": [],
   "end-screen": [
-    "/media/textures/end-screen.png",
-    "/media/textures/end-screen1.png",
-    "/media/textures/end-screen2.png",
-    "/media/textures/end-screen3.png",
-    "/media/textures/end-screen4.png",
-    "/media/textures/end-screen5.png"
+    "/media/textures/end-screen.webp",
+    "/media/textures/end-screen1.webp",
+    "/media/textures/end-screen2.webp",
+    "/media/textures/end-screen3.webp",
+    "/media/textures/end-screen4.webp",
+    "/media/textures/end-screen5.webp"
   ],
   "end-hero": [
-    "/media/textures/end-hero.png",
     "/media/textures/end-hero.webp",
-    "/media/textures/end-hero1.png",
-    "/media/textures/end-hero2.png",
-    "/media/textures/end-hero3.png"
+    "/media/textures/end-hero1.webp",
+    "/media/textures/end-hero2.webp",
+    "/media/textures/end-hero3.webp"
   ],
   "end-summary": [
-    "/media/textures/end-summary.png",
-    "/media/textures/end-summary1.png",
-    "/media/textures/end-summary2.png",
-    "/media/textures/end-summary3.png"
+    "/media/textures/end-summary.webp",
+    "/media/textures/end-summary1.webp",
+    "/media/textures/end-summary2.webp",
+    "/media/textures/end-summary3.webp"
   ],
   "end-stats": [
-    "/media/textures/end-stats.png",
-    "/media/textures/end-stats1.png",
-    "/media/textures/end-stats2.png",
-    "/media/textures/end-stats3.png"
+    "/media/textures/end-stats.webp",
+    "/media/textures/end-stats1.webp",
+    "/media/textures/end-stats2.webp",
+    "/media/textures/end-stats3.webp"
   ],
   "end-mood": [
-    "/media/textures/end-mood1.png",
-    "/media/textures/end-mood2.png",
-    "/media/textures/end-mood3.png"
+    "/media/textures/end-mood1.webp",
+    "/media/textures/end-mood2.webp",
+    "/media/textures/end-mood3.webp"
   ]
 }

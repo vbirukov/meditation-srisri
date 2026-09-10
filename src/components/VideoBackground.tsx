@@ -1,7 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import posterManifest from '@/data/poster-manifest.json';
 import type { VideoScene } from '@/types';
-import { shouldUseStaticBackground } from '@/utils/connection';
+import {
+  preferredVideoHeight,
+  shouldUseStaticBackground,
+  videoRenditionUrl,
+} from '@/utils/connection';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import './VideoBackground.css';
 
@@ -10,8 +14,11 @@ const SCENE_POSTERS = posterManifest as Record<VideoScene, string[]>;
 type SceneVideoSources = { webm?: string; mp4?: string | string[] };
 
 const SCENE_VIDEOS: Record<VideoScene, SceneVideoSources> = {
-  welcome: { mp4: '/media/video/welcome.mp4' },
-  picker: { mp4: ['/media/video/picker.mp4', '/media/video/picker2.mp4'] },
+  // welcome.mp4 never shipped — poster only
+  welcome: {},
+  picker: {
+    mp4: ['/media/video/picker.mp4', '/media/video/picker2.mp4', '/media/video/picker3.mp4'],
+  },
   session: { mp4: ['/media/video/session.mp4', '/media/video/session2.mp4'] },
 };
 
@@ -21,8 +28,6 @@ function pickOne(item: string | string[] | undefined): string | undefined {
   if (item.length === 0) return undefined;
   return item[Math.floor(Math.random() * item.length)];
 }
-
-const pickMp4 = pickOne;
 
 type OverlayVariant = 'dark' | 'soft' | 'welcome' | 'session';
 
@@ -49,7 +54,16 @@ export function VideoBackground({
   const [useVideo, setUseVideo] = useState(false);
   const sources = SCENE_VIDEOS[scene];
   const poster = useMemo(() => pickOne(SCENE_POSTERS[scene]), [scene]);
-  const mp4Src = useMemo(() => pickMp4(sources.mp4), [scene]);
+  const baseMp4 = useMemo(() => pickOne(sources.mp4), [scene]);
+  const [mp4Src, setMp4Src] = useState<string | undefined>();
+
+  useEffect(() => {
+    if (!baseMp4) {
+      setMp4Src(undefined);
+      return;
+    }
+    setMp4Src(videoRenditionUrl(baseMp4, preferredVideoHeight()));
+  }, [baseMp4]);
 
   useEffect(() => {
     const preferStatic = staticOnly || reducedMotion || shouldUseStaticBackground() || !mp4Src;
@@ -90,6 +104,13 @@ export function VideoBackground({
           playsInline
           preload="metadata"
           poster={poster}
+          onError={() => {
+            if (baseMp4 && mp4Src && !mp4Src.includes('.480p.')) {
+              setMp4Src(videoRenditionUrl(baseMp4, 480));
+              return;
+            }
+            setUseVideo(false);
+          }}
         >
           {sources.webm && <source src={sources.webm} type="video/webm" />}
           <source src={mp4Src} type="video/mp4" />

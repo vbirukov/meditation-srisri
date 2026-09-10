@@ -9,6 +9,7 @@ import './PracticeTools.css';
 
 interface PracticeToolsProps {
   onStartCustom?: () => void;
+  onStartTimer?: () => void;
   sadhanaBlocks?: readonly SadhanaBlock[];
   textureUrl?: string;
   builderOpen?: boolean;
@@ -18,6 +19,7 @@ interface PracticeToolsProps {
 
 export function PracticeTools({
   onStartCustom,
+  onStartTimer,
   sadhanaBlocks = [],
   textureUrl,
   builderOpen = false,
@@ -43,6 +45,22 @@ export function PracticeTools({
     >
       <h2 className="practice-tools__heading">{t('hub.toolsTitle')}</h2>
       <div className="practice-tools__row">
+        {onStartTimer && (
+          <button
+            type="button"
+            className="practice-tools__chip"
+            onClick={() => {
+              setTrackOpen(false);
+              setBuilderOpen(false);
+              onStartTimer();
+            }}
+          >
+            <span className="practice-tools__chip-icon" aria-hidden>
+              ◌
+            </span>
+            <span className="practice-tools__chip-label">{t('picker.timerSection')}</span>
+          </button>
+        )}
         <button
           type="button"
           className={`practice-tools__chip ${trackOpen ? 'practice-tools__chip--active' : ''}`}

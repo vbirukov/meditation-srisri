@@ -89,7 +89,11 @@ const precacheFromMeditations = meditations
 
 const precacheFromBlocks = unique(blocks.flatMap(blockMediaUrls));
 
-const precacheUrls = unique([...precacheFromMeditations, ...precacheFromBlocks]);
+const precacheUrls = unique([
+  '/media/audio/bell.mp3',
+  ...precacheFromMeditations,
+  ...precacheFromBlocks,
+]);
 
 const practiceMedia = practices.map((practice) => {
   const phases = resolvePhases(practice, blocks);

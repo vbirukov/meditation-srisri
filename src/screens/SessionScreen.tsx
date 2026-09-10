@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { track } from '@/analytics/track';
 import meditationsData from '@/data/meditations.json';
 import sadhanaData from '@/data/sadhana.json';
 import type { Meditation, SadhanaCatalog, SadhanaPractice } from '@/types';
@@ -11,11 +12,12 @@ import { GuidedVideoPlayer } from '@/components/GuidedVideoPlayer';
 import { Timer } from '@/components/Timer';
 import { CustomTrackPanel } from '@/components/CustomTrackPanel';
 import { useT } from '@/i18n';
-import { useSessionStore } from '@/store/sessionStore';
+import { canSoftSaveAbandon, sessionElapsedSeconds, useSessionStore } from '@/store/sessionStore';
 import { usePracticeStatsStore } from '@/store/practiceStatsStore';
 import { useCustomPracticeStore } from '@/store/customPracticeStore';
 import { useCustomTrackStore } from '@/store/customTrackStore';
 import { resolveCustomPracticeSteps } from '@/utils/customPractice';
+import { preferredVideoHeight, videoRenditionUrl } from '@/utils/connection';
 import { formatTime } from '@/utils/time';
 import { useSessionPanelTexture, textureStyle, withTexture } from '@/utils/textures';
 import { useSadhanaChoicesStore } from '@/store/sadhanaChoicesStore';
@@ -41,6 +43,8 @@ export function SessionScreen() {
   );
   const [showExit, setShowExit] = useState(false);
   const [sessionRestored, setSessionRestored] = useState(false);
+  const startedTrackedRef = useRef(false);
+  const progress50TrackedRef = useRef(false);
 
   const mode = useSessionStore((s) => s.mode);
   const meditationId = useSessionStore((s) => s.meditationId);
@@ -62,6 +66,9 @@ export function SessionScreen() {
   const setSadhanaPhaseState = useSessionStore((s) => s.setSadhanaPhaseState);
   const setGuidedAudioSeconds = useSessionStore((s) => s.setGuidedAudioSeconds);
   const resetSession = useSessionStore((s) => s.reset);
+  const markInterrupted = useSessionStore((s) => s.markInterrupted);
+  const clearInterrupted = useSessionStore((s) => s.clearInterrupted);
+  const pauseSession = useSessionStore((s) => s.pause);
 
   const customTrack = useCustomTrackStore((s) => s.track);
   const customPractices = useCustomPracticeStore((s) => s.practices);
@@ -143,14 +150,46 @@ export function SessionScreen() {
 
   useWakeLock(keepAwake);
 
+  const sessionTrackProps = useCallback(() => {
+    const practiceId =
+      mode === 'guided'
+        ? meditationId
+        : mode === 'sadhana'
+          ? sadhanaId
+          : mode === 'custom-practice'
+            ? customPracticeId
+            : undefined;
+    return {
+      mode,
+      practice_id: practiceId,
+      duration: targetDurationSeconds,
+    };
+  }, [mode, meditationId, sadhanaId, customPracticeId, targetDurationSeconds]);
+
+  const markSessionStarted = useCallback(() => {
+    if (startedTrackedRef.current) return;
+    startedTrackedRef.current = true;
+    track('session_start', sessionTrackProps());
+  }, [sessionTrackProps]);
+
   const onTimerRunningChange = useCallback(
     (running: boolean) => {
       if (running) void acquireScreenWakeLock();
       setTimerRunning(running);
       setTimerRunningStore(running);
-      if (running) start();
+      if (running) {
+        clearInterrupted();
+        // resume must not call start() — it zeroes progressSeconds
+        if (!useSessionStore.getState().startedAt) start();
+        markSessionStarted();
+        if (params.get('setup') === '1') {
+          const next = new URLSearchParams(params);
+          next.delete('setup');
+          navigate(`/session?${next.toString()}`, { replace: true });
+        }
+      }
     },
-    [setTimerRunningStore, start],
+    [clearInterrupted, markSessionStarted, navigate, params, setTimerRunningStore, start],
   );
 
   const onSadhanaPhaseStateChange = useCallback(
@@ -168,10 +207,13 @@ export function SessionScreen() {
     }
     const hasSadhanaProgress =
       sadhanaPhaseIndex > 0 || sadhanaPhaseProgress > 0 || storedTimerRunning;
+    const hasTimerProgress =
+      (mode === 'timer' || mode === 'custom') &&
+      (timerRunning || storedTimerRunning || progressSeconds > 0);
     if (
       params.get('setup') === '1' &&
-      (mode === 'sadhana' || mode === 'custom-practice') &&
-      hasSadhanaProgress
+      (((mode === 'sadhana' || mode === 'custom-practice') && hasSadhanaProgress) ||
+        hasTimerProgress)
     ) {
       const next = new URLSearchParams(params);
       next.delete('setup');
@@ -187,10 +229,12 @@ export function SessionScreen() {
     mode,
     navigate,
     params,
+    progressSeconds,
     sadhanaPhaseIndex,
     sadhanaPhaseProgress,
     sessionRestored,
     storedTimerRunning,
+    timerRunning,
   ]);
 
   useEffect(() => {
@@ -212,6 +256,10 @@ export function SessionScreen() {
       1,
       Math.round(progressSeconds) || targetDurationSeconds,
     );
+    track('session_complete', {
+      ...sessionTrackProps(),
+      duration: durationSeconds,
+    });
     recordSession({
       mode,
       meditationId: mode === 'guided' ? meditationId : undefined,
@@ -231,15 +279,36 @@ export function SessionScreen() {
     customPracticeId,
     progressSeconds,
     targetDurationSeconds,
+    sessionTrackProps,
   ]);
 
   const handleGuidedProgress = useCallback(
     (seconds: number) => {
+      markSessionStarted();
       tick(seconds);
       setGuidedAudioSeconds(seconds);
+      if (
+        !progress50TrackedRef.current &&
+        targetDurationSeconds > 0 &&
+        seconds / targetDurationSeconds >= 0.5
+      ) {
+        progress50TrackedRef.current = true;
+        track('session_progress_50', sessionTrackProps());
+      }
     },
-    [setGuidedAudioSeconds, tick],
+    [markSessionStarted, sessionTrackProps, setGuidedAudioSeconds, targetDurationSeconds, tick],
   );
+
+  useEffect(() => {
+    if (
+      !progress50TrackedRef.current &&
+      targetDurationSeconds > 0 &&
+      progressSeconds / targetDurationSeconds >= 0.5
+    ) {
+      progress50TrackedRef.current = true;
+      track('session_progress_50', sessionTrackProps());
+    }
+  }, [progressSeconds, sessionTrackProps, targetDurationSeconds]);
 
   const handleBack = () => {
     if (timerRunning || progressSeconds > 0) {
@@ -250,9 +319,48 @@ export function SessionScreen() {
   };
 
   const confirmExit = () => {
+    const state = useSessionStore.getState();
+    const elapsed = sessionElapsedSeconds(state);
+    const pct =
+      state.targetDurationSeconds > 0
+        ? Math.round((elapsed / state.targetDurationSeconds) * 100)
+        : 0;
+
+    if (canSoftSaveAbandon(state)) {
+      pauseSession();
+      markInterrupted();
+      track('session_abandon', { ...sessionTrackProps(), pct, saved: true });
+      setShowExit(false);
+      navigate(practicePath);
+      return;
+    }
+
+    track('session_abandon', { ...sessionTrackProps(), pct, saved: false });
     resetSession();
     navigate(practicePath);
   };
+
+  const discardExit = () => {
+    const state = useSessionStore.getState();
+    const elapsed = sessionElapsedSeconds(state);
+    const pct =
+      state.targetDurationSeconds > 0
+        ? Math.round((elapsed / state.targetDurationSeconds) * 100)
+        : 0;
+    track('session_abandon', { ...sessionTrackProps(), pct, saved: false });
+    resetSession();
+    navigate(practicePath);
+  };
+
+  const softSaveEligible = canSoftSaveAbandon({
+    isCompleted,
+    targetDurationSeconds,
+    progressSeconds,
+    guidedAudioSeconds,
+    sadhanaPhaseIndex,
+    sadhanaPhaseProgress,
+    timerRunning,
+  });
 
   const toggleFocus = () => setFocusMode((f) => !f);
 
@@ -274,11 +382,18 @@ export function SessionScreen() {
 
   const panelTexture = useSessionPanelTexture();
   const isGuidedVideo = mode === 'guided' && meditation?.type === 'video';
+  const guidedVideoSrc = useMemo(() => {
+    if (!meditation?.mediaUrl) return '';
+    return videoRenditionUrl(meditation.mediaUrl, preferredVideoHeight());
+  }, [meditation?.mediaUrl]);
 
   const handleGuidedStart = useCallback(() => {
     void acquireScreenWakeLock();
-    start();
-  }, [start]);
+    const s = useSessionStore.getState();
+    if (!s.startedAt) start();
+    else clearInterrupted();
+    markSessionStarted();
+  }, [clearInterrupted, markSessionStarted, start]);
 
   return (
     <div
@@ -342,7 +457,8 @@ export function SessionScreen() {
 
         {isGuidedVideo && meditation && (
           <GuidedVideoPlayer
-            src={meditation.mediaUrl}
+            src={guidedVideoSrc}
+            fallbackSrc={videoRenditionUrl(meditation.mediaUrl, 480)}
             durationSeconds={meditation.durationSeconds}
             initialTime={guidedResumeRef.current}
             onProgress={handleGuidedProgress}
@@ -401,7 +517,9 @@ export function SessionScreen() {
             onComplete={handleComplete}
             running={timerRunning}
             onRunningChange={onTimerRunningChange}
+            onProgress={tick}
             setupMode={setup}
+            initialProgress={progressSeconds}
             textureUrl={panelTexture}
             labels={{
               presets: t('timer.presets'),
@@ -435,7 +553,9 @@ export function SessionScreen() {
               onComplete={handleComplete}
               running={timerRunning}
               onRunningChange={onTimerRunningChange}
+              onProgress={tick}
               setupMode={setup}
+              initialProgress={progressSeconds}
               textureUrl={panelTexture}
               labels={{
                 presets: t('timer.presets'),
@@ -459,15 +579,22 @@ export function SessionScreen() {
       {showExit && (
         <div className="session-dialog" role="dialog" aria-modal="true">
           <div className="session-dialog__box panel-elevated">
-            <p>{t('session.exitConfirm')}</p>
+            <p>
+              {softSaveEligible ? t('session.exitSaveConfirm') : t('session.exitConfirm')}
+            </p>
             <div className="session-dialog__actions">
               <button type="button" className="btn-secondary" onClick={() => setShowExit(false)}>
                 {t('session.exitNo')}
               </button>
               <button type="button" className="btn-primary" onClick={confirmExit}>
-                {t('session.exitYes')}
+                {softSaveEligible ? t('session.exitSave') : t('session.exitYes')}
               </button>
             </div>
+            {softSaveEligible && (
+              <button type="button" className="session-dialog__discard" onClick={discardExit}>
+                {t('session.exitDiscard')}
+              </button>
+            )}
           </div>
         </div>
       )}

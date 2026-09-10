@@ -32,21 +32,6 @@
         { "id": "finished" }
       ]
     },
-        {
-      "id": "sanyam-short",
-      "title": "Короткая саньям садхана с Самаведами",
-      "description": "Богар пранаяма - сахадж - тишина - надишодхана пранаяма",
-      "phases": [
-        { "id": "lets-start" },
-        { "id": "smile" },
-        { "id": "bogar-pranayam" },
-        { "id": "sahaj" },
-        { "id": "silence-8-minutes" },
-        { "id": "lie-down" },
-        { "id": "nadi-shodhana-pranayam" },
-        { "id": "finished" }
-      ]
-    },
     {
       "id": "sanyam-full",
       "title": "Полная саньям садхана",

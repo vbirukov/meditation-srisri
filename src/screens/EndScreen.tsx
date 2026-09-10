@@ -1,14 +1,17 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { track } from '@/analytics/track';
 import meditationsData from '@/data/meditations.json';
 import sadhanaData from '@/data/sadhana.json';
 import type { Meditation, SadhanaCatalog, SadhanaPractice } from '@/types';
 import { Header } from '@/components/Header';
 import { MoodSelector } from '@/components/MoodSelector';
+import { StreakPath } from '@/components/StreakPath';
 import { useLocaleStore, useT } from '@/i18n';
 import { useSessionStore } from '@/store/sessionStore';
 import { useCustomPracticeStore } from '@/store/customPracticeStore';
 import { usePracticeStatsStore } from '@/store/practiceStatsStore';
+import { STREAK_GOAL_DAYS } from '@/store/onboardingStore';
 import {
   getGurujiMedia,
   getLocalized,
@@ -93,17 +96,22 @@ export function EndScreen() {
 
   const finish = () => {
     reset();
-    navigate('/welcome');
+    navigate('/practice');
   };
 
   const again = () => {
     reset();
     navigate(
       lastSession?.sadhanaId || lastSession?.customPracticeId
-        ? '/practice?tab=sadhana'
-        : '/practice',
+        ? '/practice?tab=sadhana&focus=continue'
+        : '/practice?focus=continue',
     );
   };
+
+  const streakHint =
+    streakDays >= STREAK_GOAL_DAYS
+      ? t('end.streakDone')
+      : t('end.streakKeep').replace('{next}', String(Math.min(STREAK_GOAL_DAYS, streakDays + 1)));
 
   const runShare = async (kind: 'wall' | 'story' | 'link' | 'invite') => {
     if (shareBusy) return;
@@ -125,6 +133,7 @@ export function EndScreen() {
       } else {
         await shareLink();
       }
+      track('end_share', { kind, mode: lastSession?.mode });
     } finally {
       setShareBusy(null);
     }
@@ -135,6 +144,7 @@ export function EndScreen() {
     setFavBusy(true);
     try {
       await addAppToFavorites();
+      track('end_share', { kind: 'favorites', mode: lastSession?.mode });
     } finally {
       setFavBusy(false);
       setShowFavorites(false);
@@ -207,19 +217,31 @@ export function EndScreen() {
           style={textureStyle(textures['end-stats'])}
           aria-label={t('end.statsTitle')}
         >
-          <div className="end-screen__stat">
-            <span className="end-screen__stat-value">{streakDays}</span>
-            <span className="end-screen__stat-label">{t('end.streak')}</span>
+          <div className="end-screen__streak-path">
+            <StreakPath
+              current={streakDays}
+              goal={STREAK_GOAL_DAYS}
+              label={t('end.streakPath')
+                .replace('{current}', String(Math.min(streakDays, STREAK_GOAL_DAYS)))
+                .replace('{goal}', String(STREAK_GOAL_DAYS))}
+            />
+            <p className="end-screen__streak-hint text-muted">{streakHint}</p>
           </div>
-          <div className="end-screen__stat">
-            <span className="end-screen__stat-value">
-              {formatMonthTotal(secondsThisMonth, locale)}
-            </span>
-            <span className="end-screen__stat-label">{t('end.monthTotal')}</span>
-          </div>
-          <div className="end-screen__stat">
-            <span className="end-screen__stat-value">{totalSessions}</span>
-            <span className="end-screen__stat-label">{t('end.totalSessions')}</span>
+          <div className="end-screen__stat-row">
+            <div className="end-screen__stat">
+              <span className="end-screen__stat-value">{streakDays}</span>
+              <span className="end-screen__stat-label">{t('end.streak')}</span>
+            </div>
+            <div className="end-screen__stat">
+              <span className="end-screen__stat-value">
+                {formatMonthTotal(secondsThisMonth, locale)}
+              </span>
+              <span className="end-screen__stat-label">{t('end.monthTotal')}</span>
+            </div>
+            <div className="end-screen__stat">
+              <span className="end-screen__stat-value">{totalSessions}</span>
+              <span className="end-screen__stat-label">{t('end.totalSessions')}</span>
+            </div>
           </div>
         </section>
 

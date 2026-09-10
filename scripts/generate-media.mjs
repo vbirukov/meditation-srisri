@@ -1,9 +1,13 @@
+/**
+ * Dev placeholders only. Writes into media-originals/, NEVER into public/media.
+ * Real product media lives in public/media and is optimized via optimize-*.mjs.
+ */
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const root = path.join(__dirname, '..', 'public', 'media');
+const root = path.join(__dirname, '..', 'media-originals');
 
 function writeWav(filePath, durationSec = 30, sampleRate = 22050) {
   const numSamples = sampleRate * durationSec;
@@ -29,27 +33,12 @@ function writeWav(filePath, durationSec = 30, sampleRate = 22050) {
 const audioFiles = [
   ['audio/breath-5.wav', 300],
   ['audio/gratitude-10.wav', 600],
-  ['audio/silence-15.wav', 900],
   ['audio/bell.wav', 2],
 ];
 
 for (const [rel, sec] of audioFiles) {
   writeWav(path.join(root, rel), sec);
-  console.log('wrote', rel);
+  console.log('wrote media-originals/', rel);
 }
 
-const mp3Map = {
-  'breath-5.mp3': 'breath-5.wav',
-  'gratitude-10.mp3': 'gratitude-10.wav',
-  'silence-15.mp3': 'silence-15.wav',
-  'bell.mp3': 'bell.wav',
-};
-
-for (const [mp3, wav] of Object.entries(mp3Map)) {
-  const src = path.join(root, 'audio', wav);
-  const dest = path.join(root, 'audio', mp3);
-  if (fs.existsSync(src)) {
-    fs.copyFileSync(src, dest);
-    console.log('copied placeholder as', mp3, '(replace with real mp3)');
-  }
-}
+console.log('Note: silence is a timer phase — no silence audio placeholder.');

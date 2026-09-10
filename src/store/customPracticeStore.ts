@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { track } from '@/analytics/track';
 import type { CustomPractice, CustomPracticeStep, SadhanaBlock } from '@/types';
 import { createEmptyPractice, createStepFromBlock, newInstanceId } from '@/utils/customPractice';
 
@@ -79,6 +80,7 @@ export const useCustomPracticeStore = create(
               : p,
           ),
         });
+        track('custom_practice_save', { steps: practice.steps.length });
         return editingId;
       },
 

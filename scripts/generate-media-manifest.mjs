@@ -48,8 +48,23 @@ function collectFiles(dir, urlPrefix, prefix, fallback) {
   }
   const files = fs.readdirSync(dir);
   const matched = files.filter((f) => matchesPrefix(f, prefix));
-  matched.sort((a, b) => sortKey(a, prefix) - sortKey(b, prefix));
-  const urls = matched.map((f) => `${urlPrefix}/${f}`);
+  // Prefer webp/avif over png/jpeg for the same stem
+  const byStem = new Map();
+  const rank = (f) => {
+    const ext = path.extname(f).toLowerCase();
+    if (ext === '.avif') return 0;
+    if (ext === '.webp') return 1;
+    if (ext === '.jpg' || ext === '.jpeg') return 2;
+    return 3;
+  };
+  for (const f of matched) {
+    const stem = f.replace(/\.[^.]+$/, '').toLowerCase();
+    const prev = byStem.get(stem);
+    if (!prev || rank(f) < rank(prev)) byStem.set(stem, f);
+  }
+  const preferred = [...byStem.values()];
+  preferred.sort((a, b) => sortKey(a, prefix) - sortKey(b, prefix));
+  const urls = preferred.map((f) => `${urlPrefix}/${f}`);
   if (urls.length === 0 && fallback) return [fallback];
   return urls;
 }

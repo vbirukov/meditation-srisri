@@ -2,8 +2,13 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import type { MeditationSession, SessionMode } from '@/types';
 
+/** Soft-save abandon only below this fraction of target duration. */
+export const ABANDON_SAVE_PCT = 0.5;
+
 interface SessionStore extends MeditationSession {
   mood: string | null;
+  /** Left mid-session with progress kept — hub can resume. */
+  interrupted: boolean;
   setMode: (mode: SessionMode, practiceId?: string) => void;
   setTargetDuration: (seconds: number) => void;
   start: () => void;
@@ -16,6 +21,8 @@ interface SessionStore extends MeditationSession {
   setTimerRunning: (running: boolean) => void;
   setSadhanaPhaseState: (index: number, progressSeconds: number) => void;
   setGuidedAudioSeconds: (seconds: number) => void;
+  markInterrupted: () => void;
+  clearInterrupted: () => void;
 }
 
 const initial: MeditationSession = {
@@ -34,11 +41,42 @@ const initial: MeditationSession = {
   guidedAudioSeconds: 0,
 };
 
+export function sessionElapsedSeconds(s: {
+  progressSeconds: number;
+  guidedAudioSeconds?: number;
+  sadhanaPhaseIndex?: number;
+  sadhanaPhaseProgress?: number;
+}): number {
+  const guided = s.guidedAudioSeconds ?? 0;
+  const phase =
+    (s.sadhanaPhaseIndex ?? 0) > 0 || (s.sadhanaPhaseProgress ?? 0) > 0
+      ? Math.max(1, s.sadhanaPhaseProgress ?? 0)
+      : 0;
+  return Math.max(s.progressSeconds, guided, phase);
+}
+
+export function canSoftSaveAbandon(s: {
+  isCompleted: boolean;
+  targetDurationSeconds: number;
+  progressSeconds: number;
+  guidedAudioSeconds?: number;
+  sadhanaPhaseIndex?: number;
+  sadhanaPhaseProgress?: number;
+  timerRunning?: boolean;
+}): boolean {
+  if (s.isCompleted) return false;
+  const elapsed = sessionElapsedSeconds(s);
+  if (elapsed <= 0 && !s.timerRunning) return false;
+  if (s.targetDurationSeconds <= 0) return true;
+  return elapsed / s.targetDurationSeconds < ABANDON_SAVE_PCT;
+}
+
 export const useSessionStore = create(
   persist<SessionStore>(
     (set, get) => ({
       ...initial,
       mood: null,
+      interrupted: false,
 
       setMode: (mode, practiceId) =>
         set({
@@ -54,6 +92,7 @@ export const useSessionStore = create(
           sadhanaPhaseProgress: 0,
           timerRunning: false,
           guidedAudioSeconds: 0,
+          interrupted: false,
         }),
 
       setTargetDuration: (targetDurationSeconds) =>
@@ -66,6 +105,7 @@ export const useSessionStore = create(
           pausedAt: null,
           isCompleted: false,
           progressSeconds: 0,
+          interrupted: false,
         });
       },
 
@@ -83,14 +123,16 @@ export const useSessionStore = create(
           startedAt: startedAt + pauseDuration,
           pausedAt: null,
           progressSeconds,
+          interrupted: false,
         });
       },
 
       tick: (progressSeconds) => set({ progressSeconds }),
 
-      complete: () => set({ isCompleted: true, pausedAt: null, timerRunning: false }),
+      complete: () =>
+        set({ isCompleted: true, pausedAt: null, timerRunning: false, interrupted: false }),
 
-      reset: () => set({ ...initial, mood: null }),
+      reset: () => set({ ...initial, mood: null, interrupted: false }),
 
       setMood: (mood) => set({ mood }),
 
@@ -100,6 +142,19 @@ export const useSessionStore = create(
         set({ sadhanaPhaseIndex, sadhanaPhaseProgress }),
 
       setGuidedAudioSeconds: (guidedAudioSeconds) => set({ guidedAudioSeconds }),
+
+      markInterrupted: () => {
+        const s = get();
+        const now = Date.now();
+        set({
+          interrupted: true,
+          timerRunning: false,
+          startedAt: s.startedAt ?? now,
+          pausedAt: s.pausedAt ?? now,
+        });
+      },
+
+      clearInterrupted: () => set({ interrupted: false }),
     }),
     {
       name: 'meditate-session',
@@ -119,6 +174,7 @@ export const useSessionStore = create(
           sadhanaPhaseProgress: state.sadhanaPhaseProgress,
           timerRunning: state.timerRunning,
           guidedAudioSeconds: state.guidedAudioSeconds,
+          interrupted: state.interrupted,
         }) as SessionStore,
     },
   ),

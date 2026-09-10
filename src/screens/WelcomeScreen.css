@@ -111,3 +111,12 @@
   background-color: var(--btn-terracotta-hover);
   box-shadow: 0 8px 22px rgba(155, 119, 80, 0.34);
 }
+
+.welcome-screen__disclaimer {
+  margin: var(--space-4) 0 0;
+  font-size: 0.7rem;
+  line-height: 1.4;
+  text-align: center;
+  max-width: 36ch;
+  opacity: 0.85;
+}

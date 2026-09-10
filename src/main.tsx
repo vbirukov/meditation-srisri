@@ -2,12 +2,16 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, HashRouter } from 'react-router-dom';
 import bridge from '@vkontakte/vk-bridge';
+import { track } from './analytics/track';
 import { App } from './App';
+import { assertCatalogIntegrity } from './data/assertCatalog';
 import './styles/global.css';
 import { registerSW } from './pwa/registerSW';
 import { isVkMiniApp } from './utils/vk';
 
 const inVk = isVkMiniApp();
+assertCatalogIntegrity();
+track('app_open');
 
 function bootError(err: unknown) {
   const msg = err instanceof Error ? `${err.message}\n${err.stack ?? ''}` : String(err);

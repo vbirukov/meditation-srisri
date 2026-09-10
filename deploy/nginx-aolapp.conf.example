@@ -31,6 +31,15 @@ server {
         add_header Access-Control-Allow-Origin *;
     }
 
+    # Analytics pixel: events → access log (goaccess / duckdb)
+    # log_format events '$time_iso8601\t$arg_n\t$args\t$http_referer\t$http_user_agent';
+    location = /e.gif {
+        empty_gif;
+        access_log /var/log/nginx/meditate-events.log;
+        add_header Cache-Control "no-store";
+        add_header Access-Control-Allow-Origin *;
+    }
+
     location ~* \.(?:js|css|woff2|png|jpg|jpeg|webp|svg|ico)$ {
         try_files $uri =404;
         expires 7d;

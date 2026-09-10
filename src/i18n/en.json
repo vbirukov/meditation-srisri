@@ -1,11 +1,49 @@
 {
   "appName": "Meditate with Sri Sri",
   "splash": "Loading…",
+  "splashReady": "Ready",
   "welcome": {
     "greeting": "Namaste, let us sit for meditation",
     "greetingNamed": "Namaste, {name}. Let us sit for meditation",
     "cta": "Begin meditation",
     "disclaimer": "This app does not replace medical care. If you need help, please consult a professional."
+  },
+  "onboarding": {
+    "eyebrow": "14 days with Guruji",
+    "title": "One day — one practice",
+    "lead": "A short session every day. By day 14 the habit is yours — no pressure, no race.",
+    "promiseNote": "Day 1 starts now. The rest is one dot at a time.",
+    "pathLabel": "Your 14-day path",
+    "ctaPromise": "I'm ready · day 1",
+    "skip": "Skip onboarding",
+    "skipCatalog": "Open full catalog",
+    "back": "Back",
+    "stepsLabel": "Onboarding steps",
+    "slotEyebrow": "Rhythm",
+    "slotTitle": "When is easiest for you?",
+    "slotLead": "One slot anchors the habit. Reminders can follow later.",
+    "slotLater": "Decide later",
+    "slot": {
+      "morning": "Morning",
+      "day": "Daytime",
+      "evening": "Evening"
+    },
+    "slotHint": {
+      "morning": "Before the rush — 5–10 quiet minutes",
+      "day": "A short pause between tasks",
+      "evening": "Put the day down gently"
+    },
+    "pickEyebrow": "Day 1",
+    "pickTitle": "First practice — one tap",
+    "pickLead": {
+      "default": "Three short options. The top pick is recommended — start there.",
+      "morning": "Morning fits a short Om — a soft start to the day.",
+      "day": "Daytime fits a silent timer — no voice, 5 minutes.",
+      "evening": "Evening fits the smile practice — ease tension before rest."
+    },
+    "recommended": "For you",
+    "timerPick": "Silent timer",
+    "timerPickMeta": "Just a bell and silence — 5 minutes"
   },
   "hub": {
     "title": "Practice",
@@ -17,7 +55,14 @@
     "sadhanaHint": "Ready sadhanas or build your own from blocks below",
     "phasesCount": "{count} phases",
     "recent": "Recent",
-    "continue": "Continue"
+    "continue": "Continue",
+    "resumeSession": "Unfinished",
+    "resumeCta": "Resume",
+    "resumeDiscard": "Discard",
+    "starterTitle": "Start short",
+    "starterLead": "Three day-1 options — no full catalog yet.",
+    "showAll": "Full catalog",
+    "streakLabel": "Streak · {goal}-day goal"
   },
   "sadhana": {
     "phases": "Phases",
@@ -38,8 +83,8 @@
     "subtitle": "When you feel ready, tap to begin",
     "videoSection": "Video meditations",
     "audioSection": "Audio meditations",
-    "timerSection": "Your own practice",
-    "timerHint": "A quiet timer with water in the background",
+    "timerSection": "Silent timer",
+    "timerHint": "Practice in silence — just a timer",
     "offlineHint": "Cached meditations, sadhanas, and the timer are available",
     "sadhanaOfflineHint": "Download practices first or go online",
     "customSection": "Your track"
@@ -97,11 +142,14 @@
     "focusHint": "Tap anywhere to hide controls",
     "exitConfirm": "End meditation?",
     "exitYes": "End",
-    "exitNo": "Continue",
+    "exitNo": "Stay",
+    "exitSaveConfirm": "Save progress and leave? You can continue from here.",
+    "exitSave": "Save & leave",
+    "exitDiscard": "Discard progress",
     "offlineFallback": "Media unavailable offline. You can use the timer instead."
   },
   "timer": {
-    "title": "Your practice",
+    "title": "Silence",
     "presets": "Duration",
     "custom": "Custom (minutes)",
     "start": "Start",
@@ -117,10 +165,13 @@
     "practiceFallback": "Meditation",
     "statsTitle": "Your practice",
     "streak": "day streak",
+    "streakPath": "Day {current} of {goal}",
+    "streakKeep": "Tomorrow is day {next}. Keep the streak.",
+    "streakDone": "14 days! Habit locked in.",
     "monthTotal": "this month",
     "totalSessions": "total sessions",
-    "again": "Another meditation",
-    "finish": "Finish",
+    "again": "One more today",
+    "finish": "Back to practice",
     "shareWall": "Post to VK",
     "shareStory": "Share story",
     "shareLink": "Share link",

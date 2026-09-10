@@ -9,6 +9,8 @@ import './GuidedVideoPlayer.css';
 
 interface GuidedVideoPlayerProps {
   src: string;
+  /** If rendition 404s, fall back to original mediaUrl. */
+  fallbackSrc?: string;
   durationSeconds: number;
   onComplete?: () => void;
   onProgress?: (seconds: number) => void;
@@ -27,6 +29,7 @@ function pauseBackgroundVideos() {
 
 export function GuidedVideoPlayer({
   src,
+  fallbackSrc,
   durationSeconds,
   onComplete,
   onProgress,
@@ -44,16 +47,22 @@ export function GuidedVideoPlayer({
   const onCompleteRef = useRef(onComplete);
   const onProgressRef = useRef(onProgress);
   const onStartRef = useRef(onStart);
+  const [activeSrc, setActiveSrc] = useState(src);
   const [playing, setPlaying] = useState(false);
   const [current, setCurrent] = useState(initialTime);
   const [duration, setDuration] = useState(durationSeconds);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
-  const encodedSrc = encodeMediaUrl(src);
+  const encodedSrc = encodeMediaUrl(activeSrc);
 
   onCompleteRef.current = onComplete;
   onProgressRef.current = onProgress;
   onStartRef.current = onStart;
+
+  useEffect(() => {
+    setActiveSrc(src);
+    setError(false);
+  }, [src]);
 
   const markStarted = useCallback(() => {
     if (startedRef.current) return;
@@ -143,6 +152,12 @@ export function GuidedVideoPlayer({
       onCompleteRef.current?.();
     };
     const onErr = () => {
+      if (fallbackSrc && activeSrc !== fallbackSrc) {
+        setActiveSrc(fallbackSrc);
+        setLoading(true);
+        setError(false);
+        return;
+      }
       setLoading(false);
       setError(true);
     };
@@ -162,7 +177,7 @@ export function GuidedVideoPlayer({
       v.removeEventListener('ended', onEnd);
       v.removeEventListener('error', onErr);
     };
-  }, [encodedSrc, initialTime, markStarted]);
+  }, [activeSrc, encodedSrc, fallbackSrc, initialTime, markStarted]);
 
   useEffect(() => {
     if (!autoPlay || error) return;

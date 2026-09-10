@@ -12,7 +12,10 @@ interface TimerProps {
   onComplete: () => void;
   running: boolean;
   onRunningChange: (running: boolean) => void;
+  onProgress?: (seconds: number) => void;
   setupMode?: boolean;
+  /** Restore mid-session progress (soft abandon resume). */
+  initialProgress?: number;
   textureUrl?: string;
   labels: {
     presets: string;
@@ -32,7 +35,9 @@ export function Timer({
   onComplete,
   running,
   onRunningChange,
+  onProgress,
   setupMode = false,
+  initialProgress = 0,
   textureUrl,
   labels,
 }: TimerProps) {
@@ -40,9 +45,23 @@ export function Timer({
   const startedAtRef = useRef<number | null>(null);
   const pausedAtRef = useRef<number | null>(null);
   const pausedProgressRef = useRef(0);
-  const [progress, setProgress] = useState(0);
+  const [progress, setProgress] = useState(() => Math.max(0, initialProgress));
   const completedRef = useRef(false);
   const bellRef = useRef<HTMLAudioElement>(null);
+  const restoredRef = useRef(false);
+
+  useEffect(() => {
+    if (restoredRef.current || initialProgress <= 0) return;
+    restoredRef.current = true;
+    pausedProgressRef.current = initialProgress;
+    setProgress(initialProgress);
+    startedAtRef.current = Date.now() - initialProgress * 1000;
+    if (running) {
+      pausedAtRef.current = null;
+    } else {
+      pausedAtRef.current = Date.now();
+    }
+  }, [initialProgress, running]);
 
   const remaining = Math.max(0, targetSeconds - progress);
   const pct = targetSeconds > 0 ? Math.min(1, progress / targetSeconds) : 0;
@@ -67,8 +86,9 @@ export function Timer({
     pausedProgressRef.current = p;
     pausedAtRef.current = Date.now();
     setProgress(p);
+    onProgress?.(p);
     onRunningChange(false);
-  }, [onRunningChange]);
+  }, [onProgress, onRunningChange]);
 
   const resume = useCallback(() => {
     if (!pausedAtRef.current) return;
@@ -87,6 +107,7 @@ export function Timer({
         pausedProgressRef.current,
       );
       setProgress(p);
+      onProgress?.(p);
       if (p >= targetSeconds && !completedRef.current) {
         completedRef.current = true;
         onRunningChange(false);
@@ -95,7 +116,7 @@ export function Timer({
       }
     }, 250);
     return () => clearInterval(id);
-  }, [running, targetSeconds, onComplete, onRunningChange]);
+  }, [running, targetSeconds, onComplete, onProgress, onRunningChange]);
 
   const applyPreset = (min: number) => {
     onTargetChange(min * 60);
@@ -151,7 +172,7 @@ export function Timer({
 
   return (
     <div className="timer-active">
-      <audio ref={bellRef} src="/media/audio/bell.wav" preload="auto" />
+      <audio ref={bellRef} src="/media/audio/bell.mp3" preload="auto" />
       <div className="timer-ring-wrap glass-panel" aria-live="polite">
         <svg className="timer-ring" viewBox="0 0 200 200" role="img" aria-label={`${labels.remaining}: ${formatTime(remaining)}`}>
           <circle className="timer-ring__track" cx="100" cy="100" r="88" />

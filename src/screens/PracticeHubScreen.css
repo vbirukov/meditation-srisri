@@ -20,3 +20,90 @@
 .practice-hub .offline-badge {
   border: 1px solid color-mix(in srgb, var(--color-green) 25%, transparent);
 }
+
+.practice-hub__streak {
+  margin-bottom: var(--space-4);
+}
+
+.practice-hub__continue {
+  margin-bottom: var(--space-5);
+}
+
+.practice-hub__continue .continue-card {
+  margin-bottom: 0;
+}
+
+.practice-hub__resume {
+  margin-bottom: var(--space-5);
+}
+
+.practice-hub__resume .continue-card {
+  margin-bottom: var(--space-2);
+}
+
+.practice-hub__resume-discard {
+  display: block;
+  margin: 0 auto;
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  text-decoration: underline;
+  cursor: pointer;
+  padding: var(--space-1) var(--space-2);
+}
+
+.practice-hub__resume-discard:hover,
+.practice-hub__resume-discard:focus-visible {
+  color: var(--color-text);
+}
+
+.practice-hub__continue--focus .continue-card__main {
+  animation: continue-focus-pulse 1.4s ease-out 2;
+}
+
+.practice-hub__starter {
+  margin-bottom: var(--space-6);
+}
+
+.practice-hub__starter-lead {
+  margin: calc(-1 * var(--space-2)) 0 var(--space-4);
+  line-height: 1.5;
+  max-width: 40ch;
+}
+
+.practice-hub__starter-timer {
+  width: 100%;
+  margin-top: var(--space-2);
+}
+
+.practice-hub__show-all {
+  width: 100%;
+  margin: var(--space-3) 0 var(--space-5);
+}
+
+.practice-hub__starter > .practice-tools {
+  margin-top: var(--space-2);
+}
+
+@keyframes continue-focus-pulse {
+  0% {
+    box-shadow: var(--shadow-glow-sun), var(--shadow-inset-highlight);
+  }
+  40% {
+    box-shadow:
+      0 0 0 3px color-mix(in srgb, var(--color-primary) 55%, transparent),
+      var(--shadow-glow-sun),
+      var(--shadow-elevated);
+  }
+  100% {
+    box-shadow: var(--shadow-glow-sun), var(--shadow-inset-highlight);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .practice-hub__continue--focus .continue-card__main {
+    animation: none;
+    outline: 2px solid color-mix(in srgb, var(--color-primary) 70%, transparent);
+  }
+}

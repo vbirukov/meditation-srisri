@@ -27,9 +27,28 @@ const precacheAudioPattern = new RegExp(
   'i',
 );
 
+function analyticsPixelPlugin() {
+  return {
+    name: 'analytics-pixel',
+    configureServer(server: { middlewares: { use: (fn: unknown) => void } }) {
+      server.middlewares.use(
+        (req: { url?: string }, res: { statusCode: number; end: () => void }, next: () => void) => {
+          if (req.url?.startsWith('/e.gif')) {
+            res.statusCode = 204;
+            res.end();
+            return;
+          }
+          next();
+        },
+      );
+    },
+  };
+}
+
 export default defineConfig({
   plugins: [
     react(),
+    analyticsPixelPlugin(),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['icons/*.svg', 'icons/*.png'],
@@ -124,5 +143,10 @@ export default defineConfig({
   ],
   resolve: {
     alias: { '@': path.resolve(__dirname, 'src') },
+  },
+  server: {
+    watch: {
+      ignored: ['**/media-originals/**', '**/optimize-video.log'],
+    },
   },
 });

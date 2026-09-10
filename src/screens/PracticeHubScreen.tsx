@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { track } from '@/analytics/track';
 import meditationsData from '@/data/meditations.json';
 import sadhanaData from '@/data/sadhana.json';
 import type { Meditation, PracticeTab, SadhanaCatalog, SadhanaPractice } from '@/types';
@@ -12,13 +13,21 @@ import { PRACTICE_HUB_TEXTURE_POOLS, usePageTextures } from '@/utils/textures';
 import { PracticeTabs } from '@/components/PracticeTabs';
 import { PracticeTools } from '@/components/PracticeTools';
 import { RecentContinueCard } from '@/components/RecentContinueCard';
+import { StreakPath } from '@/components/StreakPath';
 import { useT } from '@/i18n';
 import { OfflineDownloadPanel } from '@/components/OfflineDownloadPanel';
 import { useOfflineCatalog } from '@/hooks/useOfflineCatalog';
 import { acquireScreenWakeLock } from '@/hooks/useWakeLock';
-import { useSessionStore } from '@/store/sessionStore';
+import { sessionElapsedSeconds, useSessionStore } from '@/store/sessionStore';
 import { useCustomTrackStore } from '@/store/customTrackStore';
 import { useRecentPracticeStore } from '@/store/recentPracticeStore';
+import { usePracticeStatsStore } from '@/store/practiceStatsStore';
+import {
+  STARTER_GUIDED_IDS,
+  STARTER_TIMER_SECONDS,
+  STREAK_GOAL_DAYS,
+  useOnboardingStore,
+} from '@/store/onboardingStore';
 import {
   customPracticeToSadhanaPractice,
   customPracticeTotalSeconds,
@@ -32,10 +41,12 @@ import '@/components/MeditationCard.css';
 import '@/components/SectionTitle.css';
 import './PracticeHubScreen.css';
 
+
 const meditations = meditationsData as Meditation[];
 const sadhanaCatalog = sadhanaData as unknown as SadhanaCatalog;
 const sadhanas = (sadhanaCatalog.practices ?? []) as SadhanaPractice[];
 const sadhanaBlocks = sadhanaCatalog.blocks ?? [];
+const DEFAULT_TIMER_SECONDS = 600;
 
 function parseTab(value: string | null): PracticeTab {
   return value === 'sadhana' ? 'sadhana' : 'meditations';
@@ -49,6 +60,22 @@ export function PracticeHubScreen() {
 
   const setMode = useSessionStore((s) => s.setMode);
   const setTargetDuration = useSessionStore((s) => s.setTargetDuration);
+  const interrupted = useSessionStore((s) => s.interrupted);
+  const interruptedMode = useSessionStore((s) => s.mode);
+  const interruptedMeditationId = useSessionStore((s) => s.meditationId);
+  const interruptedSadhanaId = useSessionStore((s) => s.sadhanaId);
+  const interruptedCustomPracticeId = useSessionStore((s) => s.customPracticeId);
+  const interruptedProgress = useSessionStore((s) =>
+    sessionElapsedSeconds({
+      progressSeconds: s.progressSeconds,
+      guidedAudioSeconds: s.guidedAudioSeconds,
+      sadhanaPhaseIndex: s.sadhanaPhaseIndex,
+      sadhanaPhaseProgress: s.sadhanaPhaseProgress,
+    }),
+  );
+  const interruptedTarget = useSessionStore((s) => s.targetDurationSeconds);
+  const clearInterrupted = useSessionStore((s) => s.clearInterrupted);
+  const resetInterrupted = useSessionStore((s) => s.reset);
   const customTrack = useCustomTrackStore((s) => s.track);
   const lastMeditationId = useRecentPracticeStore((s) => s.lastMeditationId);
   const lastSadhanaId = useRecentPracticeStore((s) => s.lastSadhanaId);
@@ -72,6 +99,18 @@ export function PracticeHubScreen() {
   const pageTextures = usePageTextures(PRACTICE_HUB_TEXTURE_POOLS);
   const [builderOpen, setBuilderOpen] = useState(false);
   const [builderEditId, setBuilderEditId] = useState<string | null>(null);
+  const [showAll, setShowAll] = useState(false);
+  const continueRef = useRef<HTMLDivElement>(null);
+  const focusContinue = params.get('focus') === 'continue';
+  const streakDays = usePracticeStatsStore((s) => s.streakDays);
+  const lastSession = usePracticeStatsStore((s) => s.lastSession);
+  const onboardingDone = useOnboardingStore((s) => s.completed);
+  const isReturning =
+    Boolean(lastSession) ||
+    Boolean(lastMeditationId) ||
+    Boolean(lastSadhanaId) ||
+    Boolean(lastCustomPracticeId);
+  const showStarterPack = !isReturning && !showAll;
 
   const handleBuilderOpenChange = useCallback((open: boolean) => {
     setBuilderOpen(open);
@@ -105,6 +144,10 @@ export function PracticeHubScreen() {
     if (params.has('tab') || !lastTab) return;
     setParams({ tab: lastTab }, { replace: true });
   }, [lastTab, params, setParams]);
+
+  useEffect(() => {
+    track('practice_hub_view', { tab, focus: focusContinue ? 'continue' : undefined });
+  }, [tab, focusContinue]);
 
   const setTab = useCallback(
     (next: PracticeTab) => {
@@ -173,6 +216,12 @@ export function PracticeHubScreen() {
     navigate(sessionUrl(true));
   };
 
+  const startTimer = () => {
+    setMode('timer');
+    setTargetDuration(showStarterPack ? STARTER_TIMER_SECONDS : DEFAULT_TIMER_SECONDS);
+    navigate(sessionUrl(true));
+  };
+
   const startCustom = () => {
     if (!customTrack) return;
     const defaultDuration =
@@ -195,6 +244,57 @@ export function PracticeHubScreen() {
     navigate(sessionUrl(true));
   };
 
+  useEffect(() => {
+    if (!focusContinue || !continueRef.current) return;
+    continueRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, [focusContinue, recentMeditation, sadhanaRecentCustom, tab]);
+
+  const starterGuided = useMemo(
+    () =>
+      STARTER_GUIDED_IDS.map((id) => meditations.find((m) => m.id === id)).filter(
+        (m): m is Meditation => Boolean(m) && isMeditationAvailable(m!.id),
+      ),
+    [isMeditationAvailable],
+  );
+
+  const interruptedTitle = useMemo(() => {
+    if (interruptedMode === 'guided') {
+      return meditations.find((m) => m.id === interruptedMeditationId)?.title ?? t('end.practiceFallback');
+    }
+    if (interruptedMode === 'sadhana') {
+      return sadhanas.find((s) => s.id === interruptedSadhanaId)?.title ?? t('hub.sadhana');
+    }
+    if (interruptedMode === 'custom-practice') {
+      return (
+        customPractices.find((p) => p.id === interruptedCustomPracticeId)?.title.trim() ||
+        t('customPractice.untitled')
+      );
+    }
+    if (interruptedMode === 'custom') return customTrack?.name ?? t('customTrack.yours');
+    return t('timer.title');
+  }, [
+    customPractices,
+    customTrack?.name,
+    interruptedCustomPracticeId,
+    interruptedMeditationId,
+    interruptedMode,
+    interruptedSadhanaId,
+    t,
+  ]);
+
+  const resumeInterrupted = () => {
+    clearInterrupted();
+    const tab =
+      interruptedMode === 'sadhana' || interruptedMode === 'custom-practice'
+        ? 'sadhana'
+        : 'meditations';
+    navigate(`/session?tab=${tab}`);
+  };
+
+  const discardInterrupted = () => {
+    resetInterrupted();
+  };
+
   return (
     <div className="screen screen--immersive practice-hub">
       <VideoBackground scene="picker" overlay={0.28} blur={2} variant="soft" />
@@ -215,14 +315,51 @@ export function PracticeHubScreen() {
           labels={{ meditations: t('hub.meditations'), sadhana: t('hub.sadhana') }}
         />
 
+        {interrupted && (
+          <div className="practice-hub__resume">
+            <RecentContinueCard
+              label={t('hub.resumeSession')}
+              title={interruptedTitle}
+              meta={`${formatTime(interruptedProgress)} / ${formatTime(interruptedTarget)}`}
+              cta={t('hub.resumeCta')}
+              onContinue={resumeInterrupted}
+            />
+            <button
+              type="button"
+              className="practice-hub__resume-discard"
+              onClick={discardInterrupted}
+            >
+              {t('hub.resumeDiscard')}
+            </button>
+          </div>
+        )}
+
+        {onboardingDone && (
+          <div className="practice-hub__streak">
+            <StreakPath
+              current={streakDays}
+              goal={STREAK_GOAL_DAYS}
+              label={t('hub.streakLabel').replace('{goal}', String(STREAK_GOAL_DAYS))}
+              compact
+            />
+          </div>
+        )}
+
         {tab === 'meditations' && recentMeditation && isMeditationAvailable(recentMeditation.id) && (
-          <RecentContinueCard
-            label={t('hub.recent')}
-            title={recentMeditation.title}
-            meta={`${recentMeditation.type} · ${formatTime(recentMeditation.durationSeconds)}`}
-            cta={t('hub.continue')}
-            onContinue={() => startGuided(recentMeditation.id)}
-          />
+          <div
+            ref={continueRef}
+            className={
+              focusContinue ? 'practice-hub__continue practice-hub__continue--focus' : 'practice-hub__continue'
+            }
+          >
+            <RecentContinueCard
+              label={t('hub.recent')}
+              title={recentMeditation.title}
+              meta={`${recentMeditation.type} · ${formatTime(recentMeditation.durationSeconds)}`}
+              cta={t('hub.continue')}
+              onContinue={() => startGuided(recentMeditation.id)}
+            />
+          </div>
         )}
 
         {tab === 'sadhana' &&
@@ -230,27 +367,64 @@ export function PracticeHubScreen() {
             ? isCustomPracticeAvailable(sadhanaRecentCustom.id)
             : sadhanaSplit.recent && isSadhanaAvailable(sadhanaSplit.recent.id)) &&
           (sadhanaRecentCustom || sadhanaSplit.recent) && (
-          <RecentContinueCard
-            label={t('hub.recent')}
-            title={sadhanaRecentCustom?.title ?? sadhanaSplit.recent!.title}
-            meta={t('hub.phasesCount').replace(
-              '{count}',
-              String(
-                sadhanaRecentCustom?.phases.length ?? sadhanaSplit.recent!.phases.length,
-              ),
-            )}
-            cta={t('hub.continue')}
-            onContinue={() =>
-              sadhanaRecentCustom
-                ? startCustomPractice(sadhanaRecentCustom.id)
-                : startSadhana(sadhanaSplit.recent!.id)
+          <div
+            ref={continueRef}
+            className={
+              focusContinue ? 'practice-hub__continue practice-hub__continue--focus' : 'practice-hub__continue'
             }
-          />
+          >
+            <RecentContinueCard
+              label={t('hub.recent')}
+              title={sadhanaRecentCustom?.title ?? sadhanaSplit.recent!.title}
+              meta={t('hub.phasesCount').replace(
+                '{count}',
+                String(
+                  sadhanaRecentCustom?.phases.length ?? sadhanaSplit.recent!.phases.length,
+                ),
+              )}
+              cta={t('hub.continue')}
+              onContinue={() =>
+                sadhanaRecentCustom
+                  ? startCustomPractice(sadhanaRecentCustom.id)
+                  : startSadhana(sadhanaSplit.recent!.id)
+              }
+            />
+          </div>
         )}
 
-        {tab === 'meditations' && (
+        {tab === 'meditations' && showStarterPack && (
+          <section className="practice-hub__starter" aria-label={t('hub.starterTitle')}>
+            <SectionTitle textureUrl={pageTextures['section-header']}>
+              {t('hub.starterTitle')}
+            </SectionTitle>
+            <p className="practice-hub__starter-lead text-muted">{t('hub.starterLead')}</p>
+            {starterGuided.map((m) => (
+              <MeditationCard
+                key={m.id}
+                meditation={m}
+                onSelect={startGuided}
+                textureUrl={pageTextures['meditation-card']}
+                offlineUnavailable={!online && !isMeditationAvailable(m.id)}
+                offlineLabel={offlineLabel}
+              />
+            ))}
+            <button type="button" className="btn-primary practice-hub__starter-timer" onClick={startTimer}>
+              {t('onboarding.timerPick')} · {formatTime(STARTER_TIMER_SECONDS)}
+            </button>
+            <button
+              type="button"
+              className="btn-secondary practice-hub__show-all"
+              onClick={() => setShowAll(true)}
+            >
+              {t('hub.showAll')}
+            </button>
+          </section>
+        )}
+
+        {tab === 'meditations' && !showStarterPack && (
           <PracticeTools
             onStartCustom={customTrack ? startCustom : undefined}
+            onStartTimer={startTimer}
             sadhanaBlocks={sadhanaBlocks}
             textureUrl={pageTextures['practice-tools']}
             builderOpen={builderOpen}
@@ -259,7 +433,7 @@ export function PracticeHubScreen() {
           />
         )}
 
-        {tab === 'meditations' ? (
+        {tab === 'meditations' && !showStarterPack ? (
           <div className="practice-hub__catalog" role="tabpanel">
             {audioSplit.rest.length > 0 && (
               <section>
@@ -296,7 +470,7 @@ export function PracticeHubScreen() {
               </section>
             )}
           </div>
-        ) : (
+        ) : tab === 'sadhana' ? (
           <div className="practice-hub__catalog" role="tabpanel">
             <section>
               <SectionTitle textureUrl={pageTextures['section-header']}>
@@ -333,6 +507,7 @@ export function PracticeHubScreen() {
             </section>
             <PracticeTools
               onStartCustom={customTrack ? startCustom : undefined}
+              onStartTimer={startTimer}
               sadhanaBlocks={sadhanaBlocks}
               textureUrl={pageTextures['practice-tools']}
               builderOpen={builderOpen}
@@ -340,7 +515,7 @@ export function PracticeHubScreen() {
               builderEditId={builderEditId}
             />
           </div>
-        )}
+        ) : null}
       </div>
     </div>
   );

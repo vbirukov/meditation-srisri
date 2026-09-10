@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { SplashScreen } from '@/screens/SplashScreen';
 import { WelcomeScreen } from '@/screens/WelcomeScreen';
+import { OnboardingScreen } from '@/screens/OnboardingScreen';
 import { PracticeHubScreen } from '@/screens/PracticeHubScreen';
 import { PickerScreen } from '@/screens/PickerScreen';
 import { SessionScreen } from '@/screens/SessionScreen';
@@ -39,6 +40,7 @@ export function App() {
       <Routes>
         <Route path="/" element={<SplashScreen />} />
         <Route path="/welcome" element={<WelcomeScreen />} />
+        <Route path="/onboarding" element={<OnboardingScreen />} />
         <Route path="/practice" element={<PracticeHubScreen />} />
         <Route path="/picker" element={<PickerScreen />} />
         <Route path="/session" element={<SessionScreen />} />

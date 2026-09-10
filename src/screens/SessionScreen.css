@@ -151,3 +151,19 @@
   justify-content: center;
   margin-top: var(--space-4);
 }
+
+.session-dialog__discard {
+  margin-top: var(--space-3);
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  text-decoration: underline;
+  cursor: pointer;
+  padding: var(--space-2);
+}
+
+.session-dialog__discard:hover,
+.session-dialog__discard:focus-visible {
+  color: var(--color-text);
+}

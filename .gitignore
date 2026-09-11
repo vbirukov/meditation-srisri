@@ -9,3 +9,4 @@ dist-ssr
 !.env.example
 media-originals
 public/media/**/*.wav
+public/media/video/meditations/

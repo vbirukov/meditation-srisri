@@ -1,26 +1,54 @@
 import bridge from '@vkontakte/vk-bridge';
 import { isVkMiniApp, VK_APP_URL } from '@/utils/vk';
 
-export function buildShareMessage(params: {
+type ShareParams = {
   locale: 'ru' | 'en';
   practiceTitle: string;
   durationLabel: string;
   streakDays: number;
-}): string {
+};
+
+/** Текст для поста на стену / шаринга со ссылкой. */
+export function buildShareMessage(params: ShareParams): string {
   const { locale, practiceTitle, durationLabel, streakDays } = params;
   if (locale === 'en') {
     return [
-      `I finished a practice: ${practiceTitle} (${durationLabel}).`,
+      `I just meditated with Meditate with Sri Sri.`,
+      `Practice: ${practiceTitle} (${durationLabel}).`,
       streakDays > 1 ? `Streak: ${streakDays} days.` : null,
-      `Meditate with Sri Sri — ${VK_APP_URL}`,
+      `Try it too: ${VK_APP_URL}`,
     ]
       .filter(Boolean)
       .join('\n');
   }
   return [
-    `Завершил(а) практику: ${practiceTitle} (${durationLabel}).`,
+    `Я только что помедитировал(а) с помощью приложения «Медитация с Шри Шри».`,
+    `Практика: ${practiceTitle} (${durationLabel}).`,
     streakDays > 1 ? `Серия: ${streakDays} дн.` : null,
-    `Медитация с Шри Шри — ${VK_APP_URL}`,
+    `Попробуй тоже: ${VK_APP_URL}`,
+  ]
+    .filter(Boolean)
+    .join('\n');
+}
+
+/** Короткий текст для стикера в сторис (ссылка — через attachment). */
+export function buildStoryText(params: ShareParams): string {
+  const { locale, practiceTitle, durationLabel, streakDays } = params;
+  if (locale === 'en') {
+    return [
+      `I just meditated with`,
+      `Meditate with Sri Sri`,
+      `${practiceTitle} · ${durationLabel}`,
+      streakDays > 1 ? `Streak: ${streakDays} days` : null,
+    ]
+      .filter(Boolean)
+      .join('\n');
+  }
+  return [
+    `Я только что помедитировал(а)`,
+    `с помощью «Медитация с Шри Шри»`,
+    `${practiceTitle} · ${durationLabel}`,
+    streakDays > 1 ? `Серия: ${streakDays} дн.` : null,
   ]
     .filter(Boolean)
     .join('\n');
@@ -39,7 +67,10 @@ export async function shareToWall(message: string): Promise<boolean> {
   }
 }
 
-export async function shareToStory(backgroundUrl: string): Promise<boolean> {
+export async function shareToStory(
+  backgroundUrl: string,
+  text: string,
+): Promise<boolean> {
   if (!isVkMiniApp()) return false;
   try {
     await bridge.send('VKWebAppShowStoryBox', {
@@ -50,6 +81,25 @@ export async function shareToStory(backgroundUrl: string): Promise<boolean> {
         type: 'url',
         url: VK_APP_URL,
       },
+      stickers: [
+        {
+          sticker_type: 'native',
+          sticker: {
+            action_type: 'text',
+            action: {
+              text,
+              style: 'classic',
+              background_style: 'solid',
+              selection_color: '#FFFFFF',
+              alignment: 'center',
+            },
+            transform: {
+              gravity: 'center_top',
+              translation_y: 0.18,
+            },
+          },
+        },
+      ],
     });
     return true;
   } catch {
@@ -57,12 +107,12 @@ export async function shareToStory(backgroundUrl: string): Promise<boolean> {
   }
 }
 
-export async function shareLink(): Promise<boolean> {
+export async function shareLink(message?: string): Promise<boolean> {
   if (!isVkMiniApp()) return false;
   try {
     await bridge.send('VKWebAppShare', { link: VK_APP_URL });
     return true;
   } catch {
-    return shareToWall(VK_APP_URL);
+    return shareToWall(message ?? `Медитация с Шри Шри — ${VK_APP_URL}`);
   }
 }

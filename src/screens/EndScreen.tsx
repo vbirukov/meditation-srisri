@@ -21,7 +21,13 @@ import {
 } from '@/utils/gurujiContent';
 import { formatMonthTotal, formatPracticeDuration } from '@/utils/practiceStats';
 import { absoluteMediaUrl, isVkMiniApp } from '@/utils/vk';
-import { buildShareMessage, shareLink, shareToStory, shareToWall } from '@/vk/share';
+import {
+  buildShareMessage,
+  buildStoryText,
+  shareLink,
+  shareToStory,
+  shareToWall,
+} from '@/vk/share';
 import {
   addAppToFavorites,
   shouldOfferFavorites,
@@ -116,22 +122,19 @@ export function EndScreen() {
   const runShare = async (kind: 'wall' | 'story' | 'link' | 'invite') => {
     if (shareBusy) return;
     setShareBusy(kind);
+    const shareParams = { locale, practiceTitle, durationLabel, streakDays };
     try {
       if (kind === 'wall') {
-        await shareToWall(
-          buildShareMessage({
-            locale,
-            practiceTitle,
-            durationLabel,
-            streakDays,
-          }),
-        );
+        await shareToWall(buildShareMessage(shareParams));
       } else if (kind === 'story') {
-        await shareToStory(absoluteMediaUrl(STORY_BG));
+        await shareToStory(
+          absoluteMediaUrl(STORY_BG),
+          buildStoryText(shareParams),
+        );
       } else if (kind === 'invite') {
         await showInviteBox();
       } else {
-        await shareLink();
+        await shareLink(buildShareMessage(shareParams));
       }
       track('end_share', { kind, mode: lastSession?.mode });
     } finally {

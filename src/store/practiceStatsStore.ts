@@ -14,6 +14,8 @@ export interface LastPracticeSession {
   customPracticeId?: string;
   durationSeconds: number;
   completedAt: number;
+  /** Mood after session (set on EndScreen). Data only for now. */
+  mood?: string | null;
 }
 
 interface PracticeStatsState {
@@ -23,8 +25,13 @@ interface PracticeStatsState {
   monthKey: string;
   secondsThisMonth: number;
   lastSession: LastPracticeSession | null;
-  recordSession: (session: Omit<LastPracticeSession, 'completedAt'>) => void;
+  /** Recent moods for later analytics — capped, no UI yet. */
+  moodLog: Array<{ completedAt: number; mood: string }>;
+  recordSession: (session: Omit<LastPracticeSession, 'completedAt' | 'mood'>) => void;
+  setLastSessionMood: (mood: string) => void;
 }
+
+const MOOD_LOG_MAX = 60;
 
 const now = new Date();
 
@@ -37,6 +44,7 @@ export const usePracticeStatsStore = create(
       monthKey: toMonthKey(now),
       secondsThisMonth: 0,
       lastSession: null,
+      moodLog: [],
 
       recordSession: (session) => {
         const completedAt = Date.now();
@@ -55,7 +63,25 @@ export const usePracticeStatsStore = create(
           lastPracticeDate: today,
           monthKey: month,
           secondsThisMonth,
-          lastSession: { ...session, completedAt },
+          lastSession: { ...session, completedAt, mood: null },
+        });
+      },
+
+      setLastSessionMood: (mood) => {
+        const trimmed = mood.trim();
+        if (!trimmed) return;
+        const state = get();
+        const last = state.lastSession;
+        if (!last) return;
+
+        const moodLog = [
+          ...(state.moodLog ?? []).filter((e) => e.completedAt !== last.completedAt),
+          { completedAt: last.completedAt, mood: trimmed },
+        ].slice(-MOOD_LOG_MAX);
+
+        set({
+          lastSession: { ...last, mood: trimmed },
+          moodLog,
         });
       },
     }),

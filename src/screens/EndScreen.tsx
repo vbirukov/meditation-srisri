@@ -60,6 +60,7 @@ export function EndScreen() {
   const mood = useSessionStore((s) => s.mood);
   const setMood = useSessionStore((s) => s.setMood);
   const reset = useSessionStore((s) => s.reset);
+  const setLastSessionMood = usePracticeStatsStore((s) => s.setLastSessionMood);
   const inVk = isVkMiniApp();
 
   const lastSession = usePracticeStatsStore((s) => s.lastSession);
@@ -365,7 +366,13 @@ export function EndScreen() {
           style={textureStyle(textures['end-mood'])}
         >
           <h2 className="end-screen__mood-title">{t('end.subtitle')}</h2>
-          <MoodSelector value={mood} onChange={setMood} />
+          <MoodSelector
+            value={mood}
+            onChange={(next) => {
+              setMood(next);
+              setLastSessionMood(next);
+            }}
+          />
         </section>
 
         <div className="end-screen__actions">

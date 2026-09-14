@@ -127,7 +127,7 @@ Handoff-документ описывает продукт корректно, �
 | 2.2 | Минимальный notifier | 3 д | **сделано:** `scripts/notifier/notifier.mjs` (JSONL + `serve`/`send`), nginx `/notify-register`, systemd units, клиент `notifyRegister` после allow/на End; слот→час МСК до 2.3; env `VK_SERVICE_TOKEN`+`VK_APP_SECRET` на хосте |
 | 2.3 | Выбор времени практики | 1 д | **сделано:** слот + точное время в онбординге (`ReminderTimePicker`) и на End после allow; `reminderHour/Minute` в store → notify-register; cron send каждые 15 мин |
 | 2.4 | Streak, который видно | 1 д | **сделано:** `getStreakView` (atRisk / practicedToday / expiry); Welcome + Hub с риском обрыва; End — «серия сохранена» + завтра; без лидербордов |
-| 2.5 | Сохранить mood | 1 д | Сейчас mood на EndScreen не пишется никуда. Писать в stats с привязкой к сессии. Пока — только для данных, без фич поверх |
+| 2.5 | Сохранить mood | 1 д | **сделано:** `lastSession.mood` + `moodLog` (до 60) в `practiceStatsStore`; EndScreen пишет через `setLastSessionMood`; без UI поверх |
 | 2.6 | Реактивация сорвавшихся | 1 д | Отдельный сценарий уведомления для тех, кто пропал на 7+ дней: другой текст, без давления streak-ом |
 | 2.7 | Гигиена расписания | 0.5 д | Не более 1 уведомления в день, стоп после 3 проигнорированных подряд, мгновенный отказ. Пережатые уведомления убивают канал навсегда |
 

@@ -37,6 +37,8 @@ const BATCH = 100;
 const SLOT_HOUR = { morning: 7, day: 13, evening: 20 };
 const DEFAULT_HOUR = 9;
 const LAPSE_DAYS = 7;
+/** Stop after this many consecutive ignored notifications. */
+const MAX_IGNORED = 3;
 
 const MESSAGE_HABIT_RU =
   'Намасте. Время короткой практики — откройте «Медитацию с Шри Шри». Один день — одна сессия.';
@@ -97,6 +99,58 @@ export function messageForScenario(scenario) {
   return scenario === 'reactivate' ? MESSAGE_REACTIVATE_RU : MESSAGE_HABIT_RU;
 }
 
+/** True if last notification was not followed by a practice. */
+export function wasLastNotificationIgnored(user) {
+  if (!user.last_sent_at) return false;
+  if (!user.last_session_at) return true;
+  return new Date(user.last_session_at).getTime() <= new Date(user.last_sent_at).getTime();
+}
+
+/**
+ * Account for a previously ignored send (idempotent per last_sent_at).
+ * Returns updated user; may set enabled=false after MAX_IGNORED.
+ */
+export function applyIgnoreAccounting(user) {
+  let ignored = Number(user.ignored_count) || 0;
+  let accounted = user.last_ignore_accounted_at ?? null;
+  let enabled = user.enabled !== false;
+
+  if (!wasLastNotificationIgnored(user)) {
+    if (user.last_session_at) ignored = 0;
+  } else if (user.last_sent_at && accounted !== user.last_sent_at) {
+    ignored += 1;
+    accounted = user.last_sent_at;
+  }
+
+  if (ignored >= MAX_IGNORED) enabled = false;
+
+  return {
+    ...user,
+    ignored_count: ignored,
+    last_ignore_accounted_at: accounted,
+    enabled,
+  };
+}
+
+/** Instant opt-out from VK API error payloads. */
+export function applySendResult(user, result, nowIso, scenario) {
+  if (result?.error?.code === 1) {
+    return { ...user, enabled: false, updated_at: nowIso };
+  }
+  if (result?.status === false && result?.error?.code === 1) {
+    return { ...user, enabled: false, updated_at: nowIso };
+  }
+  if (result?.status || result === true || (result && result.status !== false && !result.error)) {
+    return {
+      ...user,
+      last_sent_at: nowIso,
+      last_scenario: scenario,
+      updated_at: nowIso,
+    };
+  }
+  return { ...user, updated_at: nowIso };
+}
+
 // --- JSONL store -----------------------------------------------------------
 
 function ensureDataDir() {
@@ -134,6 +188,8 @@ export function upsertUser(map, patch) {
     prefer_minute: 0,
     last_session_at: null,
     last_sent_at: null,
+    ignored_count: 0,
+    last_ignore_accounted_at: null,
     updated_at: null,
   };
   const next = {
@@ -145,6 +201,20 @@ export function upsertUser(map, patch) {
   if (patch.prefer_hour == null && patch.slot && SLOT_HOUR[patch.slot] != null) {
     next.prefer_hour = SLOT_HOUR[patch.slot];
     next.prefer_minute = 0;
+  }
+  // New practice after a send → clear ignore streak
+  if (
+    patch.last_session_at &&
+    (!prev.last_session_at ||
+      new Date(patch.last_session_at).getTime() > new Date(prev.last_session_at).getTime())
+  ) {
+    if (
+      !prev.last_sent_at ||
+      new Date(patch.last_session_at).getTime() > new Date(prev.last_sent_at).getTime()
+    ) {
+      next.ignored_count = 0;
+      if (patch.enabled === undefined) next.enabled = true;
+    }
   }
   delete next.slot;
   map.set(id, next);
@@ -188,12 +258,20 @@ export function verifyVkLaunchSign(search, secret) {
 export function usersDue(map, now = new Date()) {
   const { ymd, hour, minute } = moscowParts(now);
   const due = [];
-  for (const u of map.values()) {
+  for (const [id, raw] of map.entries()) {
+    let u = raw;
     if (u.enabled === false) continue;
+
+    // Hygiene: account prior ignore before deciding to send (idempotent)
+    u = applyIgnoreAccounting(u);
+    if (u !== raw) map.set(id, u);
+    if (u.enabled === false) continue;
+
     if (Number(u.prefer_hour) !== hour) continue;
     const preferMin = Number(u.prefer_minute) || 0;
     // 15-min cron window: send once when wall clock enters [prefer, prefer+15)
     if (minute < preferMin || minute >= preferMin + 15) continue;
+    // ≤1 notification / calendar day
     if (ymdInTz(u.last_session_at) === ymd) continue;
     if (ymdInTz(u.last_sent_at) === ymd) continue;
     due.push(u);
@@ -256,6 +334,7 @@ async function runSend() {
             u.last_sent_at = nowIso;
             u.last_scenario = scenario;
           } else if (r.error?.code === 1) {
+            // instant opt-out
             u.enabled = false;
           }
           u.updated_at = nowIso;
@@ -422,6 +501,44 @@ function selfCheck() {
   if (daysSinceIso(lapsed.last_session_at, fakeNow) < LAPSE_DAYS) {
     throw new Error('daysSinceIso undercount');
   }
+
+  // --- 2.7 hygiene ---
+  const hyMap = new Map();
+  upsertUser(hyMap, {
+    vk_user_id: 9,
+    prefer_hour: 7,
+    prefer_minute: 0,
+    last_session_at: '2026-03-01T00:00:00Z',
+    last_sent_at: '2026-03-14T04:00:00Z',
+    ignored_count: 0,
+  });
+  let hu = applyIgnoreAccounting(hyMap.get(9));
+  if (hu.ignored_count !== 1) throw new Error(`ignore bump expected 1 got ${hu.ignored_count}`);
+  hu = applyIgnoreAccounting(hu); // idempotent
+  if (hu.ignored_count !== 1) throw new Error('ignore accounting must be idempotent');
+  hu.last_sent_at = '2026-03-15T04:00:00Z';
+  hu = applyIgnoreAccounting(hu);
+  hu.last_sent_at = '2026-03-16T04:00:00Z';
+  hu = applyIgnoreAccounting(hu);
+  if (hu.ignored_count !== 3 || hu.enabled !== false) {
+    throw new Error('3 ignores must disable');
+  }
+  hyMap.set(9, hu);
+  const noDue = usersDue(hyMap, new Date('2026-03-17T04:05:00Z'));
+  if (noDue.some((x) => x.vk_user_id === 9)) throw new Error('disabled user must not be due');
+
+  // practice after send resets ignore
+  upsertUser(hyMap, {
+    vk_user_id: 9,
+    last_session_at: '2026-03-17T10:00:00Z',
+  });
+  const reset = hyMap.get(9);
+  if (reset.ignored_count !== 0 || reset.enabled !== true) {
+    throw new Error('session after send must clear ignore streak');
+  }
+
+  const opted = applySendResult({ enabled: true }, { status: false, error: { code: 1 } }, fakeNow.toISOString(), 'habit');
+  if (opted.enabled !== false) throw new Error('VK code 1 must instant opt-out');
 
   console.log('[notifier] self-check ok');
 }

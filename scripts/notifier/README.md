@@ -24,6 +24,13 @@
 
 Если `last_session_at` ≥ 7 календарных дней назад (МСК) — сценарий `reactivate`: мягкий текст без streak/вины. Иначе — обычный `habit`. В JSONL пишется `last_scenario`.
 
+### Гигиена (2.7)
+
+- ≤1 уведомление в календарный день (МСК)
+- 3 проигнорированных подряд (`last_sent` без новой сессии) → `enabled=false`
+- VK `error.code=1` (уведомления выключены) → мгновенный отказ
+- Новая `last_session_at` после send → сброс `ignored_count` и re-enable
+
 ## Env
 
 `/var/www/meditation/notifier/.env`:

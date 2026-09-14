@@ -60,8 +60,8 @@ jobs:
             fi
           done
 
-          SSH_BASE=(ssh -p "$SSH_PORT" -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes)
-          RSYNC_RSH="ssh -p ${SSH_PORT} -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes"
+          SSH_BASE=(ssh -p "$SSH_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes)
+          RSYNC_RSH="ssh -p ${SSH_PORT} -o BatchMode=yes -o StrictHostKeyChecking=yes"
           RELEASE="$(date -u +%Y%m%d%H%M%S)"
 
           echo "Deploying $RELEASE → $SSH_USER@$SSH_HOST:$DEPLOY_PATH"

@@ -28,6 +28,26 @@ export function nextStreakDays(
   return 1;
 }
 
+/** UI-facing streak: expired gaps show 0 until the next recorded session. */
+export function getStreakView(
+  lastPracticeDate: string | null,
+  streakDays: number,
+  now: Date = new Date(),
+): { days: number; practicedToday: boolean; atRisk: boolean } {
+  const today = toDateKey(now);
+  const practicedToday = lastPracticeDate === today;
+  if (!lastPracticeDate || streakDays <= 0) {
+    return { days: 0, practicedToday: false, atRisk: false };
+  }
+  if (practicedToday) {
+    return { days: streakDays, practicedToday: true, atRisk: false };
+  }
+  if (lastPracticeDate === yesterdayKey(today)) {
+    return { days: streakDays, practicedToday: false, atRisk: true };
+  }
+  return { days: 0, practicedToday: false, atRisk: false };
+}
+
 export function formatPracticeDuration(seconds: number, locale: 'ru' | 'en'): string {
   const totalMin = Math.max(1, Math.round(seconds / 60));
   if (totalMin < 60) {

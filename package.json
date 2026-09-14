@@ -18,6 +18,8 @@
     "optimize:audio": "node scripts/optimize-audio.mjs",
     "optimize:video": "node scripts/optimize-video.mjs",
     "check:catalog": "node scripts/check-catalog.mjs",
+    "notifier:check": "node scripts/notifier/notifier.mjs self-check",
+    "check:streak": "node scripts/check-streak.mjs",
     "preview": "vite preview",
     "start": "npm run build && npm run preview"
   },

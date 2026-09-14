@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { track } from '@/analytics/track';
 import meditationsData from '@/data/meditations.json';
@@ -11,7 +11,8 @@ import { useLocaleStore, useT } from '@/i18n';
 import { useSessionStore } from '@/store/sessionStore';
 import { useCustomPracticeStore } from '@/store/customPracticeStore';
 import { usePracticeStatsStore } from '@/store/practiceStatsStore';
-import { STREAK_GOAL_DAYS } from '@/store/onboardingStore';
+import { STREAK_GOAL_DAYS, SLOT_DEFAULT_HOUR, useOnboardingStore } from '@/store/onboardingStore';
+import type { PracticeSlot } from '@/store/onboardingStore';
 import {
   getGurujiMedia,
   getLocalized,
@@ -19,7 +20,7 @@ import {
   pickPhoto,
   pickQuote,
 } from '@/utils/gurujiContent';
-import { formatMonthTotal, formatPracticeDuration } from '@/utils/practiceStats';
+import { formatMonthTotal, formatPracticeDuration, getStreakView } from '@/utils/practiceStats';
 import { absoluteMediaUrl, isVkMiniApp } from '@/utils/vk';
 import {
   buildShareMessage,
@@ -33,6 +34,14 @@ import {
   shouldOfferFavorites,
   useVkFavoritesStore,
 } from '@/vk/favorites';
+import {
+  allowVkNotifications,
+  shouldOfferNotifications,
+  useVkNotificationsStore,
+  vkNotificationsAlreadyEnabled,
+} from '@/vk/notifications';
+import { registerVkReminder } from '@/vk/notifyRegister';
+import { ReminderTimePicker } from '@/components/ReminderTimePicker';
 import { showInviteBox } from '@/vk/invite';
 import { END_SCREEN_TEXTURE_POOLS, textureStyle, usePageTextures, withTexture } from '@/utils/textures';
 import '@/styles/textured-surface.css';
@@ -55,8 +64,13 @@ export function EndScreen() {
 
   const lastSession = usePracticeStatsStore((s) => s.lastSession);
   const streakDays = usePracticeStatsStore((s) => s.streakDays);
+  const lastPracticeDate = usePracticeStatsStore((s) => s.lastPracticeDate);
   const secondsThisMonth = usePracticeStatsStore((s) => s.secondsThisMonth);
   const totalSessions = usePracticeStatsStore((s) => s.totalSessions);
+  const streak = useMemo(
+    () => getStreakView(lastPracticeDate, streakDays),
+    [lastPracticeDate, streakDays],
+  );
 
   const quote = useMemo(() => pickQuote(locale), [locale]);
   const photoSrc = useMemo(() => pickPhoto() ?? GURUJI_FALLBACK_PHOTO, []);
@@ -65,8 +79,29 @@ export function EndScreen() {
   const [photoFailed, setPhotoFailed] = useState(false);
   const [shareBusy, setShareBusy] = useState<'wall' | 'story' | 'link' | 'invite' | null>(null);
   const [favBusy, setFavBusy] = useState(false);
-  const [showFavorites, setShowFavorites] = useState(() => shouldOfferFavorites(totalSessions));
+  const [notifBusy, setNotifBusy] = useState(false);
+  const offerNotif = shouldOfferNotifications(totalSessions);
+  const [showNotifications, setShowNotifications] = useState(() => offerNotif);
+  const reminderHour = useOnboardingStore((s) => s.reminderHour);
+  const preferredSlot = useOnboardingStore((s) => s.preferredSlot);
+  const setReminderTime = useOnboardingStore((s) => s.setReminderTime);
+  const notifAllowed =
+    useVkNotificationsStore((s) => s.allowed) || vkNotificationsAlreadyEnabled();
+  const [showReminderTime, setShowReminderTime] = useState(
+    () => inVk && !offerNotif && notifAllowed && reminderHour == null,
+  );
+  const [draftSlot, setDraftSlot] = useState<PracticeSlot | null>(
+    () => preferredSlot ?? 'morning',
+  );
+  const [draftHour, setDraftHour] = useState(
+    () => reminderHour ?? SLOT_DEFAULT_HOUR[preferredSlot ?? 'morning'],
+  );
+  const [draftMinute, setDraftMinute] = useState(0);
+  const [showFavorites, setShowFavorites] = useState(
+    () => !offerNotif && !showReminderTime && shouldOfferFavorites(totalSessions),
+  );
   const markAsked = useVkFavoritesStore((s) => s.markAsked);
+  const markNotifAsked = useVkNotificationsStore((s) => s.markAsked);
   const displayPhoto = photoFailed ? GURUJI_FALLBACK_PHOTO : photoSrc;
 
   const customPractices = useCustomPracticeStore((s) => s.practices);
@@ -115,14 +150,19 @@ export function EndScreen() {
   };
 
   const streakHint =
-    streakDays >= STREAK_GOAL_DAYS
+    streak.days >= STREAK_GOAL_DAYS
       ? t('end.streakDone')
-      : t('end.streakKeep').replace('{next}', String(Math.min(STREAK_GOAL_DAYS, streakDays + 1)));
+      : streak.practicedToday
+        ? `${t('end.streakSaved').replace('{days}', String(streak.days))} ${t('end.streakKeep').replace('{next}', String(Math.min(STREAK_GOAL_DAYS, streak.days + 1)))}`
+        : t('end.streakKeep').replace(
+            '{next}',
+            String(Math.min(STREAK_GOAL_DAYS, Math.max(1, streak.days + 1))),
+          );
 
   const runShare = async (kind: 'wall' | 'story' | 'link' | 'invite') => {
     if (shareBusy) return;
     setShareBusy(kind);
-    const shareParams = { locale, practiceTitle, durationLabel, streakDays };
+    const shareParams = { locale, practiceTitle, durationLabel, streakDays: streak.days };
     try {
       if (kind === 'wall') {
         await shareToWall(buildShareMessage(shareParams));
@@ -158,6 +198,78 @@ export function EndScreen() {
     markAsked();
     setShowFavorites(false);
   };
+
+  const runNotifications = async () => {
+    if (notifBusy) return;
+    setNotifBusy(true);
+    try {
+      const ok = await allowVkNotifications();
+      track('vk_notifications', {
+        result: ok ? 'accepted' : 'denied',
+        mode: lastSession?.mode,
+      });
+      if (ok) {
+        const hour = useOnboardingStore.getState().reminderHour;
+        if (hour == null) {
+          setDraftSlot(useOnboardingStore.getState().preferredSlot ?? 'morning');
+          setDraftHour(
+            SLOT_DEFAULT_HOUR[useOnboardingStore.getState().preferredSlot ?? 'morning'],
+          );
+          setDraftMinute(0);
+          setShowReminderTime(true);
+        } else {
+          void registerVkReminder({
+            enabled: true,
+            lastSessionAt: lastSession?.completedAt
+              ? new Date(lastSession.completedAt).toISOString()
+              : null,
+          });
+        }
+      }
+    } finally {
+      setNotifBusy(false);
+      setShowNotifications(false);
+    }
+  };
+
+  const dismissNotifications = () => {
+    markNotifAsked();
+    track('vk_notifications', { result: 'dismissed', mode: lastSession?.mode });
+    setShowNotifications(false);
+  };
+
+  const confirmReminderTime = () => {
+    const slot = draftSlot ?? 'morning';
+    setReminderTime(draftHour, draftMinute, slot);
+    track('vk_notifications', {
+      result: 'reminder_time',
+      slot,
+      hour: draftHour,
+      minute: draftMinute,
+      mode: lastSession?.mode,
+    });
+    void registerVkReminder({
+      enabled: true,
+      lastSessionAt: lastSession?.completedAt
+        ? new Date(lastSession.completedAt).toISOString()
+        : null,
+    });
+    setShowReminderTime(false);
+  };
+
+  useEffect(() => {
+    if (!inVk) return;
+    const allowed =
+      useVkNotificationsStore.getState().allowed || vkNotificationsAlreadyEnabled();
+    if (!allowed) return;
+    if (useOnboardingStore.getState().reminderHour == null) return;
+    void registerVkReminder({
+      enabled: true,
+      lastSessionAt: lastSession?.completedAt
+        ? new Date(lastSession.completedAt).toISOString()
+        : null,
+    });
+  }, [inVk, lastSession?.completedAt, reminderHour]);
 
   return (
     <div
@@ -222,17 +334,17 @@ export function EndScreen() {
         >
           <div className="end-screen__streak-path">
             <StreakPath
-              current={streakDays}
+              current={streak.days}
               goal={STREAK_GOAL_DAYS}
               label={t('end.streakPath')
-                .replace('{current}', String(Math.min(streakDays, STREAK_GOAL_DAYS)))
+                .replace('{current}', String(Math.min(streak.days, STREAK_GOAL_DAYS)))
                 .replace('{goal}', String(STREAK_GOAL_DAYS))}
             />
             <p className="end-screen__streak-hint text-muted">{streakHint}</p>
           </div>
           <div className="end-screen__stat-row">
             <div className="end-screen__stat">
-              <span className="end-screen__stat-value">{streakDays}</span>
+              <span className="end-screen__stat-value">{streak.days}</span>
               <span className="end-screen__stat-label">{t('end.streak')}</span>
             </div>
             <div className="end-screen__stat">
@@ -257,7 +369,69 @@ export function EndScreen() {
         </section>
 
         <div className="end-screen__actions">
-          {showFavorites && (
+          {showNotifications && (
+            <section
+              className="end-screen__favorites glass-panel"
+              aria-label={t('end.notificationsTitle')}
+            >
+              <p className="end-screen__favorites-title">{t('end.notificationsTitle')}</p>
+              <p className="end-screen__favorites-hint text-muted">{t('end.notificationsHint')}</p>
+              <div className="end-screen__favorites-actions">
+                <button
+                  type="button"
+                  className="btn-primary"
+                  disabled={notifBusy}
+                  onClick={() => void runNotifications()}
+                >
+                  {t('end.notificationsAction')}
+                </button>
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  disabled={notifBusy}
+                  onClick={dismissNotifications}
+                >
+                  {t('end.notificationsLater')}
+                </button>
+              </div>
+            </section>
+          )}
+          {showReminderTime && !showNotifications && (
+            <section
+              className="end-screen__favorites glass-panel"
+              aria-label={t('end.reminderTitle')}
+            >
+              <p className="end-screen__favorites-title">{t('end.reminderTitle')}</p>
+              <p className="end-screen__favorites-hint text-muted">{t('end.reminderHint')}</p>
+              <ReminderTimePicker
+                slot={draftSlot}
+                hour={draftHour}
+                minute={draftMinute}
+                labels={{
+                  slotsTitle: t('onboarding.timeSlotsLabel'),
+                  timeTitle: t('onboarding.timeExactLabel'),
+                  slot: {
+                    morning: t('onboarding.slot.morning'),
+                    day: t('onboarding.slot.day'),
+                    evening: t('onboarding.slot.evening'),
+                  },
+                  confirm: t('end.reminderConfirm'),
+                  custom: t('onboarding.timeCustom'),
+                }}
+                onSlotChange={(s) => {
+                  setDraftSlot(s);
+                  setDraftHour(SLOT_DEFAULT_HOUR[s]);
+                  setDraftMinute(0);
+                }}
+                onTimeChange={(h, m) => {
+                  setDraftHour(h);
+                  setDraftMinute(m);
+                }}
+                onConfirm={confirmReminderTime}
+              />
+            </section>
+          )}
+          {showFavorites && !showNotifications && !showReminderTime && (
             <section className="end-screen__favorites glass-panel" aria-label={t('end.favoritesTitle')}>
               <p className="end-screen__favorites-title">{t('end.favoritesTitle')}</p>
               <p className="end-screen__favorites-hint text-muted">{t('end.favoritesHint')}</p>

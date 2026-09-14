@@ -48,19 +48,30 @@ jobs:
           RELEASE="$(date +%Y%m%d%H%M%S)"
 
           ssh -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" "
-            mkdir -p $DEPLOY_PATH/releases/$RELEASE
+            mkdir -p $DEPLOY_PATH/releases/$RELEASE $DEPLOY_PATH/media $DEPLOY_PATH/data $DEPLOY_PATH/notifier
           "
 
+          # App shell only — media lives in $DEPLOY_PATH/media (nginx alias).
+          # Copying media into every release was bloating releases and killing CI.
           rsync -az --delete \
+            --exclude media/ \
             -e "ssh -p $SSH_PORT" \
             dist/ "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/releases/$RELEASE/"
 
-          ssh -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" "mkdir -p $DEPLOY_PATH/media"
+          # Sync lightweight media; videos stay on the server (too large for Actions).
+          if [ -d dist/media ]; then
+            rsync -az \
+              --exclude '*.wav' \
+              --exclude 'video/' \
+              -e "ssh -p $SSH_PORT" \
+              dist/media/ "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/media/"
+          fi
 
-          rsync -az \
-            --exclude '*.wav' \
-            -e "ssh -p $SSH_PORT" \
-            dist/media/ "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/media/"
+          if [ -d scripts/notifier ]; then
+            rsync -az \
+              -e "ssh -p $SSH_PORT" \
+              scripts/notifier/ "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/notifier/"
+          fi
 
           ssh -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" "
             ln -sfn $DEPLOY_PATH/releases/$RELEASE $DEPLOY_PATH/current &&

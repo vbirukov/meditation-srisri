@@ -1,0 +1,15 @@
+[Unit]
+Description=Meditation VK notifier ingest (localhost)
+After=network.target
+
+[Service]
+Type=simple
+User=deploy
+WorkingDirectory=/var/www/meditation/notifier
+EnvironmentFile=-/var/www/meditation/notifier/.env
+ExecStart=/usr/bin/node /var/www/meditation/notifier/notifier.mjs serve
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

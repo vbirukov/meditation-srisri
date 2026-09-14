@@ -36,6 +36,7 @@ import {
 import { sadhanaTotalSeconds } from '@/utils/sadhana';
 import { useCustomPracticeStore } from '@/store/customPracticeStore';
 import { splitRecent } from '@/utils/recentPractice';
+import { getStreakView } from '@/utils/practiceStats';
 import { formatTime } from '@/utils/time';
 import '@/components/MeditationCard.css';
 import '@/components/SectionTitle.css';
@@ -103,6 +104,11 @@ export function PracticeHubScreen() {
   const continueRef = useRef<HTMLDivElement>(null);
   const focusContinue = params.get('focus') === 'continue';
   const streakDays = usePracticeStatsStore((s) => s.streakDays);
+  const lastPracticeDate = usePracticeStatsStore((s) => s.lastPracticeDate);
+  const streak = useMemo(
+    () => getStreakView(lastPracticeDate, streakDays),
+    [lastPracticeDate, streakDays],
+  );
   const lastSession = usePracticeStatsStore((s) => s.lastSession);
   const onboardingDone = useOnboardingStore((s) => s.completed);
   const isReturning =
@@ -335,11 +341,18 @@ export function PracticeHubScreen() {
         )}
 
         {onboardingDone && (
-          <div className="practice-hub__streak">
+          <div
+            className={`practice-hub__streak${streak.atRisk ? ' practice-hub__streak--risk' : ''}`}
+          >
             <StreakPath
-              current={streakDays}
+              current={streak.days}
               goal={STREAK_GOAL_DAYS}
-              label={t('hub.streakLabel').replace('{goal}', String(STREAK_GOAL_DAYS))}
+              label={
+                streak.atRisk
+                  ? t('welcome.streakRisk').replace('{days}', String(streak.days))
+                  : t('hub.streakLabel').replace('{goal}', String(STREAK_GOAL_DAYS))
+              }
+              highlightNext={streak.atRisk}
               compact
             />
           </div>

@@ -19,6 +19,22 @@ server {
     # VK iframe: не ставить X-Frame-Options DENY / CSP frame-ancestors 'none'
     add_header X-Content-Type-Options nosniff always;
 
+    # HTML/SW shell — всегда перепроверять, иначе VK WebView/PWA живут на старом билде
+    location = /index.html {
+        add_header Cache-Control "no-cache";
+        add_header X-Content-Type-Options nosniff always;
+    }
+
+    location = /sw.js {
+        add_header Cache-Control "no-cache";
+        add_header X-Content-Type-Options nosniff always;
+    }
+
+    location = /manifest.webmanifest {
+        add_header Cache-Control "no-cache";
+        add_header X-Content-Type-Options nosniff always;
+    }
+
     location / {
         try_files $uri $uri/ /index.html;
     }

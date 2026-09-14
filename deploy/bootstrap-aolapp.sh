@@ -5,7 +5,7 @@ set -euo pipefail
 DEPLOY_USER=deploy
 ROOT=/var/www/meditation
 
-mkdir -p "$ROOT"/{releases,media}
+mkdir -p "$ROOT"/{releases,media,data,notifier}
 chown -R "$DEPLOY_USER:$DEPLOY_USER" "$ROOT"
 
 # placeholder, пока нет первого деплоя

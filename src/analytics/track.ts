@@ -14,6 +14,7 @@ export type TrackEvent =
   | 'session_complete'
   | 'session_abandon'
   | 'end_share'
+  | 'vk_notifications'
   | 'offline_download'
   | 'custom_practice_save';
 

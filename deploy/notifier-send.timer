@@ -1,0 +1,10 @@
+[Unit]
+Description=Run meditation VK notifier every hour
+
+[Timer]
+OnCalendar=*:0/15
+Persistent=true
+RandomizedDelaySec=40
+
+[Install]
+WantedBy=timers.target

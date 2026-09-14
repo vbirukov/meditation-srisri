@@ -9,12 +9,14 @@ import { VideoBackground } from '@/components/VideoBackground';
 import { useT } from '@/i18n';
 import { acquireScreenWakeLock } from '@/hooks/useWakeLock';
 import {
+  SLOT_DEFAULT_HOUR,
   STARTER_GUIDED_IDS,
   STARTER_TIMER_SECONDS,
   STREAK_GOAL_DAYS,
   useOnboardingStore,
   type PracticeSlot,
 } from '@/store/onboardingStore';
+import { ReminderTimePicker } from '@/components/ReminderTimePicker';
 import { useRecentPracticeStore } from '@/store/recentPracticeStore';
 import { useSessionStore } from '@/store/sessionStore';
 import { formatTime } from '@/utils/time';
@@ -38,8 +40,13 @@ export function OnboardingScreen() {
   const navigate = useNavigate();
   const t = useT();
   const [step, setStep] = useState<Step>('promise');
+  const [slotPhase, setSlotPhase] = useState<'choose' | 'time'>('choose');
+  const [draftSlot, setDraftSlot] = useState<PracticeSlot | null>(null);
+  const [draftHour, setDraftHour] = useState(7);
+  const [draftMinute, setDraftMinute] = useState(0);
   const complete = useOnboardingStore((s) => s.complete);
   const setPreferredSlot = useOnboardingStore((s) => s.setPreferredSlot);
+  const setReminderTime = useOnboardingStore((s) => s.setReminderTime);
   const preferredSlot = useOnboardingStore((s) => s.preferredSlot);
   const setMode = useSessionStore((s) => s.setMode);
   const setTargetDuration = useSessionStore((s) => s.setTargetDuration);
@@ -99,13 +106,35 @@ export function OnboardingScreen() {
   };
 
   const goBack = () => {
+    if (step === 'slot' && slotPhase === 'time') {
+      setSlotPhase('choose');
+      return;
+    }
     if (step === 'slot') setStep('promise');
-    else if (step === 'pick') setStep('slot');
+    else if (step === 'pick') {
+      setStep('slot');
+      setSlotPhase(preferredSlot ? 'time' : 'choose');
+    }
   };
 
   const chooseSlot = (slot: PracticeSlot) => {
-    setPreferredSlot(slot);
+    setDraftSlot(slot);
+    setDraftHour(SLOT_DEFAULT_HOUR[slot]);
+    setDraftMinute(0);
+    setSlotPhase('time');
     track('onboarding_view', { step: 'slot_picked', slot });
+  };
+
+  const confirmReminderTime = () => {
+    const slot = draftSlot ?? preferredSlot ?? 'morning';
+    setPreferredSlot(slot);
+    setReminderTime(draftHour, draftMinute, slot);
+    track('onboarding_view', {
+      step: 'reminder_time',
+      slot,
+      hour: draftHour,
+      minute: draftMinute,
+    });
     setStep('pick');
   };
 
@@ -167,7 +196,7 @@ export function OnboardingScreen() {
           </div>
         )}
 
-        {step === 'slot' && (
+        {step === 'slot' && slotPhase === 'choose' && (
           <div className="onboarding__panel glass-panel onboarding__panel--enter" key="slot">
             <p className="onboarding__eyebrow">{t('onboarding.slotEyebrow')}</p>
             <h1 className="heading-serif onboarding__title onboarding__title--sm">
@@ -196,6 +225,54 @@ export function OnboardingScreen() {
             </div>
             <button type="button" className="onboarding__skip" onClick={() => setStep('pick')}>
               {t('onboarding.slotLater')}
+            </button>
+          </div>
+        )}
+
+        {step === 'slot' && slotPhase === 'time' && (
+          <div className="onboarding__panel glass-panel onboarding__panel--enter" key="slot-time">
+            <p className="onboarding__eyebrow">{t('onboarding.timeEyebrow')}</p>
+            <h1 className="heading-serif onboarding__title onboarding__title--sm">
+              {t('onboarding.timeTitle')}
+            </h1>
+            <p className="onboarding__lead text-muted">{t('onboarding.timeLead')}</p>
+            <ReminderTimePicker
+              slot={draftSlot}
+              hour={draftHour}
+              minute={draftMinute}
+              labels={{
+                slotsTitle: t('onboarding.timeSlotsLabel'),
+                timeTitle: t('onboarding.timeExactLabel'),
+                slot: {
+                  morning: t('onboarding.slot.morning'),
+                  day: t('onboarding.slot.day'),
+                  evening: t('onboarding.slot.evening'),
+                },
+                confirm: t('onboarding.timeConfirm'),
+                custom: t('onboarding.timeCustom'),
+              }}
+              onSlotChange={(s) => {
+                setDraftSlot(s);
+                setDraftHour(SLOT_DEFAULT_HOUR[s]);
+                setDraftMinute(0);
+              }}
+              onTimeChange={(h, m) => {
+                setDraftHour(h);
+                setDraftMinute(m);
+              }}
+              onConfirm={confirmReminderTime}
+            />
+            <button
+              type="button"
+              className="onboarding__skip"
+              onClick={() => {
+                const slot = draftSlot ?? 'morning';
+                setPreferredSlot(slot);
+                setReminderTime(SLOT_DEFAULT_HOUR[slot], 0, slot);
+                setStep('pick');
+              }}
+            >
+              {t('onboarding.timeDefault')}
             </button>
           </div>
         )}

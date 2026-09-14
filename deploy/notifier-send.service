@@ -1,0 +1,10 @@
+[Unit]
+Description=Meditation VK notifier send (one shot)
+After=network.target
+
+[Service]
+Type=oneshot
+User=deploy
+WorkingDirectory=/var/www/meditation/notifier
+EnvironmentFile=-/var/www/meditation/notifier/.env
+ExecStart=/usr/bin/node /var/www/meditation/notifier/notifier.mjs send

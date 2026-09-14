@@ -334,6 +334,13 @@
   grid-column: 1 / -1;
 }
 
+.end-screen__share-peak {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: var(--text-sm);
+  text-align: center;
+}
+
 .end-screen__actions .btn-primary,
 .end-screen__actions .btn-secondary {
   width: 100%;

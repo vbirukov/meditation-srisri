@@ -12,11 +12,17 @@ import { App } from './App';
 import { assertCatalogIntegrity } from './data/assertCatalog';
 import './styles/global.css';
 import { registerSW } from './pwa/registerSW';
+import { captureShareAttribution, readLocationShareRef } from './utils/deepLink';
 import { isVkMiniApp } from './utils/vk';
 
 const inVk = isVkMiniApp();
 assertCatalogIntegrity();
-track('app_open');
+const shareRef = captureShareAttribution();
+track('app_open', shareRef ? { ref: shareRef } : {});
+const inboundRef = readLocationShareRef();
+if (inboundRef) {
+  track('share_open', { ref: inboundRef });
+}
 
 function bootError(err: unknown) {
   const msg = err instanceof Error ? `${err.message}\n${err.stack ?? ''}` : String(err);

@@ -25,10 +25,13 @@ import { absoluteMediaUrl, isVkMiniApp } from '@/utils/vk';
 import {
   buildShareMessage,
   buildStoryText,
+  pickStoryBackground,
   shareLink,
   shareToStory,
   shareToWall,
 } from '@/vk/share';
+import { deepLinkFromLastSession, buildShareAppUrl } from '@/utils/deepLink';
+import { markSadhanaCompletedForShare, shouldOfferShare } from '@/utils/shareOffer';
 import {
   addAppToFavorites,
   shouldOfferFavorites,
@@ -48,7 +51,6 @@ import '@/styles/textured-surface.css';
 import './EndScreen.css';
 
 const GURUJI_FALLBACK_PHOTO = '/media/images/guruji.svg';
-const STORY_BG = '/media/posters/welcome1.jpg';
 const meditations = meditationsData as Meditation[];
 const sadhanaCatalog = sadhanaData as unknown as SadhanaCatalog;
 const sadhanas = (sadhanaCatalog.practices ?? []) as SadhanaPractice[];
@@ -80,6 +82,14 @@ export function EndScreen() {
   const [photoFailed, setPhotoFailed] = useState(false);
   const [shareBusy, setShareBusy] = useState<'wall' | 'story' | 'link' | 'invite' | null>(null);
   const [shareMoreOpen, setShareMoreOpen] = useState(false);
+  const offerShare =
+    inVk &&
+    shouldOfferShare({
+      streakDays,
+      mode: lastSession?.mode,
+      totalSessions,
+    });
+  const [showShare] = useState(() => offerShare);
   const [favBusy, setFavBusy] = useState(false);
   const [notifBusy, setNotifBusy] = useState(false);
   const offerNotif = shouldOfferNotifications(totalSessions);
@@ -137,6 +147,14 @@ export function EndScreen() {
     ? formatPracticeDuration(lastSession.durationSeconds, locale)
     : '—';
 
+  const monthLabel = formatMonthTotal(secondsThisMonth, locale);
+
+  useEffect(() => {
+    if (lastSession?.mode === 'sadhana') {
+      markSadhanaCompletedForShare();
+    }
+  }, [lastSession?.mode]);
+
   const finish = () => {
     reset();
     navigate('/practice');
@@ -164,21 +182,41 @@ export function EndScreen() {
   const runShare = async (kind: 'wall' | 'story' | 'link' | 'invite') => {
     if (shareBusy) return;
     setShareBusy(kind);
-    const shareParams = { locale, practiceTitle, durationLabel, streakDays: streak.days };
+    const deepLink = deepLinkFromLastSession({
+      meditationId: lastSession?.meditationId,
+      sadhanaId: lastSession?.sadhanaId,
+      mode: lastSession?.mode,
+      channel: kind,
+    });
+    const shareUrl = buildShareAppUrl(deepLink);
+    const shareParams = {
+      locale,
+      practiceTitle,
+      durationLabel,
+      streakDays: streak.days,
+      monthLabel,
+      deepLink,
+    };
     try {
       if (kind === 'wall') {
-        await shareToWall(buildShareMessage(shareParams));
+        await shareToWall(buildShareMessage(shareParams), shareUrl);
       } else if (kind === 'story') {
         await shareToStory(
-          absoluteMediaUrl(STORY_BG),
+          absoluteMediaUrl(
+            pickStoryBackground({
+              streakDays: streak.days,
+              mode: lastSession?.mode,
+            }),
+          ),
           buildStoryText(shareParams),
+          shareUrl,
         );
       } else if (kind === 'invite') {
         await showInviteBox();
       } else {
-        await shareLink(buildShareMessage(shareParams));
+        await shareLink(buildShareMessage(shareParams), shareUrl);
       }
-      track('end_share', { kind, mode: lastSession?.mode });
+      track('end_share', { kind, mode: lastSession?.mode, ref: kind });
     } finally {
       setShareBusy(null);
     }
@@ -458,8 +496,9 @@ export function EndScreen() {
               </div>
             </section>
           )}
-          {inVk && (
+          {inVk && showShare && (
             <div className="end-screen__share" role="group" aria-label={t('end.shareLink')}>
+              <p className="end-screen__share-peak text-muted">{t('end.sharePeak')}</p>
               <button
                 type="button"
                 className="btn-secondary"

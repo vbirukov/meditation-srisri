@@ -21,7 +21,7 @@ import { preferredVideoHeight, videoRenditionUrl } from '@/utils/connection';
 import { formatTime } from '@/utils/time';
 import { useSessionPanelTexture, textureStyle, withTexture } from '@/utils/textures';
 import { useSadhanaChoicesStore } from '@/store/sadhanaChoicesStore';
-import { resolveSadhanaPractice } from '@/utils/sadhana';
+import { resolveSadhanaPractice, sadhanaTotalSeconds } from '@/utils/sadhana';
 import { acquireScreenWakeLock, useWakeLock } from '@/hooks/useWakeLock';
 import { useSadhanaDebug } from '@/hooks/useSadhanaDebug';
 import '@/styles/textured-surface.css';
@@ -56,6 +56,7 @@ export function SessionScreen() {
   const tick = useSessionStore((s) => s.tick);
   const complete = useSessionStore((s) => s.complete);
   const start = useSessionStore((s) => s.start);
+  const setMode = useSessionStore((s) => s.setMode);
   const isCompleted = useSessionStore((s) => s.isCompleted);
   const sadhanaPhaseIndex = useSessionStore((s) => s.sadhanaPhaseIndex) ?? 0;
   const sadhanaPhaseProgress = useSessionStore((s) => s.sadhanaPhaseProgress) ?? 0;
@@ -100,6 +101,44 @@ export function SessionScreen() {
   const returnTab = params.get('tab') === 'sadhana' ? 'sadhana' : 'meditations';
   const practicePath =
     returnTab === 'sadhana' ? '/practice?tab=sadhana' : '/practice';
+
+  // Deep-link bootstrap: #/session?m=... | s=... | t=1
+  useEffect(() => {
+    const m = params.get('m')?.trim();
+    const s = params.get('s')?.trim();
+    const timer = params.get('t') === '1' || params.get('mode') === 'timer';
+    const state = useSessionStore.getState();
+    const busy =
+      Boolean(state.startedAt) ||
+      state.progressSeconds > 0 ||
+      (state.guidedAudioSeconds ?? 0) > 0 ||
+      (state.sadhanaPhaseProgress ?? 0) > 0 ||
+      state.timerRunning ||
+      state.interrupted;
+
+    if (busy) return;
+
+    if (m) {
+      const med = meditations.find((x) => x.id === m);
+      if (!med) return;
+      if (state.mode === 'guided' && state.meditationId === m) return;
+      setMode('guided', m);
+      setTargetDuration(med.durationSeconds);
+      return;
+    }
+    if (s) {
+      const practice = sadhanas.find((x) => x.id === s);
+      if (!practice) return;
+      if (state.mode === 'sadhana' && state.sadhanaId === s) return;
+      setMode('sadhana', s);
+      setTargetDuration(sadhanaTotalSeconds(practice, sadhanaBlocks).totalSeconds || 600);
+      return;
+    }
+    if (timer && state.mode !== 'timer') {
+      setMode('timer');
+      setTargetDuration(state.targetDurationSeconds || 600);
+    }
+  }, [params, setMode, setTargetDuration]);
 
   const setup =
     params.get('setup') === '1' &&

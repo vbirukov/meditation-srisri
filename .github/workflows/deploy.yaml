@@ -35,7 +35,14 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Trust server host key
-        run: ssh-keyscan -p "${{ secrets.SSH_PORT }}" "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
+        run: |
+          set -euo pipefail
+          : "${{ secrets.SSH_HOST }}"
+          : "${{ secrets.SSH_PORT }}"
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          ssh-keyscan -p "${{ secrets.SSH_PORT }}" -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
 
       - name: Deploy release
         env:
@@ -45,35 +52,53 @@ jobs:
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
         run: |
           set -euo pipefail
-          RELEASE="$(date +%Y%m%d%H%M%S)"
 
-          ssh -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" "
-            mkdir -p $DEPLOY_PATH/releases/$RELEASE $DEPLOY_PATH/media $DEPLOY_PATH/data $DEPLOY_PATH/notifier
-          "
+          for v in SSH_HOST SSH_PORT SSH_USER DEPLOY_PATH; do
+            if [ -z "${!v}" ]; then
+              echo "::error::$v secret is empty"
+              exit 1
+            fi
+          done
+
+          SSH_BASE=(ssh -p "$SSH_PORT" -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes)
+          RSYNC_RSH="ssh -p ${SSH_PORT} -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes"
+          RELEASE="$(date -u +%Y%m%d%H%M%S)"
+
+          echo "Deploying $RELEASE → $SSH_USER@$SSH_HOST:$DEPLOY_PATH"
+
+          "${SSH_BASE[@]}" "$SSH_USER@$SSH_HOST" \
+            "mkdir -p '$DEPLOY_PATH/releases/$RELEASE' '$DEPLOY_PATH/media' '$DEPLOY_PATH/data' '$DEPLOY_PATH/notifier' '$DEPLOY_PATH/bin'"
 
           # App shell only — media lives in $DEPLOY_PATH/media (nginx alias).
-          # Copying media into every release was bloating releases and killing CI.
           rsync -az --delete \
             --exclude media/ \
-            -e "ssh -p $SSH_PORT" \
+            -e "$RSYNC_RSH" \
             dist/ "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/releases/$RELEASE/"
 
-          # Sync lightweight media; videos stay on the server (too large for Actions).
+          # Lightweight media; videos stay on the server.
           if [ -d dist/media ]; then
             rsync -az \
               --exclude '*.wav' \
               --exclude 'video/' \
-              -e "ssh -p $SSH_PORT" \
+              -e "$RSYNC_RSH" \
               dist/media/ "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/media/"
           fi
 
           if [ -d scripts/notifier ]; then
             rsync -az \
-              -e "ssh -p $SSH_PORT" \
+              -e "$RSYNC_RSH" \
               scripts/notifier/ "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/notifier/"
           fi
 
-          ssh -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" "
-            ln -sfn $DEPLOY_PATH/releases/$RELEASE $DEPLOY_PATH/current &&
-            sudo systemctl reload nginx
+          if [ -f deploy/disk-alert.sh ]; then
+            rsync -az \
+              -e "$RSYNC_RSH" \
+              deploy/disk-alert.sh "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/bin/disk-alert.sh"
+            "${SSH_BASE[@]}" "$SSH_USER@$SSH_HOST" "chmod +x '$DEPLOY_PATH/bin/disk-alert.sh'"
+          fi
+
+          "${SSH_BASE[@]}" "$SSH_USER@$SSH_HOST" "
+            ln -sfn '$DEPLOY_PATH/releases/$RELEASE' '$DEPLOY_PATH/current' &&
+            sudo -n /usr/bin/systemctl reload nginx &&
+            readlink -f '$DEPLOY_PATH/current'
           "

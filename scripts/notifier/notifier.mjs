@@ -36,9 +36,14 @@ const BATCH = 100;
 
 const SLOT_HOUR = { morning: 7, day: 13, evening: 20 };
 const DEFAULT_HOUR = 9;
+const LAPSE_DAYS = 7;
 
-const MESSAGE_RU =
+const MESSAGE_HABIT_RU =
   'Намасте. Время короткой практики — откройте «Медитацию с Шри Шри». Один день — одна сессия.';
+
+/** Soft re-entry — no streak / guilt. */
+const MESSAGE_REACTIVATE_RU =
+  'Намасте. Мы рядом, когда будете готовы — короткая практика снова ждёт вас в приложении.';
 
 // --- time helpers ----------------------------------------------------------
 
@@ -65,6 +70,31 @@ function ymdInTz(iso) {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return null;
   return moscowParts(d).ymd;
+}
+
+/** Whole calendar days since ISO timestamp in NOTIFIER_TZ (floor). */
+export function daysSinceIso(iso, now = new Date()) {
+  if (!iso) return null;
+  const then = new Date(iso);
+  if (Number.isNaN(then.getTime())) return null;
+  const a = moscowParts(then).ymd;
+  const b = moscowParts(now).ymd;
+  const [ay, am, ad] = a.split('-').map(Number);
+  const [by, bm, bd] = b.split('-').map(Number);
+  const t0 = Date.UTC(ay, am - 1, ad);
+  const t1 = Date.UTC(by, bm - 1, bd);
+  return Math.floor((t1 - t0) / 86_400_000);
+}
+
+/** habit | reactivate — lapsed only if we know last_session and gap ≥ LAPSE_DAYS. */
+export function notifyScenario(user, now = new Date()) {
+  const days = daysSinceIso(user.last_session_at, now);
+  if (days != null && days >= LAPSE_DAYS) return 'reactivate';
+  return 'habit';
+}
+
+export function messageForScenario(scenario) {
+  return scenario === 'reactivate' ? MESSAGE_REACTIVATE_RU : MESSAGE_HABIT_RU;
 }
 
 // --- JSONL store -----------------------------------------------------------
@@ -195,45 +225,58 @@ async function runSend() {
   }
   ensureDataDir();
   const map = loadUsers();
-  const due = usersDue(map);
-  console.log(`[notifier] due=${due.length} total=${map.size} hour=${moscowParts().hour}`);
+  const now = new Date();
+  const due = usersDue(map, now);
+  const habit = due.filter((u) => notifyScenario(u, now) === 'habit');
+  const reactivate = due.filter((u) => notifyScenario(u, now) === 'reactivate');
+  console.log(
+    `[notifier] due=${due.length} habit=${habit.length} reactivate=${reactivate.length} total=${map.size} hour=${moscowParts(now).hour}`,
+  );
   if (due.length === 0) return;
 
-  const nowIso = new Date().toISOString();
-  for (let i = 0; i < due.length; i += BATCH) {
-    const chunk = due.slice(i, i + BATCH);
-    const ids = chunk.map((u) => u.vk_user_id);
-    try {
-      const json = await vkSendMessage(ids, MESSAGE_RU, token);
-      if (json.error) {
-        console.error('[notifier] api error', json.error);
-        continue;
-      }
-      const results = Array.isArray(json.response) ? json.response : [];
-      for (const r of results) {
-        const id = Number(r.user_id);
-        const u = map.get(id);
-        if (!u) continue;
-        if (r.status) {
-          u.last_sent_at = nowIso;
-        } else if (r.error?.code === 1) {
-          u.enabled = false;
+  const nowIso = now.toISOString();
+
+  async function sendChunk(chunk, message, scenario) {
+    if (chunk.length === 0) return;
+    for (let i = 0; i < chunk.length; i += BATCH) {
+      const batch = chunk.slice(i, i + BATCH);
+      const ids = batch.map((u) => u.vk_user_id);
+      try {
+        const json = await vkSendMessage(ids, message, token);
+        if (json.error) {
+          console.error(`[notifier] api error (${scenario})`, json.error);
+          continue;
         }
-        u.updated_at = nowIso;
-        map.set(id, u);
-      }
-      // if API returns empty success shape, still mark sent for chunk
-      if (results.length === 0 && !json.error) {
-        for (const u of chunk) {
-          u.last_sent_at = nowIso;
+        const results = Array.isArray(json.response) ? json.response : [];
+        for (const r of results) {
+          const id = Number(r.user_id);
+          const u = map.get(id);
+          if (!u) continue;
+          if (r.status) {
+            u.last_sent_at = nowIso;
+            u.last_scenario = scenario;
+          } else if (r.error?.code === 1) {
+            u.enabled = false;
+          }
           u.updated_at = nowIso;
-          map.set(u.vk_user_id, u);
+          map.set(id, u);
         }
+        if (results.length === 0 && !json.error) {
+          for (const u of batch) {
+            u.last_sent_at = nowIso;
+            u.last_scenario = scenario;
+            u.updated_at = nowIso;
+            map.set(u.vk_user_id, u);
+          }
+        }
+      } catch (err) {
+        console.error(`[notifier] send failed (${scenario})`, err);
       }
-    } catch (err) {
-      console.error('[notifier] send failed', err);
     }
   }
+
+  await sendChunk(habit, MESSAGE_HABIT_RU, 'habit');
+  await sendChunk(reactivate, MESSAGE_REACTIVATE_RU, 'reactivate');
   writeUsers(map);
   console.log('[notifier] write done');
 }
@@ -357,6 +400,28 @@ function selfCheck() {
   upsertUser(map, { vk_user_id: 1, prefer_minute: 0, last_sent_at: fakeNow.toISOString() });
   const due2 = usersDue(map, fakeNow);
   if (due2.length !== 0) throw new Error('same-day last_sent must suppress');
+
+  const fresh = { last_session_at: fakeNow.toISOString() };
+  if (notifyScenario(fresh, fakeNow) !== 'habit') throw new Error('fresh session → habit');
+  if (messageForScenario('habit') === messageForScenario('reactivate')) {
+    throw new Error('habit/reactivate messages must differ');
+  }
+  if (/сери|streak|день подряд/i.test(messageForScenario('reactivate'))) {
+    throw new Error('reactivate must not pressure streak');
+  }
+
+  const lapsed = {
+    last_session_at: new Date(fakeNow.getTime() - 8 * 86_400_000).toISOString(),
+  };
+  if (notifyScenario(lapsed, fakeNow) !== 'reactivate') {
+    throw new Error('8 days gap → reactivate');
+  }
+  if (notifyScenario({ last_session_at: null }, fakeNow) !== 'habit') {
+    throw new Error('no session yet → habit (not lapsed)');
+  }
+  if (daysSinceIso(lapsed.last_session_at, fakeNow) < LAPSE_DAYS) {
+    throw new Error('daysSinceIso undercount');
+  }
 
   console.log('[notifier] self-check ok');
 }

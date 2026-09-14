@@ -1,9 +1,8 @@
-import bridge from '@vkontakte/vk-bridge';
 import {
   usePracticeStatsStore,
   type LastPracticeSession,
 } from '@/store/practiceStatsStore';
-import { isVkMiniApp } from '@/utils/vk';
+import { createVkStoreSync } from '@/vk/vkStoreSync';
 
 const STORAGE_KEY = 'practice_stats';
 
@@ -16,10 +15,6 @@ export interface PracticeStatsSnapshot {
   secondsThisMonth: number;
   lastSession: LastPracticeSession | null;
 }
-
-let suppressPush = false;
-let pushTimer: ReturnType<typeof setTimeout> | null = null;
-let started = false;
 
 function snapshotFromStore(): PracticeStatsSnapshot {
   const s = usePracticeStatsStore.getState();
@@ -49,22 +44,14 @@ export function pickNewerSnapshot(
 }
 
 function applySnapshot(snap: PracticeStatsSnapshot) {
-  suppressPush = true;
-  try {
-    usePracticeStatsStore.setState({
-      totalSessions: snap.totalSessions,
-      streakDays: snap.streakDays,
-      lastPracticeDate: snap.lastPracticeDate,
-      monthKey: snap.monthKey,
-      secondsThisMonth: snap.secondsThisMonth,
-      lastSession: snap.lastSession,
-    });
-  } finally {
-    // persist middleware пишет sync; отпускаем на следующем тике
-    queueMicrotask(() => {
-      suppressPush = false;
-    });
-  }
+  usePracticeStatsStore.setState({
+    totalSessions: snap.totalSessions,
+    streakDays: snap.streakDays,
+    lastPracticeDate: snap.lastPracticeDate,
+    monthKey: snap.monthKey,
+    secondsThisMonth: snap.secondsThisMonth,
+    lastSession: snap.lastSession,
+  });
 }
 
 function waitLocalPersistHydrated(): Promise<void> {
@@ -78,83 +65,40 @@ function waitLocalPersistHydrated(): Promise<void> {
   });
 }
 
-export async function hydratePracticeStatsFromVk(): Promise<boolean> {
-  if (!isVkMiniApp()) return false;
-  await waitLocalPersistHydrated();
-  try {
-    const data = await bridge.send('VKWebAppStorageGet', { keys: [STORAGE_KEY] });
-    const raw = data.keys?.find((k) => k.key === STORAGE_KEY)?.value;
-    if (!raw) {
-      // в VK ещё пусто — зальём локальное, если есть прогресс
-      const local = snapshotFromStore();
-      if (local.totalSessions > 0 || local.lastSession) {
-        await pushPracticeStatsToVk();
+function isValidSnapshot(raw: unknown): raw is PracticeStatsSnapshot {
+  return typeof raw === 'object' && raw !== null && (raw as PracticeStatsSnapshot).v === 1;
+}
+
+const sync = createVkStoreSync<PracticeStatsSnapshot>({
+  storageKey: STORAGE_KEY,
+  snapshotFromStore,
+  applySnapshot,
+  pickNewer: pickNewerSnapshot,
+  hasLocalWorthPushing: (local) => local.totalSessions > 0 || !!local.lastSession,
+  shouldPushMerged: (merged, remote) =>
+    completedAt(merged) > completedAt(remote) || merged.totalSessions > remote.totalSessions,
+  waitHydrated: waitLocalPersistHydrated,
+  subscribeChanged: (onChange) =>
+    usePracticeStatsStore.subscribe((state, prev) => {
+      if (
+        state.totalSessions === prev.totalSessions &&
+        state.streakDays === prev.streakDays &&
+        state.lastPracticeDate === prev.lastPracticeDate &&
+        state.monthKey === prev.monthKey &&
+        state.secondsThisMonth === prev.secondsThisMonth &&
+        state.lastSession === prev.lastSession
+      ) {
+        return;
       }
-      return false;
-    }
-    const remote = JSON.parse(raw) as PracticeStatsSnapshot;
-    if (remote?.v !== 1) return false;
-    const local = snapshotFromStore();
-    const merged = pickNewerSnapshot(local, remote);
-    applySnapshot(merged);
-    if (completedAt(merged) > completedAt(remote) || merged.totalSessions > remote.totalSessions) {
-      await pushPracticeStatsToVk();
-    }
-    return true;
-  } catch {
-    return false;
-  }
-}
+      onChange();
+    }),
+  isValidSnapshot,
+});
 
-export async function pushPracticeStatsToVk(): Promise<boolean> {
-  if (!isVkMiniApp() || suppressPush) return false;
-  try {
-    const value = JSON.stringify(snapshotFromStore());
-    if (value.length > 4000) return false;
-    await bridge.send('VKWebAppStorageSet', { key: STORAGE_KEY, value });
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-export function schedulePushPracticeStatsToVk(delayMs = 600) {
-  if (!isVkMiniApp() || suppressPush) return;
-  if (pushTimer) clearTimeout(pushTimer);
-  pushTimer = setTimeout(() => {
-    pushTimer = null;
-    void pushPracticeStatsToVk();
-  }, delayMs);
-}
-
-/** Старт sync: hydrate → подписка на изменения store */
-export function startPracticeStatsVkSync(): () => void {
-  if (!isVkMiniApp() || started) return () => undefined;
-  started = true;
-  void hydratePracticeStatsFromVk();
-  const unsub = usePracticeStatsStore.subscribe((state, prev) => {
-    if (suppressPush) return;
-    if (
-      state.totalSessions === prev.totalSessions &&
-      state.streakDays === prev.streakDays &&
-      state.lastPracticeDate === prev.lastPracticeDate &&
-      state.monthKey === prev.monthKey &&
-      state.secondsThisMonth === prev.secondsThisMonth &&
-      state.lastSession === prev.lastSession
-    ) {
-      return;
-    }
-    schedulePushPracticeStatsToVk();
-  });
-  return () => {
-    unsub();
-    started = false;
-    if (pushTimer) {
-      clearTimeout(pushTimer);
-      pushTimer = null;
-    }
-  };
-}
+export const hydratePracticeStatsFromVk = sync.hydrate;
+export const pushPracticeStatsToVk = sync.push;
+export const schedulePushPracticeStatsToVk = sync.schedulePush;
+export const startPracticeStatsVkSync = sync.start;
 
 /** self-check: fails loud if merge regresses */
 export function assertPickNewerWorks() {

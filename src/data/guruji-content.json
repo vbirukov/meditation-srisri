@@ -13,8 +13,8 @@
   },
   "summaries": {
     "default": {
-      "ru": "Краткое резюме после любой практики. Замените этот текст своим.",
-      "en": "Short summary after any practice. Replace with your own text."
+      "ru": "Практика завершена — побудьте в этом состоянии ещё немного.",
+      "en": "Practice complete — stay with this feeling a little longer."
     },
     "byMode": {
       "timer": {
@@ -22,44 +22,92 @@
         "en": "Your silence is complete — stay with this stillness a little longer."
       },
       "custom": {
-        "ru": "Резюме для практики со своим треком.",
-        "en": "Summary for a session with your own track."
+        "ru": "Своя практика завершена — спасибо, что уделили себе это время.",
+        "en": "Your custom practice is complete — thank you for this time."
       },
       "sadhana": {
-        "ru": "Резюме после садханы.",
-        "en": "Summary after sadhana practice."
+        "ru": "Садхана завершена — хороший фундамент на день.",
+        "en": "Sadhana complete — a solid foundation for the day."
+      },
+      "guided": {
+        "ru": "Медитация завершена — сохраните это ощущение.",
+        "en": "Meditation complete — hold on to this feeling."
+      },
+      "custom-practice": {
+        "ru": "Своя практика завершена — спасибо, что уделили себе это время.",
+        "en": "Your custom practice is complete — thank you for this time."
       }
     },
     "bySadhanaId": {
-      "morning-full": {
+      "morning-short": {
         "ru": "Утренняя садхана завершена — хорошего дня.",
         "en": "Morning sadhana complete — have a peaceful day."
       },
-      "evening-short": {
-        "ru": "Вечерняя практика завершена — спокойного отдыха.",
-        "en": "Evening practice complete — rest well."
+      "sanyam-short": {
+        "ru": "Короткий Саньям завершён — сохраните внутреннюю тишину.",
+        "en": "Short Sanyam complete — keep the inner quiet."
       },
-      "mantra-japa": {
-        "ru": "Джапа завершена.",
-        "en": "Japa round complete."
+      "sanyam-full": {
+        "ru": "Полный Саньям завершён — глубокая практика позади.",
+        "en": "Full Sanyam complete — a deep practice behind you."
       }
     },
     "byMeditationId": {
-      "breath-5": {
-        "ru": "Резюме после «Дыхание и покой».",
-        "en": "Summary after “Breath and calm”."
+      "smile": {
+        "ru": "Улыбка внутри — пусть останется с вами.",
+        "en": "Keep that inner smile with you."
       },
-      "gratitude-10": {
-        "ru": "Резюме после «Благодарность».",
-        "en": "Summary after “Gratitude”."
+      "om": {
+        "ru": "Звук Ом отзвучал — тишина продолжает его.",
+        "en": "Om has settled — silence continues it."
       },
-      "silence-15": {
-        "ru": "Резюме после «Тишина у воды».",
-        "en": "Summary after “Silence by the water”."
+      "om-short": {
+        "ru": "Короткая практика с Ом завершена.",
+        "en": "Short Om practice complete."
       },
-      "sunset-visual": {
-        "ru": "Резюме после визуальной медитации «Закат у воды».",
-        "en": "Summary after the visual meditation “Sunset by the water”."
+      "panchakosha": {
+        "ru": "Панчакоша завершена — мягко вернитесь в тело.",
+        "en": "Panchakosha complete — gently return to the body."
+      },
+      "tattva": {
+        "ru": "Таттва-медитация завершена.",
+        "en": "Tattva meditation complete."
+      },
+      "spine-breath": {
+        "ru": "Дыхание вдоль позвоночника завершено.",
+        "en": "Spine-breath meditation complete."
+      },
+      "five-dimensions": {
+        "ru": "Практика «5 измерений» завершена.",
+        "en": "Five-dimensions practice complete."
+      },
+      "yantra": {
+        "ru": "Янтра-медитация завершена.",
+        "en": "Yantra meditation complete."
+      },
+      "emptiness": {
+        "ru": "Пребывание в пустоте завершено.",
+        "en": "Emptiness practice complete."
+      },
+      "i-and-not-i": {
+        "ru": "Практика «я и не я» завершена.",
+        "en": "“I and not-I” practice complete."
+      },
+      "yantra-triangle": {
+        "ru": "Медитация на янтру-треугольник завершена.",
+        "en": "Yantra-triangle meditation complete."
+      },
+      "changing-unchanging": {
+        "ru": "Практика на меняющееся и неизменное завершена.",
+        "en": "Changing and unchanging practice complete."
+      },
+      "gravity-fire-air": {
+        "ru": "Практика со стихиями завершена.",
+        "en": "Elements practice complete."
+      },
+      "love": {
+        "ru": "Медитация любви завершена — пусть тепло останется.",
+        "en": "Love meditation complete — keep the warmth."
       }
     }
   }

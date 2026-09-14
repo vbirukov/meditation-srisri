@@ -1,0 +1,9 @@
+[Unit]
+Description=aolapp disk free-space check
+After=local-fs.target
+
+[Service]
+Type=oneshot
+Environment=DISK_ALERT_THRESHOLD=15
+Environment=DISK_ALERT_MOUNT=/
+ExecStart=/var/www/meditation/bin/disk-alert.sh

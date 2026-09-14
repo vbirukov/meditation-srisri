@@ -143,13 +143,13 @@ Handoff-документ описывает продукт корректно, �
 
 | # | Задача | Оценка | Детали |
 |---|--------|--------|--------|
-| 3.1 | Тесты критических путей | 2 д | Vitest, 4 сценария: завершение сессии → stats/streak; merge VK stats при конфликте устройств; restore recent practice; сборка фаз садханы с alternatives. Без e2e-фреймворков |
-| 3.2 | Единый sync layer | 1.5 д | Свести `statsSync` и `recentSync` в один модуль с параметризацией по ключу. Удаление дублирования, не абстракция ради абстракции |
-| 3.3 | Self-host шрифтов | 0.5 д | DM Serif Display + Work Sans локально. Google Fonts в VK iframe — зависимость от чужого CSP и лишний RTT |
-| 3.4 | Разгрузить EndScreen | 1 д | Сейчас 5 CTA (wall, story, share, invite, favorites) конкурируют между собой. По данным `end_share` из 0.2 оставить 1–2 лучших, остальное — под «ещё» |
-| 3.5 | Синхронизировать guruji summaries | 0.5 д | Часть ключей ссылается на устаревшие id → молчаливый fallback на `summaries.default`. Добавить dev-warning при fallback, чтобы долг не отрастал |
-| 3.6 | Актуализировать README/structure | 0.5 д | Сейчас описывают React 19 и `/picker` как главный экран. Правка или явная пометка «историческое ТЗ» |
-| 3.7 | Ops-гигиена | 0.5 д | Проверить актуальность GitHub secrets под текущий хост, алерт на свободное место на диске |
+| 3.1 | Тесты критических путей | 2 д | **сделано:** Vitest — stats/streak, merge VK stats, recent restore, sadhana alternatives |
+| 3.2 | Единый sync layer | 1.5 д | **сделано:** `vkStoreSync` + тонкие `statsSync`/`recentSync` |
+| 3.3 | Self-host шрифтов | 0.5 д | **сделано:** `@fontsource/dm-serif-display` + `work-sans`, Google Fonts убраны из `index.html` |
+| 3.4 | Разгрузить EndScreen | 1 д | **сделано:** primary story+wall, invite/link под «Ещё»; favorites отдельным offer |
+| 3.5 | Синхронизировать guruji summaries | 0.5 д | **сделано:** ids = каталог; `console.warn` в DEV при fallback |
+| 3.6 | Актуализировать README/structure | 0.5 д | **сделано:** README актуален; `structure.md` помечен как историческое ТЗ |
+| 3.7 | Ops-гигиена | 0.5 д | **сделано:** host `109.73.201.170` / `/var/www/meditation` ок; `deploy/disk-alert.{sh,service,timer}` |
 
 ---
 

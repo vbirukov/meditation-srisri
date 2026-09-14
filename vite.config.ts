@@ -83,12 +83,6 @@ export default defineConfig({
             type: 'image/png',
             purpose: 'maskable',
           },
-          {
-            src: 'icons/icon-192.svg',
-            sizes: '192x192',
-            type: 'image/svg+xml',
-            purpose: 'any',
-          },
         ],
       },
       workbox: {
@@ -148,5 +142,9 @@ export default defineConfig({
     watch: {
       ignored: ['**/media-originals/**', '**/optimize-video.log'],
     },
+  },
+  test: {
+    environment: 'node',
+    include: ['src/**/*.test.ts'],
   },
 });

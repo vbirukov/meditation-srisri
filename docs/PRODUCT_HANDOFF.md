@@ -251,6 +251,8 @@ Mood на EndScreen **не** пишется в stats и **не** синкает�
 `.github/workflows/deploy.yaml`: push в `main` → build → rsync release + media → symlink → `nginx reload`.  
 Secrets: `SSH_HOST`, `SSH_PORT`, `SSH_USER`, `SSH_PRIVATE_KEY`, `DEPLOY_PATH`.
 
+Проверено (2026-09): хост `109.73.201.170`, `DEPLOY_PATH=/var/www/meditation`, диск ~44% free. Алерт: `deploy/disk-alert.sh` (cron `15 7 * * *` у `deploy`, порог 15% free). Systemd-варианты: `disk-alert.service` + `.timer` (нужен root).
+
 Конфиги: `deploy/nginx-aolapp.conf.example`, `deploy/bootstrap-aolapp.sh`.
 
 ### 7.3. Локальная разработка

@@ -40,6 +40,12 @@ export function getLocalized(text: LocalizedText | Partial<LocalizedText>, local
   return text[locale] ?? text.ru ?? text.en ?? '';
 }
 
+function warnSummaryFallback(reason: string) {
+  if (import.meta.env.DEV) {
+    console.warn(`[guruji] summary fallback → default (${reason})`);
+  }
+}
+
 export function getSessionSummary(
   mode: SessionMode,
   meditationId: string | undefined,
@@ -47,14 +53,21 @@ export function getSessionSummary(
   sadhanaId?: string,
 ): string {
   const { summaries } = content;
-  if (sadhanaId && summaries.bySadhanaId?.[sadhanaId]) {
-    return getLocalized(summaries.bySadhanaId[sadhanaId], locale);
+  if (sadhanaId) {
+    if (summaries.bySadhanaId?.[sadhanaId]) {
+      return getLocalized(summaries.bySadhanaId[sadhanaId], locale);
+    }
+    warnSummaryFallback(`missing bySadhanaId[${sadhanaId}]`);
   }
-  if (meditationId && summaries.byMeditationId?.[meditationId]) {
-    return getLocalized(summaries.byMeditationId[meditationId], locale);
+  if (meditationId) {
+    if (summaries.byMeditationId?.[meditationId]) {
+      return getLocalized(summaries.byMeditationId[meditationId], locale);
+    }
+    warnSummaryFallback(`missing byMeditationId[${meditationId}]`);
   }
   if (summaries.byMode?.[mode]) {
     return getLocalized(summaries.byMode[mode], locale);
   }
+  warnSummaryFallback(`missing byMode[${mode}]`);
   return getLocalized(summaries.default, locale);
 }

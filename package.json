@@ -21,10 +21,14 @@
     "notifier:check": "node scripts/notifier/notifier.mjs self-check",
     "check:streak": "node scripts/check-streak.mjs",
     "check:mood": "node scripts/check-mood.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "preview": "vite preview",
     "start": "npm run build && npm run preview"
   },
   "dependencies": {
+    "@fontsource/dm-serif-display": "^5.3.0",
+    "@fontsource/work-sans": "^5.3.0",
     "@vkontakte/vk-bridge": "^3.0.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -39,6 +43,7 @@
     "sharp": "^0.35.4",
     "typescript": "~5.6.3",
     "vite": "^4.5.5",
-    "vite-plugin-pwa": "^0.20.5"
+    "vite-plugin-pwa": "^0.20.5",
+    "vitest": "^2.1.9"
   }
 }

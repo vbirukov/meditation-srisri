@@ -79,6 +79,7 @@ export function EndScreen() {
   const media = getGurujiMedia();
   const [photoFailed, setPhotoFailed] = useState(false);
   const [shareBusy, setShareBusy] = useState<'wall' | 'story' | 'link' | 'invite' | null>(null);
+  const [shareMoreOpen, setShareMoreOpen] = useState(false);
   const [favBusy, setFavBusy] = useState(false);
   const [notifBusy, setNotifBusy] = useState(false);
   const offerNotif = shouldOfferNotifications(totalSessions);
@@ -463,33 +464,46 @@ export function EndScreen() {
                 type="button"
                 className="btn-secondary"
                 disabled={shareBusy !== null}
-                onClick={() => void runShare('wall')}
-              >
-                {t('end.shareWall')}
-              </button>
-              <button
-                type="button"
-                className="btn-secondary"
-                disabled={shareBusy !== null}
                 onClick={() => void runShare('story')}
               >
                 {t('end.shareStory')}
               </button>
               <button
                 type="button"
-                className="btn-secondary end-screen__share-link"
+                className="btn-secondary"
                 disabled={shareBusy !== null}
-                onClick={() => void runShare('link')}
+                onClick={() => void runShare('wall')}
               >
-                {t('end.shareLink')}
+                {t('end.shareWall')}
               </button>
+              {shareMoreOpen && (
+                <>
+                  <button
+                    type="button"
+                    className="btn-secondary end-screen__share-link"
+                    disabled={shareBusy !== null}
+                    onClick={() => void runShare('invite')}
+                  >
+                    {t('end.inviteFriends')}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-secondary end-screen__share-link"
+                    disabled={shareBusy !== null}
+                    onClick={() => void runShare('link')}
+                  >
+                    {t('end.shareLink')}
+                  </button>
+                </>
+              )}
               <button
                 type="button"
-                className="btn-secondary end-screen__share-link"
+                className="btn-secondary end-screen__share-more"
                 disabled={shareBusy !== null}
-                onClick={() => void runShare('invite')}
+                aria-expanded={shareMoreOpen}
+                onClick={() => setShareMoreOpen((v) => !v)}
               >
-                {t('end.inviteFriends')}
+                {shareMoreOpen ? t('end.shareLess') : t('end.shareMore')}
               </button>
             </div>
           )}

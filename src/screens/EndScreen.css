@@ -329,7 +329,8 @@
   gap: var(--space-2);
 }
 
-.end-screen__share-link {
+.end-screen__share-link,
+.end-screen__share-more {
   grid-column: 1 / -1;
 }
 

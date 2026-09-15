@@ -29,8 +29,12 @@ npm run dev
 ## Медиа и данные
 
 - Медитации: `src/data/meditations.json` → файлы в `public/media/`
+- Добавить практику: `npm run add-practice -- --type audio|video --file ./in.mp3 --id slug --title "…" --lang ru`
 - Садханы: `src/data/sadhana.json`
+- Featured / офлайн-курирование: `src/data/featured.json`, `src/data/offline-curation.json`
 - Гуруджи (фото/резюме): `src/data/guruji-content.json`
+- Права: `docs/CONTENT_RIGHTS.md`
+- Как добавлять контент: `docs/CONTENT.md`
 - Офлайн-манифест: `npm run offline:manifest` → `src/data/offline-manifest.json`
 
 ## VK

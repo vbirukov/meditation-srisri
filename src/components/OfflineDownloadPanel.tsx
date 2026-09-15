@@ -3,6 +3,7 @@ import { track } from '@/analytics/track';
 import { useT } from '@/i18n';
 import {
   cacheUrlsForOffline,
+  getCuratedOfflineVideoUrls,
   getOfflineDownloadBundleUrls,
   isUrlCached,
 } from '@/utils/offlineMedia';
@@ -15,6 +16,7 @@ interface OfflineDownloadPanelProps {
 export function OfflineDownloadPanel({ onCached }: OfflineDownloadPanelProps) {
   const t = useT();
   const bundle = getOfflineDownloadBundleUrls();
+  const hasVideos = getCuratedOfflineVideoUrls().length > 0;
   const [ready, setReady] = useState<boolean | null>(null);
   const [downloading, setDownloading] = useState(false);
   const [progress, setProgress] = useState({ done: 0, total: bundle.length });
@@ -39,7 +41,7 @@ export function OfflineDownloadPanel({ onCached }: OfflineDownloadPanelProps) {
     const result = await cacheUrlsForOffline(bundle, setProgress);
     setDownloading(false);
     if (result.failed.length > 0) setFailed(result.failed);
-    else track('offline_download', { count: bundle.length });
+    else track('offline_download', { count: bundle.length, videos: hasVideos });
     await checkReady();
     onCached?.();
   };
@@ -55,7 +57,7 @@ export function OfflineDownloadPanel({ onCached }: OfflineDownloadPanelProps) {
         {t('offline.title')}
       </h2>
       <p className="offline-download__text text-muted">
-        {ready ? t('offline.ready') : t('offline.hint')}
+        {ready ? t('offline.ready') : hasVideos ? t('offline.hintWithVideo') : t('offline.hint')}
       </p>
       {!ready && (
         <>

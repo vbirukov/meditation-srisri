@@ -21,9 +21,35 @@
   border: 1px solid color-mix(in srgb, var(--color-green) 25%, transparent);
 }
 
-.practice-hub__streak {
-  margin-bottom: var(--space-4);
+.practice-hub__featured {
+  margin-bottom: var(--space-5);
+  padding: var(--space-4);
 }
+
+.practice-hub__lang {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-4);
+}
+
+.practice-hub__lang-btn {
+  border: 1px solid var(--color-border-subtle);
+  background: color-mix(in srgb, var(--color-surface) 70%, transparent);
+  color: var(--color-text-muted);
+  border-radius: var(--radius-full);
+  padding: 0.35rem 0.75rem;
+  font: inherit;
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+
+.practice-hub__lang-btn.is-active {
+  border-color: color-mix(in srgb, var(--color-primary) 55%, var(--color-border-subtle));
+  background: color-mix(in srgb, var(--color-primary) 18%, transparent);
+  color: var(--color-text);
+}
+
 
 .practice-hub__streak--risk {
   padding: var(--space-3);

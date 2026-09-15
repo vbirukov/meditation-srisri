@@ -1,0 +1,6 @@
+{
+  "generatedAt": "2026-09-15",
+  "notes": "Audio stays in default offline pack via isOfflinePrecached. Videos are opt-in: only IDs listed here enter the download bundle (480p preferred when present). Expand after offline_download analytics show demand.",
+  "videoMeditationIds": [],
+  "preferRendition": "480p"
+}

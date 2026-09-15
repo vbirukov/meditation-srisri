@@ -37,6 +37,12 @@ import { sadhanaTotalSeconds } from '@/utils/sadhana';
 import { useCustomPracticeStore } from '@/store/customPracticeStore';
 import { splitRecent } from '@/utils/recentPractice';
 import { getStreakView } from '@/utils/practiceStats';
+import {
+  CONTENT_LANG_FILTERS,
+  filterMeditationsByContentLang,
+  type ContentLangFilter,
+} from '@/utils/contentLanguage';
+import { getNewMeditations, getPracticeOfTheWeek } from '@/utils/featured';
 import { formatTime } from '@/utils/time';
 import '@/components/MeditationCard.css';
 import '@/components/SectionTitle.css';
@@ -48,9 +54,22 @@ const sadhanaCatalog = sadhanaData as unknown as SadhanaCatalog;
 const sadhanas = (sadhanaCatalog.practices ?? []) as SadhanaPractice[];
 const sadhanaBlocks = sadhanaCatalog.blocks ?? [];
 const DEFAULT_TIMER_SECONDS = 600;
+const CONTENT_LANG_KEY = 'meditate-content-lang';
 
 function parseTab(value: string | null): PracticeTab {
   return value === 'sadhana' ? 'sadhana' : 'meditations';
+}
+
+function readContentLang(): ContentLangFilter {
+  try {
+    const raw = localStorage.getItem(CONTENT_LANG_KEY);
+    if (raw && (CONTENT_LANG_FILTERS as string[]).includes(raw)) {
+      return raw as ContentLangFilter;
+    }
+  } catch {
+    /* ignore */
+  }
+  return 'all';
 }
 
 export function PracticeHubScreen() {
@@ -101,6 +120,7 @@ export function PracticeHubScreen() {
   const [builderOpen, setBuilderOpen] = useState(false);
   const [builderEditId, setBuilderEditId] = useState<string | null>(null);
   const [showAll, setShowAll] = useState(false);
+  const [contentLang, setContentLang] = useState<ContentLangFilter>(() => readContentLang());
   const continueRef = useRef<HTMLDivElement>(null);
   const focusContinue = params.get('focus') === 'continue';
   const streakDays = usePracticeStatsStore((s) => s.streakDays);
@@ -170,8 +190,26 @@ export function PracticeHubScreen() {
     return `/session?${q.toString()}`;
   };
 
-  const audio = meditations.filter((m) => m.type === 'audio');
-  const video = meditations.filter((m) => m.type === 'video');
+  const setContentLangFilter = useCallback((next: ContentLangFilter) => {
+    setContentLang(next);
+    try {
+      localStorage.setItem(CONTENT_LANG_KEY, next);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  const potw = useMemo(() => getPracticeOfTheWeek(), []);
+  const newMeditations = useMemo(() => getNewMeditations(), []);
+
+  const audio = filterMeditationsByContentLang(
+    meditations.filter((m) => m.type === 'audio'),
+    contentLang,
+  );
+  const video = filterMeditationsByContentLang(
+    meditations.filter((m) => m.type === 'video'),
+    contentLang,
+  );
   const visible = (list: Meditation[]) =>
     online ? list : list.filter((m) => m.isOfflinePrecached && isMeditationAvailable(m.id));
 
@@ -315,11 +353,57 @@ export function PracticeHubScreen() {
 
         <OfflineDownloadPanel onCached={() => void refreshOffline()} />
 
+        {(potw.meditation || potw.sadhana) && (
+          <section className="practice-hub__featured glass-panel" aria-label={t('hub.practiceOfWeek')}>
+            <SectionTitle textureUrl={pageTextures['section-header']}>
+              {t('hub.practiceOfWeek')}
+            </SectionTitle>
+            {potw.meditation && (
+              <MeditationCard
+                meditation={potw.meditation}
+                textureUrl={pageTextures['meditation-card']}
+                onSelect={startGuided}
+                offlineUnavailable={!online && !isMeditationAvailable(potw.meditation.id)}
+                offlineLabel={offlineLabel}
+              />
+            )}
+            {potw.sadhana ? (
+              <SadhanaCard
+                practice={potw.sadhana}
+                blocks={sadhanaBlocks}
+                textureUrl={pageTextures['sadhana-card']}
+                onSelect={startSadhana}
+                offlineUnavailable={!online && !isSadhanaAvailable(potw.sadhana.id)}
+                offlineLabel={offlineLabel}
+              />
+            ) : null}
+          </section>
+        )}
+
         <PracticeTabs
           active={tab}
           onChange={setTab}
           labels={{ meditations: t('hub.meditations'), sadhana: t('hub.sadhana') }}
         />
+
+        {tab === 'meditations' && (
+          <div
+            className="practice-hub__lang"
+            role="group"
+            aria-label={t('hub.contentLang')}
+          >
+            {CONTENT_LANG_FILTERS.map((lang) => (
+              <button
+                key={lang}
+                type="button"
+                className={`practice-hub__lang-btn${contentLang === lang ? ' is-active' : ''}`}
+                onClick={() => setContentLangFilter(lang)}
+              >
+                {lang === 'all' ? t('hub.contentLangAll') : lang.toUpperCase()}
+              </button>
+            ))}
+          </div>
+        )}
 
         {interrupted && (
           <div className="practice-hub__resume">
@@ -448,6 +532,23 @@ export function PracticeHubScreen() {
 
         {tab === 'meditations' && !showStarterPack ? (
           <div className="practice-hub__catalog" role="tabpanel">
+            {filterMeditationsByContentLang(newMeditations, contentLang).length > 0 && (
+              <section aria-label={t('hub.newPractices')}>
+                <SectionTitle textureUrl={pageTextures['section-header']}>
+                  {t('hub.newPractices')}
+                </SectionTitle>
+                {filterMeditationsByContentLang(newMeditations, contentLang).map((m) => (
+                  <MeditationCard
+                    key={`new-${m.id}`}
+                    meditation={m}
+                    onSelect={startGuided}
+                    textureUrl={pageTextures['meditation-card']}
+                    offlineUnavailable={!online && !isMeditationAvailable(m.id)}
+                    offlineLabel={offlineLabel}
+                  />
+                ))}
+              </section>
+            )}
             {audioSplit.rest.length > 0 && (
               <section>
                 <SectionTitle textureUrl={pageTextures['section-header']}>

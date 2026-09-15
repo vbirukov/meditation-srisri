@@ -75,7 +75,11 @@
     "starterTitle": "Start short",
     "starterLead": "Three day-1 options — no full catalog yet.",
     "showAll": "Full catalog",
-    "streakLabel": "Streak · {goal}-day goal"
+    "streakLabel": "Streak · {goal}-day goal",
+    "practiceOfWeek": "Practice of the week",
+    "newPractices": "New",
+    "contentLang": "Practice language",
+    "contentLangAll": "All"
   },
   "sadhana": {
     "phases": "Phases",
@@ -216,6 +220,7 @@
   "offline": {
     "title": "Offline pack",
     "hint": "Download meditation and sadhana audio for offline practice",
+    "hintWithVideo": "Download audio plus curated videos for offline practice",
     "ready": "Pack ready. You can practice offline.",
     "download": "Download for offline",
     "downloading": "Downloading…",

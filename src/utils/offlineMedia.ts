@@ -1,9 +1,11 @@
 import offlineManifest from '@/data/offline-manifest.json';
+import offlineCuration from '@/data/offline-curation.json';
 import meditationsData from '@/data/meditations.json';
 import sadhanaData from '@/data/sadhana.json';
 import type { CustomPractice, Meditation, SadhanaBlock, SadhanaPractice } from '@/types';
 import { resolveCustomPracticeSteps } from '@/utils/customPractice';
 import { collectPhaseMediaUrls, sadhanaPracticeAllMediaUrls } from '@/utils/sadhana';
+import { videoRenditionUrl, type VideoRendition } from '@/utils/connection';
 
 export const USER_OFFLINE_CACHE = 'meditate-offline-user-v1';
 
@@ -20,8 +22,21 @@ export function getDefaultVideoUrls(): string[] {
   return offlineManifest.videoUrls as string[];
 }
 
+/** Curated video URLs for optional offline pack (480p when configured). */
+export function getCuratedOfflineVideoUrls(): string[] {
+  const ids = new Set((offlineCuration.videoMeditationIds ?? []) as string[]);
+  if (ids.size === 0) return [];
+  const height = (offlineCuration.preferRendition === '720p' ? 720 : 480) as VideoRendition;
+  const urls: string[] = [];
+  for (const m of meditations) {
+    if (!ids.has(m.id) || m.type !== 'video' || !m.mediaUrl) continue;
+    urls.push(videoRenditionUrl(m.mediaUrl, height));
+  }
+  return [...new Set(urls)];
+}
+
 export function getOfflineDownloadBundleUrls(): string[] {
-  return getDefaultPrecacheUrls();
+  return [...new Set([...getDefaultPrecacheUrls(), ...getCuratedOfflineVideoUrls()])];
 }
 
 export function meditationMediaUrls(m: Meditation): string[] {

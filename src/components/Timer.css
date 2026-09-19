@@ -122,7 +122,7 @@
 
 .timer-ring__label.textured-surface {
   inset: 10%;
-  background: rgba(249, 246, 238, 0.52);
+  background: rgba(var(--color-bg-rgb), 0.52);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-radius: 50%;
@@ -162,7 +162,7 @@
 }
 
 .timer-elapsed:not(.textured-surface) {
-  background: rgba(249, 246, 238, 0.55);
+  background: rgba(var(--color-bg-rgb), 0.55);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 }
@@ -216,7 +216,7 @@
 }
 
 .timer-active__controls .btn-secondary {
-  background: rgba(249, 246, 238, 0.72);
+  background: rgba(var(--color-bg-rgb), 0.72);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid color-mix(in srgb, var(--color-secondary) 25%, var(--glass-border));

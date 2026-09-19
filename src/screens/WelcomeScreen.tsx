@@ -69,7 +69,7 @@ export function WelcomeScreen() {
           )}
           <h1
             className={withTexture(
-              'heading-serif welcome-screen__greeting',
+              'heading-display welcome-screen__greeting',
               greetingTexture,
               'textured-surface--welcome-greeting',
             )}
@@ -97,7 +97,7 @@ export function WelcomeScreen() {
 
           <button
             type="button"
-            className="btn-terracotta btn-terracotta--lg welcome-screen__cta"
+            className="btn-primary btn-primary--lg welcome-screen__cta"
             onClick={() => {
               track('welcome_cta', {
                 streak: streak.days,

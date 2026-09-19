@@ -52,64 +52,6 @@
 
 .welcome-screen__cta {
   width: 100%;
-  --welcome-cta-bg: url('/media/images/welcome-cta-bg.png');
-  transition:
-    background-color var(--transition-fast),
-    box-shadow var(--transition-fast),
-    transform var(--transition-fast);
-}
-
-.btn-terracotta {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: var(--btn-height-md);
-  padding: 0 var(--btn-padding-x);
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--color-secondary-hover);
-  background-color: var(--color-secondary);
-  background-image: var(--welcome-cta-bg, none);
-  background-size: cover;
-  background-position: center;
-  background-blend-mode: multiply;
-  color: var(--color-text-on-dark);
-  font-size: var(--font-size-sm);
-  font-weight: 600;
-  box-shadow: 0 6px 20px rgba(169, 92, 55, 0.35);
-  transition:
-    background-color var(--transition-fast),
-    box-shadow var(--transition-fast),
-    transform var(--transition-fast);
-}
-
-.btn-terracotta--lg {
-  min-height: var(--btn-height-lg);
-  font-size: var(--font-size-md);
-  padding: 0 var(--space-6);
-}
-
-.btn-terracotta:hover {
-  background-color: var(--color-secondary-hover);
-  box-shadow: 0 8px 24px rgba(169, 92, 55, 0.45);
-}
-
-.btn-terracotta:active {
-  transform: scale(0.98);
-}
-
-.welcome-screen__cta.btn-terracotta {
-  --btn-terracotta-base: color-mix(in srgb, var(--color-secondary) 80%, var(--color-surface) 20%);
-  --btn-terracotta-hover: color-mix(in srgb, var(--color-secondary-hover) 80%, var(--color-surface) 20%);
-  background-color: var(--btn-terracotta-base);
-  border-color: color-mix(in srgb, var(--color-secondary) 70%, var(--color-surface-muted) 30%);
-  background-blend-mode: soft-light;
-  color: var(--color-text-on-accent);
-  box-shadow: 0 6px 18px rgba(155, 119, 80, 0.28);
-}
-
-.welcome-screen__cta.btn-terracotta:hover {
-  background-color: var(--btn-terracotta-hover);
-  box-shadow: 0 8px 22px rgba(155, 119, 80, 0.34);
 }
 
 .welcome-screen__disclaimer {
@@ -132,8 +74,8 @@
 }
 
 .welcome-screen__streak--risk {
-  border-color: color-mix(in srgb, var(--color-secondary) 55%, var(--color-border-subtle));
-  background: color-mix(in srgb, var(--color-secondary-soft) 55%, var(--color-surface-alt));
+  border-color: color-mix(in srgb, var(--color-error) 55%, var(--color-border-subtle));
+  background: color-mix(in srgb, var(--color-error-soft) 55%, var(--color-surface-alt));
 }
 
 .welcome-screen__streak-msg {
@@ -147,5 +89,5 @@
 
 .welcome-screen__streak--risk .welcome-screen__streak-msg {
   font-weight: 600;
-  color: var(--color-secondary);
+  color: var(--color-error);
 }

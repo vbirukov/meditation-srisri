@@ -1,3 +1,17 @@
+.section-heading {
+  margin: var(--space-8) 0 var(--space-4);
+  font-family: var(--font-body);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  color: var(--color-text);
+}
+
+.section-heading:first-child {
+  margin-top: 0;
+}
+
 .section-title--banner {
   margin-top: var(--space-8);
   margin-bottom: var(--space-4);

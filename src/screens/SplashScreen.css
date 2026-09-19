@@ -20,7 +20,7 @@
   font-size: 4.5rem;
   margin-bottom: var(--space-6);
   color: var(--color-secondary);
-  filter: drop-shadow(0 6px 20px rgba(198, 116, 74, 0.28));
+  filter: drop-shadow(0 6px 20px rgba(var(--color-text-rgb), 0.12));
   animation: fadeIn 0.8s var(--ease-out) backwards;
 }
 

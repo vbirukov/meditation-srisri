@@ -144,6 +144,6 @@ export async function shareLink(
     await bridge.send('VKWebAppShare', { link: linkUrl });
     return true;
   } catch {
-    return shareToWall(message ?? `Медитация с Шри Шри — ${linkUrl}`, linkUrl);
+    return shareToWall(message ?? `Медитация с Шри Шри: ${linkUrl}`, linkUrl);
   }
 }

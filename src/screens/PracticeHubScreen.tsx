@@ -347,7 +347,7 @@ export function PracticeHubScreen() {
 
         {!online && (
           <p className="offline-badge" role="status">
-            {t('common.offline')} — {t('picker.offlineHint')}
+            {t('common.offlineBanner')}
           </p>
         )}
 
@@ -355,7 +355,7 @@ export function PracticeHubScreen() {
 
         {(potw.meditation || potw.sadhana) && (
           <section className="practice-hub__featured glass-panel" aria-label={t('hub.practiceOfWeek')}>
-            <SectionTitle textureUrl={pageTextures['section-header']}>
+            <SectionTitle banner textureUrl={pageTextures['section-header']}>
               {t('hub.practiceOfWeek')}
             </SectionTitle>
             {potw.meditation && (

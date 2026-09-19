@@ -12,7 +12,7 @@
 }
 
 .guided-video:not(.textured-surface) {
-  background: rgba(249, 246, 238, 0.92);
+  background: rgba(var(--color-bg-rgb), 0.92);
 }
 
 .guided-video--hidden {

@@ -10,13 +10,13 @@
     "streakLabel": "Your streak",
     "streakRisk": "Practice today so you don’t lose {days} days.",
     "streakSafe": "Today’s done · {days}-day streak",
-    "streakActive": "{days}-day streak — keep going",
+    "streakActive": "{days}-day streak. Keep going",
     "disclaimer": "This app does not replace medical care. If you need help, please consult a professional."
   },
   "onboarding": {
     "eyebrow": "14 days with Guruji",
-    "title": "One day — one practice",
-    "lead": "A short session every day. By day 14 the habit is yours — no pressure, no race.",
+    "title": "One day, one practice",
+    "lead": "A short session every day. By day 14 the habit is yours, without pressure or race, no race.",
     "promiseNote": "Day 1 starts now. The rest is one dot at a time.",
     "pathLabel": "Your 14-day path",
     "ctaPromise": "I'm ready · day 1",
@@ -26,7 +26,7 @@
     "stepsLabel": "Onboarding steps",
     "slotEyebrow": "Rhythm",
     "slotTitle": "When is easiest for you?",
-    "slotLead": "Pick a slot and exact time — so the reminder lands when you want.",
+    "slotLead": "Pick a slot and exact time so the reminder lands when you want.",
     "slotLater": "Decide later",
     "timeEyebrow": "Reminder",
     "timeTitle": "What time should we remind you?",
@@ -42,21 +42,21 @@
       "evening": "Evening"
     },
     "slotHint": {
-      "morning": "Before the rush — 5–10 quiet minutes",
+      "morning": "Before the rush, 5-10 quiet minutes",
       "day": "A short pause between tasks",
       "evening": "Put the day down gently"
     },
     "pickEyebrow": "Day 1",
-    "pickTitle": "First practice — one tap",
+    "pickTitle": "First practice, one tap",
     "pickLead": {
-      "default": "Three short options. The top pick is recommended — start there.",
-      "morning": "Morning fits a short Om — a soft start to the day.",
-      "day": "Daytime fits a silent timer — no voice, 5 minutes.",
-      "evening": "Evening fits the smile practice — ease tension before rest."
+      "default": "Three short options. The top pick is recommended, start there.",
+      "morning": "Morning fits a short Om, a soft start to the day.",
+      "day": "Daytime fits a silent timer: no voice, 5 minutes.",
+      "evening": "Evening fits the smile practice to ease tension before rest."
     },
     "recommended": "For you",
     "timerPick": "Silent timer",
-    "timerPickMeta": "Just a bell and silence — 5 minutes"
+    "timerPickMeta": "Just a bell and silence, 5 minutes"
   },
   "hub": {
     "title": "Practice",
@@ -73,7 +73,7 @@
     "resumeCta": "Resume",
     "resumeDiscard": "Discard",
     "starterTitle": "Start short",
-    "starterLead": "Three day-1 options — no full catalog yet.",
+    "starterLead": "Three day-1 options, no full catalog yet catalog yet.",
     "showAll": "Full catalog",
     "streakLabel": "Streak · {goal}-day goal",
     "practiceOfWeek": "Practice of the week",
@@ -101,7 +101,7 @@
     "videoSection": "Video meditations",
     "audioSection": "Audio meditations",
     "timerSection": "Silent timer",
-    "timerHint": "Practice in silence — just a timer",
+    "timerHint": "Practice in silence: just a timer",
     "offlineHint": "Cached meditations, sadhanas, and the timer are available",
     "sadhanaOfflineHint": "Download practices first or go online",
     "customSection": "Your track"
@@ -139,7 +139,7 @@
   },
   "customTrack": {
     "upload": "Upload audio",
-    "uploadHint": "mp3, wav, ogg, m4a — up to 50 MB",
+    "uploadHint": "mp3, wav, ogg, m4a, up to 50 MB",
     "yours": "Your track",
     "start": "Start with track",
     "replace": "Replace",
@@ -196,13 +196,13 @@
     "shareLink": "Share link",
     "shareMore": "More",
     "shareLess": "Less",
-    "sharePeak": "Mark the moment — share with friends",
+    "sharePeak": "Mark the moment and share with friends",
     "favoritesTitle": "Add to favorites?",
     "favoritesHint": "Keep the app one tap away in VK.",
     "favoritesAction": "Add to favorites",
     "favoritesLater": "Not now",
     "notificationsTitle": "Remind you to practice?",
-    "notificationsHint": "A short VK notification — so the streak doesn’t slip.",
+    "notificationsHint": "A short VK notification so the streak doesn’t slip.",
     "notificationsAction": "Allow",
     "notificationsLater": "Not now",
     "reminderTitle": "When should we remind you?",
@@ -237,6 +237,7 @@
   "common": {
     "back": "Back",
     "minutes": "min",
-    "offline": "Offline"
+    "offline": "Offline",
+    "offlineBanner": "Offline · cached practices available"
   }
 }

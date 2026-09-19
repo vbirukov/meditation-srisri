@@ -145,7 +145,7 @@ export function EndScreen() {
 
   const durationLabel = lastSession
     ? formatPracticeDuration(lastSession.durationSeconds, locale)
-    : '—';
+    : '…';
 
   const monthLabel = formatMonthTotal(secondsThisMonth, locale);
 

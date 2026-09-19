@@ -491,7 +491,7 @@ export function SadhanaPhaseTimer({
                   )}
                 </div>
                 <span className="sadhana-timer-setup__dur">
-                  {slotSec != null ? formatPhaseDuration(slotSec) : '—'}
+                  {slotSec != null ? formatPhaseDuration(slotSec) : '…'}
                 </span>
                 {debugMode && flags && (
                   <span className="sadhana-debug-audio" title="main / start / end">
@@ -505,7 +505,7 @@ export function SadhanaPhaseTimer({
         </ol>
         <p className="sadhana-timer-setup__total text-muted">
           {labels.total}:{' '}
-          {totalSeconds > 0 ? formatPhaseDuration(totalSeconds) : '—'}
+          {totalSeconds > 0 ? formatPhaseDuration(totalSeconds) : '…'}
         </p>
         <button type="button" className="btn-primary timer-start-btn" onClick={start}>
           {labels.start}

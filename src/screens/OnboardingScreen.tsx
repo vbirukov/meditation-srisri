@@ -173,7 +173,7 @@ export function OnboardingScreen() {
               ॐ
             </div>
             <p className="onboarding__eyebrow">{t('onboarding.eyebrow')}</p>
-            <h1 className="heading-serif onboarding__title">{t('onboarding.title')}</h1>
+            <h1 className="heading-display onboarding__title">{t('onboarding.title')}</h1>
             <p className="onboarding__lead text-muted">{t('onboarding.lead')}</p>
             <StreakPath
               current={0}
@@ -198,8 +198,7 @@ export function OnboardingScreen() {
 
         {step === 'slot' && slotPhase === 'choose' && (
           <div className="onboarding__panel glass-panel onboarding__panel--enter" key="slot">
-            <p className="onboarding__eyebrow">{t('onboarding.slotEyebrow')}</p>
-            <h1 className="heading-serif onboarding__title onboarding__title--sm">
+            <h1 className="heading-display onboarding__title onboarding__title--sm">
               {t('onboarding.slotTitle')}
             </h1>
             <p className="onboarding__lead text-muted">{t('onboarding.slotLead')}</p>
@@ -231,8 +230,7 @@ export function OnboardingScreen() {
 
         {step === 'slot' && slotPhase === 'time' && (
           <div className="onboarding__panel glass-panel onboarding__panel--enter" key="slot-time">
-            <p className="onboarding__eyebrow">{t('onboarding.timeEyebrow')}</p>
-            <h1 className="heading-serif onboarding__title onboarding__title--sm">
+            <h1 className="heading-display onboarding__title onboarding__title--sm">
               {t('onboarding.timeTitle')}
             </h1>
             <p className="onboarding__lead text-muted">{t('onboarding.timeLead')}</p>
@@ -279,8 +277,7 @@ export function OnboardingScreen() {
 
         {step === 'pick' && (
           <div className="onboarding__panel glass-panel onboarding__panel--enter" key="pick">
-            <p className="onboarding__eyebrow">{t('onboarding.pickEyebrow')}</p>
-            <h1 className="heading-serif onboarding__title onboarding__title--sm">
+            <h1 className="heading-display onboarding__title onboarding__title--sm">
               {t('onboarding.pickTitle')}
             </h1>
             <p className="onboarding__lead text-muted">

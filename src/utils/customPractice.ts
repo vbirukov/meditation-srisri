@@ -123,7 +123,7 @@ export function formatCustomPracticeTotal(
   blocks: readonly SadhanaBlock[],
 ): string {
   const { totalSeconds, hasUnknown } = customPracticeTotalSeconds(practice, blocks);
-  if (practice.steps.length === 0) return '—';
+  if (practice.steps.length === 0) return '…';
   return hasUnknown
     ? `≈ ${formatPhaseDuration(totalSeconds)}`
     : formatPhaseDuration(totalSeconds);

@@ -15,9 +15,9 @@
 
 .app-header__title {
   margin: 0;
-  font-family: var(--font-display);
+  font-family: var(--font-heading);
   font-size: var(--font-size-lg);
-  font-weight: 400;
+  font-weight: 600;
   text-align: center;
   line-height: 1.15;
   letter-spacing: -0.02em;
@@ -30,7 +30,7 @@
 .app-header--transparent .app-header__title {
   color: var(--color-text);
   padding: var(--space-2) var(--space-5);
-  background: rgba(249, 246, 238, 0.82);
+  background: rgba(var(--color-bg-rgb), 0.82);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border: 1px solid var(--glass-border);

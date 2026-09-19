@@ -221,7 +221,7 @@ export function SadhanaCard({
               <span className="sadhana-card__phase-time">
                 {typeof slot.durationSeconds === 'number'
                   ? formatPhaseDuration(slot.durationSeconds)
-                  : '—'}
+                  : '…'}
               </span>
             </li>
           ))}

@@ -462,7 +462,7 @@ export function SessionScreen() {
             )}
             style={textureStyle(panelTexture)}
           >
-            <h1 className="heading-serif heading-serif--sm session-screen__title">
+            <h1 className="heading-display heading-display--sm session-screen__title">
               <span className="session-screen__title-text">{sessionTitle}</span>
             </h1>
             {mode === 'guided' && (

@@ -75,7 +75,7 @@ export function SplashScreen() {
       <div className="splash-screen__logo" aria-hidden>
         ॐ
       </div>
-      <h1 className="splash-screen__title heading-serif">{t('appName')}</h1>
+      <h1 className="splash-screen__title heading-display">{t('appName')}</h1>
       <p className="splash-screen__tagline">
         {booting ? t('splash') : t('splashReady')}
       </p>

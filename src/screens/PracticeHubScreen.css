@@ -54,8 +54,8 @@
 .practice-hub__streak--risk {
   padding: var(--space-3);
   border-radius: var(--radius-lg);
-  border: 1px solid color-mix(in srgb, var(--color-secondary) 45%, var(--color-border-subtle));
-  background: color-mix(in srgb, var(--color-secondary-soft) 50%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-error) 45%, var(--color-border-subtle));
+  background: color-mix(in srgb, var(--color-error-soft) 50%, transparent);
 }
 
 .practice-hub__continue {

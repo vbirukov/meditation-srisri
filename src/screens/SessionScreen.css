@@ -57,7 +57,7 @@
 }
 
 .session-screen__chrome:not(.textured-surface) {
-  background: rgba(249, 246, 238, 0.55);
+  background: rgba(var(--color-bg-rgb), 0.55);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 }

@@ -308,7 +308,7 @@ export function phaseListSummary(phases: SadhanaPhase[]): string {
   return phases
     .map((p) => {
       const s = p.durationSeconds;
-      const dur = typeof s === 'number' ? formatPhaseDuration(s) : '—';
+      const dur = typeof s === 'number' ? formatPhaseDuration(s) : '…';
       return `${p.label ?? p.id} (${dur})`;
     })
     .join(' · ');

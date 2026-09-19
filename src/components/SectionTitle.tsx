@@ -5,9 +5,15 @@ import './SectionTitle.css';
 interface SectionTitleProps {
   children: string;
   textureUrl?: string;
+  /** Uppercase textured banner — use at most once per screen. */
+  banner?: boolean;
 }
 
-export function SectionTitle({ children, textureUrl }: SectionTitleProps) {
+export function SectionTitle({ children, textureUrl, banner = false }: SectionTitleProps) {
+  if (!banner) {
+    return <h2 className="section-heading">{children}</h2>;
+  }
+
   return (
     <h2
       className={withTexture(

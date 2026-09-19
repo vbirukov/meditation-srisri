@@ -13,61 +13,61 @@
   },
   "summaries": {
     "default": {
-      "ru": "Практика завершена — побудьте в этом состоянии ещё немного.",
-      "en": "Practice complete — stay with this feeling a little longer."
+      "ru": "Практика завершена, побудьте в этом состоянии ещё немного.",
+      "en": "Practice complete, stay with this feeling a little longer."
     },
     "byMode": {
       "timer": {
-        "ru": "Тишина завершена — побудьте в этом покое ещё немного.",
-        "en": "Your silence is complete — stay with this stillness a little longer."
+        "ru": "Тишина завершена, побудьте в этом покое ещё немного.",
+        "en": "Your silence is complete, stay with this stillness a little longer."
       },
       "custom": {
-        "ru": "Своя практика завершена — спасибо, что уделили себе это время.",
-        "en": "Your custom practice is complete — thank you for this time."
+        "ru": "Своя практика завершена, спасибо, что уделили себе это время.",
+        "en": "Your custom practice is complete, thank you for this time."
       },
       "sadhana": {
-        "ru": "Садхана завершена — хороший фундамент на день.",
-        "en": "Sadhana complete — a solid foundation for the day."
+        "ru": "Садхана завершена, хороший фундамент на день.",
+        "en": "Sadhana complete, a solid foundation for the day."
       },
       "guided": {
-        "ru": "Медитация завершена — сохраните это ощущение.",
-        "en": "Meditation complete — hold on to this feeling."
+        "ru": "Медитация завершена, сохраните это ощущение.",
+        "en": "Meditation complete, hold on to this feeling."
       },
       "custom-practice": {
-        "ru": "Своя практика завершена — спасибо, что уделили себе это время.",
-        "en": "Your custom practice is complete — thank you for this time."
+        "ru": "Своя практика завершена, спасибо, что уделили себе это время.",
+        "en": "Your custom practice is complete, thank you for this time."
       }
     },
     "bySadhanaId": {
       "morning-short": {
-        "ru": "Утренняя садхана завершена — хорошего дня.",
-        "en": "Morning sadhana complete — have a peaceful day."
+        "ru": "Утренняя садхана завершена, хорошего дня.",
+        "en": "Morning sadhana complete, have a peaceful day."
       },
       "sanyam-short": {
-        "ru": "Короткий Саньям завершён — сохраните внутреннюю тишину.",
-        "en": "Short Sanyam complete — keep the inner quiet."
+        "ru": "Короткий Саньям завершён, сохраните внутреннюю тишину.",
+        "en": "Short Sanyam complete, keep the inner quiet."
       },
       "sanyam-full": {
-        "ru": "Полный Саньям завершён — глубокая практика позади.",
-        "en": "Full Sanyam complete — a deep practice behind you."
+        "ru": "Полный Саньям завершён, глубокая практика позади.",
+        "en": "Full Sanyam complete, a deep practice behind you."
       }
     },
     "byMeditationId": {
       "smile": {
-        "ru": "Улыбка внутри — пусть останется с вами.",
+        "ru": "Улыбка внутри, пусть останется с вами.",
         "en": "Keep that inner smile with you."
       },
       "om": {
-        "ru": "Звук Ом отзвучал — тишина продолжает его.",
-        "en": "Om has settled — silence continues it."
+        "ru": "Звук Ом отзвучал, тишина продолжает его.",
+        "en": "Om has settled, silence continues it."
       },
       "om-short": {
         "ru": "Короткая практика с Ом завершена.",
         "en": "Short Om practice complete."
       },
       "panchakosha": {
-        "ru": "Панчакоша завершена — мягко вернитесь в тело.",
-        "en": "Panchakosha complete — gently return to the body."
+        "ru": "Панчакоша завершена, мягко вернитесь в тело.",
+        "en": "Panchakosha complete, gently return to the body."
       },
       "tattva": {
         "ru": "Таттва-медитация завершена.",
@@ -106,8 +106,8 @@
         "en": "Elements practice complete."
       },
       "love": {
-        "ru": "Медитация любви завершена — пусть тепло останется.",
-        "en": "Love meditation complete — keep the warmth."
+        "ru": "Медитация любви завершена, пусть тепло останется.",
+        "en": "Love meditation complete, keep the warmth."
       }
     }
   }
